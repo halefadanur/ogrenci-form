@@ -547,14 +547,32 @@ const WEBHOOK = "https://script.google.com/macros/s/AKfycbzT_uF6HsczXuF7kuBbsemF
 const data = {sinif:null,cocukSayisi:null,tani:null,rehabSureVal:null,raporOlasilik:null};
 const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 
-// Tarih picker doldur
 function initDatePicker(prefix, minYear, maxYear){
-  const g=document.getElementById(prefix+'Gun');
-  const a=document.getElementById(prefix+'Ay');
-  const y=document.getElementById(prefix+'Yil');
-  for(let i=1;i<=31;i++) g.innerHTML+=`<option value="${String(i).padStart(2,'0')}">${i}</option>`;
-  AYLAR.forEach((m,i)=> a.innerHTML+=`<option value="${String(i+1).padStart(2,'0')}">${m}</option>`);
-  for(let i=maxYear;i>=minYear;i--) y.innerHTML+=`<option value="${i}">${i}</option>`;
+  const g = document.getElementById(prefix+'Gun');
+  const a = document.getElementById(prefix+'Ay');
+  const y = document.getElementById(prefix+'Yil');
+  if(!g||!a||!y) return;
+  g.innerHTML = '<option value="">Gün</option>';
+  a.innerHTML = '<option value="">Ay</option>';
+  y.innerHTML = '<option value="">Yıl</option>';
+  for(let i=1;i<=31;i++){
+    const o=document.createElement('option');
+    o.value=String(i).padStart(2,'0');
+    o.textContent=i;
+    g.appendChild(o);
+  }
+  AYLAR.forEach((m,i)=>{
+    const o=document.createElement('option');
+    o.value=String(i+1).padStart(2,'0');
+    o.textContent=m;
+    a.appendChild(o);
+  });
+  for(let i=maxYear;i>=minYear;i--){
+    const o=document.createElement('option');
+    o.value=i;
+    o.textContent=i;
+    y.appendChild(o);
+  }
 }
 
 function getDateVal(prefix){
