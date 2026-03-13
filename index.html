@@ -158,11 +158,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
     </div>
     <div class="card">
       <div class="field-label"><span class="icon">🎂</span> Öğrencinin Doğum Tarihi</div>
-      <div class="date-picker">
-        <select id="dogumTarihiGun"><option value="">Gün</option></select>
-        <select id="dogumTarihiAy"><option value="">Ay</option></select>
-        <select id="dogumTarihiYil"><option value="">Yıl</option></select>
-      </div>
+      <input type="date" id="dogumTarihi">
     </div>
     <div class="nav"><button class="btn btn-next" onclick="goTo(2,1)">İleri →</button></div>
   </div>
@@ -814,7 +810,7 @@ function submitForm(){
     ogrenciSoyad:document.getElementById('ogrenciSoyad').value,
     okul:document.getElementById('okul').value,
     sinif:data.sinif||"",
-    dogumTarihi:getDateVal('dogumTarihi'),
+    dogumTarihi:document.getElementById('dogumTarihi').value,
     gorusmeNot:document.getElementById('gorusmeNot').value,
     saglik1:getRadioVal('saglik1'),saglik2:getRadioVal('saglik2'),
     saglik3:getRadioVal('saglik3'),saglik4:getRadioVal('saglik4'),
