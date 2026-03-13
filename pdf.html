@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Öğrenci Tanıma Formu</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f0ede8;color:#16130e;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+/* ── PRINT BUTTON (ekranda görünür, baskıda kaybolur) ── */
+.print-bar{background:#1a1814;color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.print-bar h3{font-size:14px;font-weight:700;opacity:.8}
+.print-btns{display:flex;gap:10px}
+.pbtn{padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+.pbtn-print{background:#c9720a;color:#fff}
+.pbtn-close{background:rgba(255,255,255,.12);color:#fff}
+
+/* ── A4 SAYFA ── */
+.page{width:210mm;min-height:297mm;background:#fff;margin:24px auto;box-shadow:0 8px 40px rgba(0,0,0,.18);position:relative;overflow:hidden}
+
+/* ── HEADER ── */
+.pg-header{background:linear-gradient(135deg,#b05e18,#de8f28);padding:28px 32px 24px;color:#fff;position:relative;overflow:hidden}
+.pg-header::before{content:'';position:absolute;right:-40px;bottom:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.07)}
+.pg-header::after{content:'';position:absolute;right:80px;top:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.04)}
+.header-inner{display:flex;align-items:flex-start;gap:20px;position:relative;z-index:1}
+.header-text{flex:1}
+.header-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;opacity:.75;margin-bottom:6px}
+.header-name{font-size:26px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px}
+.header-meta{font-size:12px;opacity:.8;display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+.header-meta span{display:flex;align-items:center;gap:5px}
+.foto-box{width:90px;height:120px;border-radius:12px;overflow:hidden;border:3px solid rgba(255,255,255,.35);flex-shrink:0;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center}
+.foto-box img{width:100%;height:100%;object-fit:cover}
+.foto-box .no-foto{font-size:36px;opacity:.5}
+
+/* ── BADGE ── */
+.form-badge{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:10px;font-weight:800;padding:4px 12px;border-radius:99px;letter-spacing:.5px;text-transform:uppercase;backdrop-filter:blur(4px)}
+
+/* ── BODY ── */
+.pg-body{padding:24px 28px}
+
+/* ── SECTION ── */
+.sec{margin-bottom:20px}
+.sec-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:#a09a94;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.sec-title::after{content:'';flex:1;height:1px;background:#ede8e0}
+
+/* ── GRID ── */
+.grid{display:grid;gap:8px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.g4{grid-template-columns:1fr 1fr 1fr 1fr}
+.field{background:#f8f5f0;border-radius:9px;padding:9px 12px}
+.field-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a09a94;margin-bottom:3px}
+.field-value{font-size:13px;font-weight:600;color:#16130e;line-height:1.4}
+.field-value.empty{color:#c0b8b0;font-weight:400;font-style:italic;font-size:12px}
+
+/* ── TAG PILLS ── */
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.tag{background:#fff;border:1.5px solid #e2dbd0;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;color:#4a443c}
+.tag.red{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+.tag.green{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+.tag.blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.tag.orange{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+.tag.purple{background:#faf5ff;border-color:#e9d5ff;color:#7c3aed}
+
+/* ── AKADEMİK TABLO ── */
+.ak-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.ak-table th{background:#f0ede8;color:#6b6560;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:7px 10px;text-align:left;border-bottom:1.5px solid #e2dbd0}
+.ak-table td{padding:7px 10px;border-bottom:1px solid #f0ebe2;font-weight:500}
+.ak-table tr:last-child td{border-bottom:none}
+.ak-val{display:inline-flex;align-items:center;gap:5px}
+.ak-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-green{background:#16a34a}.dot-yellow{background:#d97706}.dot-red{background:#dc2626}.dot-gray{background:#9ca3af}
+
+/* ── AİLE KARTLARI ── */
+.aile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.aile-card{border-radius:10px;padding:12px 14px;border:1.5px solid}
+.aile-anne{border-color:#f0c4c4;background:linear-gradient(148deg,#fffafa,#fff)}
+.aile-baba{border-color:#c4d6f0;background:linear-gradient(148deg,#f7fbff,#fff)}
+.aile-card-title{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.aile-anne .aile-card-title{color:#7a1616}
+.aile-baba .aile-card-title{color:#163678}
+.aile-row{display:flex;gap:6px;margin-bottom:4px;font-size:11.5px}
+.aile-row:last-child{margin-bottom:0}
+.aile-key{color:#a09a94;font-weight:600;min-width:52px;font-size:10.5px}
+.aile-val{font-weight:600;color:#16130e}
+
+/* ── KARAR BANNER ── */
+.karar-banner{border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-top:8px}
+.karar-kayit{background:linear-gradient(135deg,#0d4a27,#18733c);color:#fff}
+.karar-red{background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff}
+.karar-takip{background:linear-gradient(135deg,#1e3a5f,#1d4ed8);color:#fff}
+.karar-diger{background:linear-gradient(135deg,#3d2b00,#c9720a);color:#fff}
+.karar-ico{font-size:22px}
+.karar-text{font-size:14px;font-weight:800}
+
+/* ── NOT KUTUSU ── */
+.not-box{background:#fffbf0;border:1.5px solid #fde68a;border-radius:9px;padding:11px 14px;font-size:12px;line-height:1.7;color:#3d2b00;white-space:pre-wrap;word-break:break-word}
+
+/* ── FOOTER ── */
+.pg-footer{background:#f8f5f0;border-top:1px solid #e2dbd0;padding:12px 28px;display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#a09a94}
+
+/* ── PRINT ── */
+@media print{
+  .print-bar{display:none!important}
+  body{background:#fff}
+  .page{margin:0;box-shadow:none;width:100%;min-height:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- PRINT BAR -->
+<div class="print-bar">
+  <h3 id="printBarTitle">Öğrenci Tanıma Formu</h3>
+  <div class="print-btns">
+    <button class="pbtn pbtn-print" onclick="window.print()">🖨️ Yazdır / PDF</button>
+    <button class="pbtn pbtn-close" onclick="window.close()">✕ Kapat</button>
+  </div>
+</div>
+
+<!-- SAYFA -->
+<div class="page" id="page">
+
+  <!-- HEADER -->
+  <div class="pg-header">
+    <div class="form-badge" id="formTip">TAM FORM</div>
+    <div class="header-inner">
+      <div class="header-text">
+        <div class="header-tag">Öğrenci Tanıma Formu</div>
+        <div class="header-name" id="hName">—</div>
+        <div class="header-meta">
+          <span>🎓 <span id="hSinif">—</span></span>
+          <span>🎂 <span id="hDogum">—</span></span>
+          <span>🏫 <span id="hOkul">—</span></span>
+          <span>📅 <span id="hTarih">—</span></span>
+        </div>
+      </div>
+      <div class="foto-box" id="fotoBox">
+        <span class="no-foto">👤</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="pg-body">
+
+    <!-- TANI & AKADEMİK -->
+    <div class="sec">
+      <div class="sec-title">🗂️ Tanı & Akademik Durum</div>
+      <div class="grid g2" style="margin-bottom:10px">
+        <div class="field">
+          <div class="field-label">Rapor / Tanı</div>
+          <div class="field-value" id="fTani">—</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Temel İhtiyaç Alanı</div>
+          <div class="field-value" id="fIhtiyac">—</div>
+        </div>
+      </div>
+      <table class="ak-table" id="akTable">
+        <thead>
+          <tr>
+            <th>Alan</th>
+            <th>Değerlendirme</th>
+            <th>Alan</th>
+            <th>Değerlendirme</th>
+          </tr>
+        </thead>
+        <tbody id="akBody"></tbody>
+      </table>
+    </div>
+
+    <!-- SAĞLIK & DAVRANIŞ -->
+    <div class="sec" id="secSaglik">
+      <div class="sec-title">🩺 Sağlık & Davranış</div>
+      <div id="saglikTags" class="tags"></div>
+    </div>
+
+    <!-- DİL GELİŞİMİ -->
+    <div class="sec" id="secDil">
+      <div class="sec-title">🔤 Dil Gelişimi</div>
+      <div id="dilTags" class="tags"></div>
+    </div>
+
+    <!-- REHABİLİTASYON -->
+    <div class="sec" id="secRehab">
+      <div class="sec-title">🏥 Rehabilitasyon</div>
+      <div class="grid g3">
+        <div class="field">
+          <div class="field-label">Durum</div>
+          <div class="field-value" id="fRehab">—</div>
+        </div>
+        <div class="field" style="grid-column:span 2">
+          <div class="field-label">Merkez / Süre</div>
+          <div class="field-value" id="fRehabDetay">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AİLE -->
+    <div class="sec">
+      <div class="sec-title">👨‍👩‍👧 Aile Bilgileri</div>
+      <div class="aile-grid" style="margin-bottom:10px">
+        <div class="aile-card aile-anne">
+          <div class="aile-card-title">👩 Anne</div>
+          <div class="aile-row"><span class="aile-key">Adı</span><span class="aile-val" id="aAnneAd">—</span></div>
+          <div class="aile-row"><span class="aile-key">Tel</span><span class="aile-val" id="aAnneTel">—</span></div>
+          <div class="aile-row"><span class="aile-key">Meslek</span><span class="aile-val" id="aAnneMeslek">—</span></div>
+          <div class="aile-row"><span class="aile-key">Sağlık</span><span class="aile-val" id="aAnneSaglik">—</span></div>
+          <div class="aile-row"><span class="aile-key">Eğitim</span><span class="aile-val" id="aAnneEgitim">—</span></div>
+        </div>
+        <div class="aile-card aile-baba">
+          <div class="aile-card-title">👨 Baba</div>
+          <div class="aile-row"><span class="aile-key">Adı</span><span class="aile-val" id="aBabaAd">—</span></div>
+          <div class="aile-row"><span class="aile-key">Tel</span><span class="aile-val" id="aBabaTel">—</span></div>
+          <div class="aile-row"><span class="aile-key">Meslek</span><span class="aile-val" id="aBabaMeslek">—</span></div>
+          <div class="aile-row"><span class="aile-key">Sağlık</span><span class="aile-val" id="aBabaSaglik">—</span></div>
+          <div class="aile-row"><span class="aile-key">Eğitim</span><span class="aile-val" id="aBabaEgitim">—</span></div>
+        </div>
+      </div>
+      <div class="grid g2">
+        <div class="field">
+          <div class="field-label">Birlikte mi Yaşıyor?</div>
+          <div class="field-value" id="fBeraberlik">—</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Adres</div>
+          <div class="field-value" id="fAdres">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AAA & KARAR -->
+    <div class="sec">
+      <div class="sec-title">⭐ Değerlendirme & Karar</div>
+      <div class="grid g3" style="margin-bottom:10px">
+        <div class="field">
+          <div class="field-label">AAA</div>
+          <div class="field-value" id="fAAA">—</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Rapor Olasılığı</div>
+          <div class="field-value" id="fRaporOlas">—</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Uzman</div>
+          <div class="field-value" id="fUzman">—</div>
+        </div>
+      </div>
+      <div id="kararBanner" class="karar-banner karar-diger">
+        <span class="karar-ico">📋</span>
+        <span class="karar-text" id="fKarar">—</span>
+      </div>
+    </div>
+
+    <!-- GÖRÜŞME NOTU -->
+    <div class="sec" id="secNot">
+      <div class="sec-title">📝 Görüşme Notları</div>
+      <div class="not-box" id="fNot"></div>
+    </div>
+
+  </div><!-- pg-body -->
+
+  <!-- FOOTER -->
+  <div class="pg-footer">
+    <span id="footerLeft">Öğrenci Tanıma Formu</span>
+    <span id="footerRight"></span>
+  </div>
+
+</div><!-- page -->
+
+<script>
+// URL parametrelerinden veriyi al
+const params = new URLSearchParams(window.location.search);
+const tip = params.get('tip') || 'TAM FORM';
+const raw = params.get('d');
+
+if (!raw) {
+  document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif"><h2>Veri bulunamadı</h2><p>Bu sayfa doğrudan açılamaz.</p></div>';
+} else {
+  const d = JSON.parse(decodeURIComponent(raw));
+  document.getElementById('formTip').textContent = tip;
+  document.getElementById('printBarTitle').textContent = (d['Ad']||'') + ' ' + (d['Soyad']||'') + ' — ' + tip;
+  doldur(d);
+}
+
+function val(v) { return v && String(v).trim() ? String(v).trim() : null; }
+function el(id) { return document.getElementById(id); }
+function set(id, v, fallback) { const e = el(id); if(e) e.textContent = val(v) || fallback || '—'; }
+
+function doldur(d) {
+  // HEADER
+  set('hName', (d['Ad']||'') + ' ' + (d['Soyad']||''));
+  set('hSinif', d['Sınıf'] ? d['Sınıf'] + '. Sınıf' : d['Sınıf']);
+  set('hDogum', formatTarih(d['Doğum Tarihi']));
+  set('hOkul', d['Okul']);
+  set('hTarih', 'Görüşme: ' + formatTarih(d['Görüşme Tarihi']));
+
+  // Fotoğraf
+  const fotoUrl = val(d['Fotoğraf (Drive)']);
+  if (fotoUrl) {
+    const fotoBox = el('fotoBox');
+    fotoBox.innerHTML = '<img src="' + fotoUrl + '" alt="Fotoğraf" onerror="this.parentElement.innerHTML=\'<span class=no-foto>👤</span>\'">';
+  }
+
+  // TANI
+  set('fTani', d['Tanı']);
+  set('fIhtiyac', d['Temel İhtiyaç']);
+
+  // AKADEMİK TABLO
+  const akAlanlari = [
+    {label:'Okuma', key:'Okuma'},
+    {label:'Anlama', key:'Anlama'},
+    {label:'Yazma', key:'Yazma'},
+    {label:'Matematik', key:'Matematik'},
+    {label:'İfade', key:'İfade'},
+    {label:'Kavram', key:'Kavram'},
+  ];
+  const tbody = el('akBody');
+  for (let i = 0; i < akAlanlari.length; i += 2) {
+    const tr = tbody.insertRow();
+    [akAlanlari[i], akAlanlari[i+1]].forEach(function(alan) {
+      if (!alan) { tr.insertCell(); tr.insertCell(); return; }
+      const tdLabel = tr.insertCell();
+      tdLabel.textContent = alan.label;
+      tdLabel.style.cssText = 'font-weight:600;font-size:12px;color:#3d3830';
+      const tdVal = tr.insertCell();
+      const v = val(d[alan.key]);
+      if (v) {
+        const dot = akDot(v);
+        tdVal.innerHTML = '<span class="ak-val"><span class="ak-dot ' + dot + '"></span>' + v + '</span>';
+      } else {
+        tdVal.innerHTML = '<span style="color:#c0b8b0;font-style:italic;font-size:11px">—</span>';
+      }
+    });
+  }
+
+  // SAĞLIK
+  const saglik = val(d['Sağlık Durumu']);
+  if (saglik) {
+    const tags = el('saglikTags');
+    saglik.split(';').forEach(function(s) {
+      s = s.trim(); if (!s) return;
+      const span = document.createElement('span');
+      span.className = 'tag red';
+      span.textContent = s;
+      tags.appendChild(span);
+    });
+  } else {
+    el('secSaglik').style.display = 'none';
+  }
+
+  // DİL
+  const dil = val(d['Dil Problemi Detay']);
+  const dilModul = val(d['Dil Modülü']);
+  const aileDil = val(d['Ailede Dil Problemi']);
+  if (dil || dilModul || aileDil) {
+    const tags = el('dilTags');
+    if (dilModul) { const s=document.createElement('span');s.className='tag blue';s.textContent='Modül: '+dilModul;tags.appendChild(s); }
+    if (aileDil)  { const s=document.createElement('span');s.className='tag purple';s.textContent='Ailede dil: '+aileDil;tags.appendChild(s); }
+    if (dil) dil.split(';').forEach(function(s) {
+      s=s.trim();if(!s)return;
+      const span=document.createElement('span');span.className='tag orange';span.textContent=s;tags.appendChild(span);
+    });
+  } else {
+    el('secDil').style.display = 'none';
+  }
+
+  // REHABİLİTASYON
+  const rehab = val(d['Rehabilitasyon']);
+  set('fRehab', rehab);
+  if (rehab === 'Evet') {
+    const merkez = val(d['Rehab Merkez']) || '';
+    const sure = val(d['Rehab Süre']) ? d['Rehab Süre'] + ' yıl' : '';
+    el('fRehabDetay').textContent = [merkez, sure].filter(Boolean).join(' · ') || '—';
+  } else {
+    el('secRehab').style.display = 'none';
+  }
+
+  // AİLE
+  set('aAnneAd', d['Anne Adı']);
+  set('aAnneTel', d['Anne Tel']);
+  set('aAnneMeslek', d['Anne Meslek']);
+  set('aAnneSaglik', d['Anne Sağlık']);
+  set('aAnneEgitim', d['Anne Eğitim']);
+  set('aBabaAd', d['Baba Adı']);
+  set('aBabaTel', d['Baba Tel']);
+  set('aBabaMeslek', d['Baba Meslek']);
+  set('aBabaSaglik', d['Baba Sağlık']);
+  set('aBabaEgitim', d['Baba Eğitim']);
+  set('fBeraberlik', d['Birlikte mi']);
+  set('fAdres', d['Adres']);
+
+  // AAA & KARAR
+  set('fAAA', d['AAA']);
+  const raporOlas = val(d['Rapor Olasılığı']);
+  el('fRaporOlas').textContent = raporOlas ? raporOlas + ' / 5' : '—';
+  set('fUzman', d['Uzman']);
+
+  const karar = val(d['Karar']) || '—';
+  el('fKarar').textContent = karar;
+  const kb = el('kararBanner');
+  if (/kayded/i.test(karar)) kb.className='karar-banner karar-kayit';
+  else if (/red/i.test(karar)) kb.className='karar-banner karar-red';
+  else if (/takip/i.test(karar)) kb.className='karar-banner karar-takip';
+  else kb.className='karar-banner karar-diger';
+
+  // NOT
+  const not = val(d['Görüşme Notu']);
+  if (not) { el('fNot').textContent = not; }
+  else { el('secNot').style.display = 'none'; }
+
+  // FOOTER
+  el('footerLeft').textContent = (d['Ad']||'') + ' ' + (d['Soyad']||'') + ' — Öğrenci Tanıma Formu';
+  el('footerRight').textContent = 'Görüşme: ' + formatTarih(d['Görüşme Tarihi']) + ' · ' + (d['Uzman']||'');
+}
+
+function akDot(v) {
+  if (!v) return 'dot-gray';
+  if (v === 'Akranları düzeyinde') return 'dot-green';
+  if (v === 'Zayıf') return 'dot-yellow';
+  if (v === 'Çok zayıf') return 'dot-red';
+  return 'dot-gray';
+}
+
+function formatTarih(t) {
+  if (!t) return null;
+  const s = String(t);
+  // yyyy-mm-dd → dd.mm.yyyy
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return m[3] + '.' + m[2] + '.' + m[1];
+  return s;
+}
+</script>
+</body>
+</html>
