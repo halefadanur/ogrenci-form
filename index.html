@@ -527,6 +527,7 @@ function goTo(n){
   document.getElementById('sec'+n).classList.remove('hidden');
   document.getElementById('progressFill').style.width=Math.round((n/8)*100)+'%';
   document.getElementById('progressLabel').textContent='Bölüm '+n+' / 8';
+  if(n===8) updateRaporOlasilik();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -618,12 +619,7 @@ document.querySelectorAll('input[type=radio]').forEach(r=>{
   });
 });
 
-// Bölüm 8'e geçince rapor olasılığı görünürlüğünü güncelle
-const origGoTo=goTo;
-function goTo(n){
-  origGoTo(n);
-  if(n===8) updateRaporOlasilik();
-}
+
 
 function submitForm(){
   const btn=document.querySelector('.btn-submit');
