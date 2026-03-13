@@ -1,1004 +1,184 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Öğrenci Tanıma</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --ink:#16130e;--sub:#63584f;--muted:#a8a096;
-  --bg:#f0ede8;--surf:#ffffff;
-  --bd:#e2dbd0;--bd2:#ede7de;
-  --br:#c8700a;--br2:#f0a020;--brbg:#fff7eb;
-  --red:#d12b1e;--green:#176638;
-}
-html{-webkit-text-size-adjust:100%}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
-.app{max-width:648px;margin:0 auto;padding-bottom:110px}
+// ═══════════════════════════════════════════════════════════════
+// ÖĞRENCI TANIMA FORMU — Google Apps Script
+// ═══════════════════════════════════════════════════════════════
+//
+// KURULUM:
+// 1. script.google.com → mevcut projenizi açın
+// 2. Bu kodu mevcut kodun ÜSTÜNE yapıştırın (doPost fonksiyonunu değiştirin)
+// 3. FOTO_KLASOR_ID değerini kendi Drive klasörünüzün ID'si ile değiştirin
+// 4. Kaydedin → Dağıt → Güncelle
+//
+// KLASÖR ID NASIL BULUNUR:
+// Drive'da klasörü açın → URL'deki son parça:
+// https://drive.google.com/drive/folders/BURASI_KLASOR_ID
+// ═══════════════════════════════════════════════════════════════
 
-/* ─ TOPBAR ─ */
-.topbar{position:sticky;top:0;z-index:300;padding:0 16px}
-.tb{background:rgba(240,237,232,.9);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--bd2);border-radius:0 0 18px 18px;padding:11px 15px 13px}
-.tb-row{display:flex;align-items:center;gap:10px}
-.tb-dot{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--br),var(--br2));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.tb-title{font-size:14px;font-weight:800;flex:1;letter-spacing:-.25px;color:var(--ink)}
-.tb-pill{background:var(--br);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px}
-.prog{height:3px;background:var(--bd2);border-radius:99px;margin-top:10px;overflow:hidden}
-.prog-f{height:3px;background:linear-gradient(90deg,var(--br),var(--br2));border-radius:99px;transition:width .55s cubic-bezier(.4,0,.2,1)}
+// ▼ Fotoğrafların kaydedileceği ana Drive klasörü ID'si
+var FOTO_KLASOR_ID = "1Kvwgi4ZTzuavVptYB57xUnvDDMgNTwfu";
 
-/* ─ SECTION ─ */
-.sec{padding:16px 16px 0;animation:fadeUp .2s ease both}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+// ▼ Google Sheet ID (mevcut webhook'unuzdaki ile aynı olmalı)
+var SHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
 
-/* ─ HERO BANNER ─ */
-.banner{border-radius:20px;padding:18px 20px 16px;margin-bottom:16px;color:#fff;position:relative;overflow:hidden}
-.banner::before{content:'';position:absolute;right:-30px;bottom:-44px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07)}
-.banner::after{content:'';position:absolute;right:70px;top:-18px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.04)}
-.brow{display:flex;align-items:center;gap:13px;position:relative;z-index:1}
-.bico{width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.banner h2{font-size:18px;font-weight:900;letter-spacing:-.35px}
-.banner p{font-size:12px;opacity:.72;margin-top:2px;font-weight:500}
-.bnum{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:56px;font-weight:900;opacity:.07;line-height:1;z-index:0;pointer-events:none}
-
-/* banner colors */
-.b1{background:linear-gradient(135deg,#b05e18,#de8f28)}
-.b2{background:linear-gradient(135deg,#a81f15,#d63526)}
-.b3{background:linear-gradient(135deg,#452070,#7b38c8)}
-.b4{background:linear-gradient(135deg,#0d4a90,#1f6ecc)}
-.b5{background:linear-gradient(135deg,#075548,#12987e)}
-.b6{background:linear-gradient(135deg,#0d4a27,#18733c)}
-.b7{background:linear-gradient(135deg,#122b66,#1d58aa)}
-.b8{background:linear-gradient(135deg,#17202a,#2a3f58)}
-
-/* ─ CARD ─ */
-.card{background:var(--surf);border-radius:16px;padding:17px 18px;margin-bottom:11px;border:1px solid var(--bd2);box-shadow:0 1px 2px rgba(0,0,0,.04),0 3px 12px rgba(0,0,0,.04)}
-.card.err{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(209,43,30,.1)!important;animation:shake .28s ease}
-@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-.clabel{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.55px;margin-bottom:11px;display:flex;align-items:center;flex-wrap:wrap;gap:6px}
-.rq{color:var(--red);font-size:12px;text-transform:none;letter-spacing:0;font-weight:700}
-.hint-text{font-weight:500;text-transform:none;letter-spacing:0;font-size:11px;color:var(--muted)}
-
-/* ─ INPUTS ─ */
-.fl{margin-bottom:11px}.fl:last-child{margin-bottom:0}
-.ftitle{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
-input[type=text],input[type=date],textarea,select{
-  width:100%;border:1.5px solid var(--bd);border-radius:10px;
-  padding:11px 13px;font-size:15px;font-family:inherit;
-  background:#fdfcfa;color:var(--ink);outline:none;
-  transition:border-color .14s,box-shadow .14s,background .14s;
-  -webkit-appearance:none;appearance:none;
-}
-input:focus,textarea:focus,select:focus{border-color:var(--br);background:#fff;box-shadow:0 0 0 3px rgba(200,112,10,.12)}
-textarea{resize:vertical;min-height:86px;line-height:1.6}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8a096' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
-.dob-row{display:grid;grid-template-columns:1fr 1.4fr 1.1fr;gap:8px}
-
-/* ─ CHIPS ─ */
-.chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{padding:7px 14px;border:1.5px solid var(--bd);border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;transition:all .13s;color:var(--sub);background:#fdfcfa;white-space:nowrap;user-select:none}
-.chip:hover{border-color:var(--br);color:var(--br);background:var(--brbg)}
-.chip.on{border-color:var(--br);background:var(--br);color:#fff;box-shadow:0 2px 8px rgba(200,112,10,.3)}
-
-/* ─ RADIO ─ */
-.rstack{display:flex;flex-direction:column;gap:7px}
-.ri{display:flex;align-items:center;gap:11px;padding:11px 15px;border:1.5px solid var(--bd);border-radius:12px;cursor:pointer;transition:all .13s;font-size:14px;font-weight:500;background:#fdfcfa;user-select:none}
-.ri:hover{border-color:var(--br);background:var(--brbg)}
-.ri.on{border-color:var(--br);background:var(--brbg);color:var(--br)}
-.ri input[type=radio]{accent-color:var(--br);width:16px;height:16px;flex-shrink:0;cursor:pointer}
-
-/* ─ TOGGLE (multi) ─ */
-.togs{display:flex;flex-direction:column;gap:7px}
-.tog{display:flex;align-items:center;gap:11px;padding:11px 15px;border:1.5px solid var(--bd);border-radius:12px;cursor:pointer;font-size:14px;font-weight:500;color:var(--sub);transition:all .13s;background:#fdfcfa;user-select:none}
-.tog:hover{border-color:var(--br);background:var(--brbg)}
-.tog.on{border-color:var(--br);background:var(--brbg);color:var(--ink)}
-.tdot{width:20px;height:20px;border-radius:50%;border:2px solid #d0c8be;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;transition:all .18s;color:transparent}
-.tog.on .tdot{border-color:var(--br);background:var(--br);color:#fff}
-.nbadge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:var(--bd2);color:var(--sub);font-size:10px;font-weight:800;flex-shrink:0;transition:all .13s}
-.tog.on .nbadge{background:rgba(200,112,10,.15);color:var(--br)}
-
-/* ─ GRID TABLE ─ */
-.gtable{width:100%;border-collapse:collapse;font-size:13px}
-.gtable th{background:#f6f2ec;color:var(--sub);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;padding:9px 6px;text-align:center;border-bottom:1.5px solid var(--bd2)}
-.gtable th:first-child{text-align:left;padding-left:10px}
-.gtable th.cbtn{cursor:pointer;transition:background .13s,color .13s}
-.gtable th.cbtn:hover{background:#ffefd4;color:var(--br)}
-.cbtn-tip{font-size:9px;opacity:.6;font-weight:500;display:block;text-transform:none;letter-spacing:0;margin-top:1px}
-.gtable td{padding:10px 6px;border-bottom:1px solid #f0ebe2;text-align:center;vertical-align:middle}
-.gtable td:first-child{text-align:left;font-weight:600;font-size:13px;color:#3a3530;padding-left:10px}
-.gtable tr:last-child td{border-bottom:none}
-.gtable input[type=radio]{accent-color:var(--br);width:16px;height:16px;cursor:pointer}
-.gtable tr.roff td{opacity:.16;pointer-events:none}
-
-/* ─ SCALE ─ */
-.scrow{display:flex;gap:7px;margin-top:10px}
-.scbtn{flex:1;padding:13px 4px;border:1.5px solid var(--bd);border-radius:11px;cursor:pointer;font-size:16px;font-weight:800;transition:all .13s;color:#c0b8ae;background:#fdfcfa;text-align:center}
-.scbtn:hover{border-color:var(--br);color:var(--br)}
-.scbtn.on{border-color:var(--br);background:var(--br);color:#fff;box-shadow:0 3px 10px rgba(200,112,10,.28)}
-.scends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:5px;padding:0 2px}
-
-/* ─ KARAR ─ */
-.kmore{display:flex;align-items:center;justify-content:space-between;padding:10px 15px;border:1.5px dashed var(--bd);border-radius:11px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;margin-top:8px;transition:all .13s;background:transparent;width:100%;font-family:inherit}
-.kmore:hover{border-color:var(--br);color:var(--br);background:var(--brbg)}
-.kmore .arr{font-size:10px;transition:transform .2s}
-.kmore.open .arr{transform:rotate(180deg)}
-
-/* ─ PARENT GROUP ─ */
-.pg{border-radius:16px;padding:16px 16px 12px;margin-bottom:11px;position:relative;border:2px solid}
-.pg-a{border-color:#f0c4c4;background:linear-gradient(148deg,#fffafa,#fff)}
-.pg-b{border-color:#c4d6f0;background:linear-gradient(148deg,#f7fbff,#fff)}
-.pg-tag{position:absolute;top:-12px;left:14px;font-size:10.5px;font-weight:900;padding:2px 12px;border-radius:99px;letter-spacing:.5px;text-transform:uppercase}
-.pg-a .pg-tag{background:#f0c4c4;color:#7a1616}
-.pg-b .pg-tag{background:#c4d6f0;color:#163678}
-/* vefat banner inside parent group */
-.vbanner{display:flex;align-items:center;gap:7px;background:#fff5f5;border:1.5px solid #fccac6;color:#b91c1c;font-size:12px;font-weight:700;padding:8px 12px;border-radius:9px;margin-bottom:12px}
-
-/* ─ NAV ─ */
-.navb{display:flex;gap:10px;padding:18px 16px 0}
-.btn{padding:13px 24px;border-radius:13px;font-size:15px;font-weight:800;cursor:pointer;border:none;transition:all .13s;font-family:inherit;letter-spacing:-.1px}
-.btn-back{background:var(--surf);border:1.5px solid var(--bd);color:var(--sub);flex-shrink:0}
-.btn-back:hover{border-color:var(--br);color:var(--br)}
-.btn-next{background:linear-gradient(135deg,var(--br),var(--br2));color:#fff;flex:1;box-shadow:0 4px 14px rgba(200,112,10,.3)}
-.btn-next:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(200,112,10,.36)}
-.btn-next:active{transform:none}
-.btn-submit{background:linear-gradient(135deg,#0d4a27,#18733c);color:#fff;flex:1;box-shadow:0 4px 14px rgba(24,115,60,.26)}
-.btn-submit:hover{transform:translateY(-1px)}
-
-/* ─ PHOTO ─ */
-.fbtns{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
-.fbtn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:1.5px solid var(--bd);border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;background:#fdfcfa;color:var(--sub);transition:all .13s}
-.fbtn:hover{border-color:var(--br);color:var(--br);background:var(--brbg)}
-.fprev{position:relative}
-.fprev img{width:100%;max-height:220px;object-fit:cover;border-radius:12px;display:block}
-.frecrop{position:absolute;bottom:9px;right:9px;background:rgba(0,0,0,.72);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:12px;font-weight:800;cursor:pointer;backdrop-filter:blur(6px)}
-
-/* ─ CROP ─ */
-.cropmodal{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;display:flex;align-items:flex-end;justify-content:center}
-.cropmodal.hidden{display:none!important}
-.cropsheet{background:#fff;border-radius:24px 24px 0 0;padding:14px 18px 30px;width:100%;max-width:600px;display:flex;flex-direction:column;gap:13px;max-height:94vh;overflow-y:auto}
-.chandle{width:34px;height:4px;background:#ddd;border-radius:99px;margin:0 auto -4px}
-.ctitle{font-size:16px;font-weight:900;text-align:center}
-.cwrap{background:#111;border-radius:14px;overflow:hidden;min-height:240px;display:flex;align-items:center;justify-content:center}
-#cropCanvas{display:block;width:100%;touch-action:none;cursor:grab}
-#cropCanvas:active{cursor:grabbing}
-.chint{font-size:12px;color:#aaa;text-align:center}
-.czrow{display:flex;align-items:center;gap:12px}
-.czrow input[type=range]{flex:1;accent-color:var(--br)}
-.czrow span{font-size:13px;font-weight:700;color:var(--sub);min-width:38px;text-align:right}
-.cacts{display:flex;gap:9px}
-.ccancel{flex:1;padding:13px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;border:none;background:#f0ece6;color:var(--sub);font-family:inherit}
-.capply{flex:1;padding:13px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;border:none;background:linear-gradient(135deg,var(--br),var(--br2));color:#fff;font-family:inherit}
-
-/* ─ SUCCESS ─ */
-.sucwrap{padding:60px 20px;text-align:center;animation:fadeUp .3s ease}
-.sucico{width:80px;height:80px;background:linear-gradient(135deg,#0d4a27,#18733c);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:36px;color:#fff;box-shadow:0 10px 28px rgba(24,115,60,.3)}
-.sucwrap h2{font-size:25px;font-weight:900;letter-spacing:-.4px;margin-bottom:7px}
-.sucwrap p{color:var(--sub);font-size:15px;margin-bottom:26px}
-
-/* ─ TOAST ─ */
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);background:#1a1610;color:#fff;padding:11px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:9998;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .28s;opacity:0;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-
-.hidden{display:none!important}
-</style>
-</head>
-<body>
-<div class="app">
-
-<!-- TOPBAR -->
-<div class="topbar">
-  <div class="tb">
-    <div class="tb-row">
-      <div class="tb-dot">📋</div>
-      <div class="tb-title">Öğrenci Tanıma</div>
-      <div class="tb-pill" id="stepBadge">1 / 8</div>
-    </div>
-    <div class="prog"><div class="prog-f" id="pFill" style="width:12.5%"></div></div>
-  </div>
-</div>
-
-<!-- ══════ 1 · GENEL ══════ -->
-<div id="sec1" class="sec">
-  <div class="banner b1">
-    <div class="bnum">1</div>
-    <div class="brow"><div class="bico">👤</div><div><h2>Genel Bilgiler</h2><p>Öğrenci ve görüşme bilgileri</p></div></div>
-  </div>
-
-  <div class="card">
-    <div class="clabel">🧑‍💼 Uzman</div>
-    <input type="text" id="uzman" value="Serpil" placeholder="Ad Soyad">
-  </div>
-  <div class="card">
-    <div class="clabel">📅 Görüşme Tarihi</div>
-    <input type="date" id="gorusmeTarihi">
-  </div>
-  <div class="card" id="cAd">
-    <div class="clabel">🎒 Öğrenci Adı Soyadı <span class="rq">*</span></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-      <input type="text" id="ogrenciAd" placeholder="Ad">
-      <input type="text" id="ogrenciSoyad" placeholder="Soyad">
-    </div>
-  </div>
-  <div class="card">
-    <div class="clabel">🏫 Okul</div>
-    <input type="text" id="okul" placeholder="Devam ettiği okul">
-  </div>
-  <div class="card" id="cSinif">
-    <div class="clabel">📚 Sınıf <span class="rq">*</span></div>
-    <div class="chips">
-      <div class="chip" onclick="selectSinif(this,'Anaokulu-Kreş')">Anaokulu-Kreş</div>
-      <div class="chip" onclick="selectSinif(this,'Okula Gitmeyen')">Okula Gitmeyen</div>
-      <div class="chip" onclick="selectSinif(this,'Açıktan/Mezun')">Açıktan/Mezun</div>
-      <div class="chip" onclick="selectSinif(this,'1')">1</div>
-      <div class="chip" onclick="selectSinif(this,'2')">2</div>
-      <div class="chip" onclick="selectSinif(this,'3')">3</div>
-      <div class="chip" onclick="selectSinif(this,'4')">4</div>
-      <div class="chip" onclick="selectSinif(this,'5')">5</div>
-      <div class="chip" onclick="selectSinif(this,'6')">6</div>
-      <div class="chip" onclick="selectSinif(this,'7')">7</div>
-      <div class="chip" onclick="selectSinif(this,'8+')">8+</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="clabel">🎂 Doğum Tarihi</div>
-    <div class="dob-row">
-      <select id="dobGun"><option value="">Gün</option></select>
-      <select id="dobAy">
-        <option value="">Ay</option>
-        <option value="01">Ocak</option><option value="02">Şubat</option><option value="03">Mart</option>
-        <option value="04">Nisan</option><option value="05">Mayıs</option><option value="06">Haziran</option>
-        <option value="07">Temmuz</option><option value="08">Ağustos</option><option value="09">Eylül</option>
-        <option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
-      </select>
-      <select id="dobYil"><option value="">Yıl</option></select>
-    </div>
-  </div>
-  <div class="navb"><button class="btn btn-next" onclick="v1()">İleri →</button></div>
-</div>
-
-<!-- ══════ 2 · SAĞLIK ══════ -->
-<div id="sec2" class="sec hidden">
-  <div class="banner b2">
-    <div class="bnum">2</div>
-    <div class="brow"><div class="bico">🏥</div><div><h2>Sağlık & Davranış</h2><p>Tıklananlar "var" kabul edilir</p></div></div>
-  </div>
-  <div class="card" id="cSaglik">
-    <div class="clabel">🩺 Durum Bilgileri <span class="rq">*</span></div>
-    <div class="togs">
-      <div class="tog" onclick="togSaglik(this,'okuldanKacma')"><span class="tdot"></span>Okuldan kaçma meyli var / elden teslim gerekli</div>
-      <div class="tog" onclick="togSaglik(this,'uygunsuzDavranis')"><span class="tdot"></span>Uygunsuz söz/davranış var</div>
-      <div class="tog" onclick="togSaglik(this,'epilepsi')"><span class="tdot"></span>Epilepsi vb. nöbet geçirebiliyor</div>
-      <div class="tog" onclick="togSaglik(this,'sinirKrizi')"><span class="tdot"></span>Sinir krizi var</div>
-      <div class="tog" onclick="togSaglik(this,'aglamaKrizi')"><span class="tdot"></span>Ağlama krizleri var</div>
-      <div class="tog" onclick="togSaglik(this,'kendiZarar')"><span class="tdot"></span>Kendine zarar verebiliyor</div>
-      <div class="tog" onclick="togSaglik(this,'cevreZarar')"><span class="tdot"></span>Çevresine zarar verebiliyor</div>
-      <div class="tog" onclick="togSaglik(this,'tuvalet')"><span class="tdot"></span>Tuvalet alışkanlığı yok</div>
-      <div class="tog" onclick="togSaglik(this,'komutAlmiyor')"><span class="tdot"></span>Komut almıyor</div>
-      <div class="tog" onclick="togSaglik(this,'dehap')"><span class="tdot"></span>DEHAP var</div>
-      <div class="tog" onclick="togSaglik(this,'travma')"><span class="tdot"></span>Fizyolojik / psikolojik travması var</div>
-      <div class="tog" onclick="togSaglik(this,'ilac')"><span class="tdot"></span>Düzenli ilaç kullanıyor</div>
-      <div class="tog" onclick="togSaglik(this,'alerji')"><span class="tdot"></span>Ciddi alerjisi var</div>
-      <div class="tog" onclick="togSaglik(this,'fizyolojik')"><span class="tdot"></span>Fizyolojik farklılığı var</div>
-      <div class="tog" onclick="togSaglik(this,'zihinsel')"><span class="tdot"></span>Zihinsel gelişim farklılığı var</div>
-      <div class="tog" onclick="togSaglik(this,'iletisim')"><span class="tdot"></span>İletişim problemi var</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="clabel">📝 Görüşme Notları</div>
-    <textarea id="gorusmeNot" placeholder="Görüşmede edinilen izlenimler..."></textarea>
-  </div>
-  <div class="navb">
-    <button class="btn btn-back" onclick="goTo(1)">← Geri</button>
-    <button class="btn btn-next" onclick="v2()">İleri →</button>
-  </div>
-</div>
-
-<!-- ══════ 3 · AKADEMİK ══════ -->
-<div id="sec3" class="sec hidden">
-  <div class="banner b3">
-    <div class="bnum">3</div>
-    <div class="brow"><div class="bico">🎓</div><div><h2>Akademik Durum</h2><p>Sütun başlığına tıkla → tümünü seç</p></div></div>
-  </div>
-  <div class="card" id="cAkademik" style="padding:15px 11px 15px">
-    <div class="clabel" style="padding:0 5px;margin-bottom:13px">📋 Değerlendirme <span class="rq">*</span></div>
-    <div style="overflow-x:auto">
-    <table class="gtable">
-      <thead>
-        <tr>
-          <th></th>
-          <th class="cbtn" onclick="fillCol('Değerlendirme dışı')">Değ. Dışı<span class="cbtn-tip">tümüne</span></th>
-          <th class="cbtn" onclick="fillCol('Akranları düzeyinde')">Akranları<span class="cbtn-tip">tümüne</span></th>
-          <th class="cbtn" onclick="fillCol('Zayıf')">Zayıf<span class="cbtn-tip">tümüne</span></th>
-          <th class="cbtn" onclick="fillCol('Çok zayıf')">Çok Zayıf<span class="cbtn-tip">tümüne</span></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr id="row-okuma"><td>Okuma</td><td><input type="radio" name="ak_okuma" value="Değerlendirme dışı"></td><td><input type="radio" name="ak_okuma" value="Akranları düzeyinde"></td><td><input type="radio" name="ak_okuma" value="Zayıf"></td><td><input type="radio" name="ak_okuma" value="Çok zayıf"></td></tr>
-        <tr id="row-anlama"><td>Anlama</td><td><input type="radio" name="ak_anlama" value="Değerlendirme dışı"></td><td><input type="radio" name="ak_anlama" value="Akranları düzeyinde"></td><td><input type="radio" name="ak_anlama" value="Zayıf"></td><td><input type="radio" name="ak_anlama" value="Çok zayıf"></td></tr>
-        <tr id="row-yazma"><td>Yazma</td><td><input type="radio" name="ak_yazma" value="Değerlendirme dışı"></td><td><input type="radio" name="ak_yazma" value="Akranları düzeyinde"></td><td><input type="radio" name="ak_yazma" value="Zayıf"></td><td><input type="radio" name="ak_yazma" value="Çok zayıf"></td></tr>
-        <tr id="row-mat"><td>Matematik</td><td><input type="radio" name="ak_mat" value="Değerlendirme dışı"></td><td><input type="radio" name="ak_mat" value="Akranları düzeyinde"></td><td><input type="radio" name="ak_mat" value="Zayıf"></td><td><input type="radio" name="ak_mat" value="Çok zayıf"></td></tr>
-        <tr id="row-ifade"><td>İfade</td><td><input type="radio" name="ak_ifade" value="Değerlendirme dışı"></td><td><input type="radio" name="ak_ifade" value="Akranları düzeyinde"></td><td><input type="radio" name="ak_ifade" value="Zayıf"></td><td><input type="radio" name="ak_ifade" value="Çok zayıf"></td></tr>
-        <tr id="row-kavram"><td>Kavram</td><td><input type="radio" name="ak_kavram" value="Değerlendirme dışı"></td><td><input type="radio" name="ak_kavram" value="Akranları düzeyinde"></td><td><input type="radio" name="ak_kavram" value="Zayıf"></td><td><input type="radio" name="ak_kavram" value="Çok zayıf"></td></tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-  <div class="card" id="cTani">
-    <div class="clabel">🗂️ Rapor / Tanı <span class="rq">*</span></div>
-    <div class="rstack">
-      <label class="ri"><input type="radio" name="tani" value="Aday (Z/ÖÖ/Y)" onchange="onTani(this)"> Aday (Z/ÖÖ/Y)</label>
-      <label class="ri"><input type="radio" name="tani" value="Aday Dil" onchange="onTani(this)"> Aday Dil</label>
-      <label class="ri"><input type="radio" name="tani" value="Aday Dil+" onchange="onTani(this)"> Aday Dil+</label>
-      <label class="ri"><input type="radio" name="tani" value="Raporlu Z" onchange="onTani(this)"> Raporlu Z</label>
-      <label class="ri"><input type="radio" name="tani" value="Raporlu ÖÖG" onchange="onTani(this)"> Raporlu ÖÖG</label>
-      <label class="ri"><input type="radio" name="tani" value="Raporlu Y" onchange="onTani(this)"> Raporlu Y</label>
-      <label class="ri"><input type="radio" name="tani" value="Raporlu Dil+" onchange="onTani(this)"> Raporlu Dil+</label>
-      <label class="ri"><input type="radio" name="tani" value="Raporlu Dil" onchange="onTani(this)"> Raporlu Dil</label>
-      <label class="ri"><input type="radio" name="tani" value="Eksik Raporlu" onchange="onTani(this)"> Eksik Raporlu</label>
-    </div>
-  </div>
-  <div class="navb">
-    <button class="btn btn-back" onclick="goTo(2)">← Geri</button>
-    <button class="btn btn-next" onclick="v3()">İleri →</button>
-  </div>
-</div>
-
-<!-- ══════ 4 · RAPORLU DİL ══════ -->
-<div id="sec4" class="sec hidden">
-  <div class="banner b4">
-    <div class="bnum">4</div>
-    <div class="brow"><div class="bico">🗣️</div><div><h2>Raporlu Dil</h2><p>Gelişimsel dil modülü bilgisi</p></div></div>
-  </div>
-  <div class="card">
-    <div class="clabel">🧩 Gelişimsel Dil Modülü</div>
-    <div class="rstack">
-      <label class="ri"><input type="radio" name="dilModul" value="Var"> Var</label>
-      <label class="ri"><input type="radio" name="dilModul" value="Yok"> Yok</label>
-      <label class="ri"><input type="radio" name="dilModul" value="Bilinmiyor"> Bilinmiyor</label>
-    </div>
-  </div>
-  <div class="navb">
-    <button class="btn btn-back" onclick="goTo(3)">← Geri</button>
-    <button class="btn btn-next" onclick="goTo(6)">İleri →</button>
-  </div>
-</div>
-
-<!-- ══════ 5 · DİL GELİŞİMİ ══════ -->
-<div id="sec5" class="sec hidden">
-  <div class="banner b5">
-    <div class="bnum">5</div>
-    <div class="brow"><div class="bico">💬</div><div><h2>Dil Gelişimi</h2><p>Birden fazla seçilebilir — kuralsız</p></div></div>
-  </div>
-  <div class="card">
-    <div class="clabel">👨‍👩‍👧 Ailede Dil Problemi Olan</div>
-    <div class="rstack">
-      <label class="ri"><input type="radio" name="aileDil" value="Evet"> Evet</label>
-      <label class="ri"><input type="radio" name="aileDil" value="Hayır"> Hayır</label>
-    </div>
-  </div>
-  <div class="card">
-    <div class="clabel">🔤 Dil Problemi <span class="hint-text">· birden fazla seçilebilir</span></div>
-    <div class="togs">
-      <div class="tog" data-dil="dil1" onclick="togDil(this)"><span class="nbadge">1</span>İletişim — etkileşim başlatamıyor, sürdüremiyor</div>
-      <div class="tog" data-dil="dil2" onclick="togDil(this)"><span class="nbadge">2</span>Sözsüz iletişim, jest-mimik, işaret yoluyla iletişim sağlıyor</div>
-      <div class="tog" data-dil="dil3" onclick="togDil(this)"><span class="nbadge">3</span>Hiç sözel iletişimi yok</div>
-      <div class="tog" data-dil="dil4" onclick="togDil(this)"><span class="nbadge">4</span>Yaşına göre az sayıda kelime söyleyebiliyor</div>
-      <div class="tog" data-dil="dil5" onclick="togDil(this)"><span class="nbadge">5</span>Kelimeleri söylüyor, düzgün cümle kuramıyor</div>
-      <div class="tog" data-dil="dil6" onclick="togDil(this)"><span class="nbadge">6</span>Sesleri doğru çıkaramıyor, sözcükleri ağzında yuvarlıyor</div>
-      <div class="tog" data-dil="dil7" onclick="togDil(this)"><span class="nbadge">7</span>Takılıyor, kekeliyor</div>
-    </div>
-  </div>
-  <div class="navb">
-    <button class="btn btn-back" onclick="goTo(3)">← Geri</button>
-    <button class="btn btn-next" onclick="goTo(6)">İleri →</button>
-  </div>
-</div>
-
-<!-- ══════ 6 · AİLE ══════ -->
-<div id="sec6" class="sec hidden">
-  <div class="banner b6">
-    <div class="bnum">6</div>
-    <div class="brow"><div class="bico">👨‍👩‍👧</div><div><h2>Aile Bilgileri</h2><p>Ebeveyn ve iletişim detayları</p></div></div>
-  </div>
-
-  <div class="card">
-    <div class="clabel">🎓 Ailede Özel Eğitim Alan</div>
-    <div class="rstack">
-      <label class="ri"><input type="radio" name="ozelEgitim" value="Evet" onchange="togOzel('Evet')"> Evet</label>
-      <label class="ri"><input type="radio" name="ozelEgitim" value="Hayır" onchange="togOzel('Hayır')"> Hayır</label>
-    </div>
-  </div>
-  <div id="ozelAcikCard" class="card hidden">
-    <div class="clabel">✏️ Açıklama</div>
-    <textarea id="ozelEgitimAcik" placeholder="Açıklayınız..."></textarea>
-  </div>
-
-  <div class="card">
-    <div class="clabel">❤️ Ebeveyn Sağlık Durumu</div>
-    <table class="gtable">
-      <thead><tr><th></th><th>Sağ</th><th>Vefat</th></tr></thead>
-      <tbody>
-        <tr><td>Anne</td>
-          <td><input type="radio" name="saglikAnne" value="Sağ" onchange="onVefat()"></td>
-          <td><input type="radio" name="saglikAnne" value="Vefat" onchange="onVefat()"></td>
-        </tr>
-        <tr><td>Baba</td>
-          <td><input type="radio" name="saglikBaba" value="Sağ" onchange="onVefat()"></td>
-          <td><input type="radio" name="saglikBaba" value="Vefat" onchange="onVefat()"></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <div class="clabel">📖 Eğitim Durumu</div>
-    <table class="gtable">
-      <thead><tr><th></th><th>Okur-Yazar Değil</th><th>Okur-Yazar</th><th>Üniversite+</th></tr></thead>
-      <tbody>
-        <tr id="egAnneRow"><td>Anne</td>
-          <td><input type="radio" name="egitimAnne" value="Okur-Yazar Değil"></td>
-          <td><input type="radio" name="egitimAnne" value="Okur-Yazar"></td>
-          <td><input type="radio" name="egitimAnne" value="Üniversite+"></td>
-        </tr>
-        <tr id="egBabaRow"><td>Baba</td>
-          <td><input type="radio" name="egitimBaba" value="Okur-Yazar Değil"></td>
-          <td><input type="radio" name="egitimBaba" value="Okur-Yazar"></td>
-          <td><input type="radio" name="egitimBaba" value="Üniversite+"></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <div class="clabel">🏠 Birlikte mi Yaşıyorlar?</div>
-    <div class="rstack">
-      <label class="ri" id="berEvet"><input type="radio" name="beraberlik" value="Evet"> Evet</label>
-      <label class="ri" id="berBos"><input type="radio" name="beraberlik" value="Boşanmış/Ayrı"> Boşanmış / Ayrı</label>
-    </div>
-  </div>
-
-  <div class="card" id="cAdres">
-    <div class="clabel">📍 Adres <span class="rq">*</span></div>
-    <textarea id="adres" placeholder="Açık adres..."></textarea>
-  </div>
-
-  <!-- ANNE -->
-  <div class="pg pg-a" id="pgAnne">
-    <span class="pg-tag">👩 Anne</span>
-    <div id="anneVefatBanner" class="hidden">
-      <div class="vbanner">⚠️ Anne vefat — Alternatif bilgi giriniz</div>
-    </div>
-    <div class="fl"><div class="ftitle">Adı</div><input type="text" id="anneAd" placeholder="Anne adı"></div>
-    <div class="fl"><div class="ftitle">İletişim</div><input type="text" id="anneIletisim" placeholder="05xxxxxxxxx" maxlength="11" inputmode="numeric" oninput="formatTel(this)" onblur="validateTel(this)"></div>
-    <div class="fl"><div class="ftitle">Mesleği</div><input type="text" id="anneMeslek" value="Ev Hanımı"></div>
-    <div class="fl" id="anneAltWrap" style="display:none">
-      <div class="ftitle">Alternatif Veli / Not</div>
-      <input type="text" id="anneAlt" placeholder="Veli, vasi vb. alternatif bilgi">
-    </div>
-  </div>
-
-  <!-- BABA -->
-  <div class="pg pg-b" id="pgBaba">
-    <span class="pg-tag">👨 Baba</span>
-    <div id="babaVefatBanner" class="hidden">
-      <div class="vbanner">⚠️ Baba vefat — Alternatif bilgi giriniz</div>
-    </div>
-    <div class="fl"><div class="ftitle">Adı</div><input type="text" id="babaAd" placeholder="Baba adı"></div>
-    <div class="fl"><div class="ftitle">İletişim</div><input type="text" id="babaIletisim" placeholder="05xxxxxxxxx" maxlength="11" inputmode="numeric" oninput="formatTel(this)" onblur="validateTel(this)"></div>
-    <div class="fl"><div class="ftitle">Mesleği</div><input type="text" id="babaMeslek" value="İşçi"></div>
-    <div class="fl" id="babaAltWrap" style="display:none">
-      <div class="ftitle">Alternatif Veli / Not</div>
-      <input type="text" id="babaAlt" placeholder="Veli, vasi vb. alternatif bilgi">
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="clabel">🪪 Öğrenci TC Kimlik No</div>
-    <input type="text" id="tcNo" placeholder="11 haneli TC" maxlength="11" inputmode="numeric">
-  </div>
-
-  <div class="navb">
-    <button class="btn btn-back" onclick="goBackSec6()">← Geri</button>
-    <button class="btn btn-next" onclick="v6()">İleri →</button>
-  </div>
-</div>
-
-<!-- ══════ 7 · REHABİLİTASYON ══════ -->
-<div id="sec7" class="sec hidden">
-  <div class="banner b7">
-    <div class="bnum">7</div>
-    <div class="brow"><div class="bico">🏥</div><div><h2>Rehabilitasyon</h2><p>Mevcut veya geçmiş merkez bilgisi</p></div></div>
-  </div>
-  <div class="card">
-    <div class="clabel">🏥 Rehabilitasyon Merkezi</div>
-    <div class="rstack">
-      <label class="ri"><input type="radio" name="rehab" value="Evet" onchange="togRehab('Evet')"> Evet</label>
-      <label class="ri"><input type="radio" name="rehab" value="Hayır" onchange="togRehab('Hayır')"> Hayır</label>
-    </div>
-  </div>
-  <div id="rehabDetail" class="hidden">
-    <div class="card">
-      <div class="clabel">🏷️ Merkez Adı</div>
-      <textarea id="rehabMerkez" placeholder="Rehabilitasyon merkezi adı..."></textarea>
-    </div>
-    <div class="card">
-      <div class="clabel">⏳ Ne Kadar Süredir? (yıl)</div>
-      <div class="scrow">
-        <div class="scbtn" onclick="selSc(this,'rehabSure','0')">0</div>
-        <div class="scbtn" onclick="selSc(this,'rehabSure','1')">1</div>
-        <div class="scbtn" onclick="selSc(this,'rehabSure','2')">2</div>
-        <div class="scbtn" onclick="selSc(this,'rehabSure','3')">3</div>
-        <div class="scbtn" onclick="selSc(this,'rehabSure','4')">4</div>
-        <div class="scbtn" onclick="selSc(this,'rehabSure','5+')">5+</div>
-      </div>
-    </div>
-  </div>
-  <div class="navb">
-    <button class="btn btn-back" onclick="goTo(6)">← Geri</button>
-    <button class="btn btn-next" onclick="goTo(8)">İleri →</button>
-  </div>
-</div>
-
-<!-- ══════ 8 · KARAR ══════ -->
-<div id="sec8" class="sec hidden">
-  <div class="banner b8">
-    <div class="bnum">8</div>
-    <div class="brow"><div class="bico">⚖️</div><div><h2>Değerlendirme & Karar</h2><p>Son adım</p></div></div>
-  </div>
-
-  <div class="card" id="cAAA">
-    <div class="clabel">⭐ AAA — Aile Değerlendirmesi <span class="rq">*</span></div>
-    <div class="rstack">
-      <label class="ri"><input type="radio" name="aileAAA" value="Aile standart"> Aile standart</label>
-      <label class="ri"><input type="radio" name="aileAAA" value="Aile ilgili"> Aile ilgili</label>
-      <label class="ri"><input type="radio" name="aileAAA" value="Aile bilinçli"> Aile bilinçli</label>
-    </div>
-  </div>
-
-  <div class="card" id="cIhtiyac">
-    <div class="clabel">🎯 Temel İhtiyaç Alanı <span class="rq">*</span></div>
-    <div class="rstack">
-      <label class="ri"><input type="radio" name="temelIhtiyac" value="Dil Gelişimi"> Temel ihtiyacı Dil Gelişimi</label>
-      <label class="ri"><input type="radio" name="temelIhtiyac" value="Davranış ve Kavram Eğitimi"> Temel ihtiyacı Davranış ve Kavram Eğitimi</label>
-      <label class="ri"><input type="radio" name="temelIhtiyac" value="Akademik Gelişim"> Temel ihtiyacı Akademik Gelişim</label>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="clabel">📝 Görüşme Notları</div>
-    <div id="notOnizleme" style="display:none;background:#f8f5f0;border:1.5px solid #e5dfd6;border-radius:10px;padding:11px 13px;font-size:13.5px;line-height:1.65;color:#4a443c;margin-bottom:10px;white-space:pre-wrap;word-break:break-word"></div>
-    <textarea id="gorusmeNot2" placeholder="Ek not ekleyebilirsiniz..."></textarea>
-  </div>
-
-  <!-- Rapor Olasılığı — Raporlu tanılar için gizlenir -->
-  <div class="card" id="cRaporOlas">
-    <div class="clabel">📊 Rapor Çıkma Olasılığı <span class="rq">*</span> <span class="hint-text">· 1 düşük · 5 yüksek</span></div>
-    <div class="scrow">
-      <div class="scbtn" onclick="selSc(this,'raporOlas','1')">1</div>
-      <div class="scbtn" onclick="selSc(this,'raporOlas','2')">2</div>
-      <div class="scbtn" onclick="selSc(this,'raporOlas','3')">3</div>
-      <div class="scbtn" onclick="selSc(this,'raporOlas','4')">4</div>
-      <div class="scbtn" onclick="selSc(this,'raporOlas','5')">5</div>
-    </div>
-    <div class="scends"><span>Düşük ihtimal</span><span>Yüksek ihtimal</span></div>
-  </div>
-
-  <div class="card">
-    <div class="clabel">✅ Karar</div>
-    <div id="kararVisible" style="display:flex;flex-direction:column;gap:7px">
-      <label class="ri"><input type="radio" name="karar" value="Başka Kurumda Kayıtlı, Kaydolacak"> Başka Kurumda Kayıtlı, Kaydolacak</label>
-      <label class="ri"><input type="radio" name="karar" value="Başka Kurumda Kayıtlı, Düşünecek"> Başka Kurumda Kayıtlı, Düşünecek</label>
-      <label class="ri"><input type="radio" name="karar" value="KAYDEDİLDİ"> KAYDEDİLDİ</label>
-      <label class="ri"><input type="radio" name="karar" value="Kaydedilecek"> Kaydedilecek</label>
-      <label class="ri"><input type="radio" name="karar" value="Özel Ders Alacak"> Özel Ders Alacak</label>
-      <label class="ri"><input type="radio" name="karar" value="RED"> RED</label>
-      <label class="ri"><input type="radio" name="karar" value="Takibe Alındı (MHRS var)"> Takibe Alındı (MHRS var)</label>
-      <label class="ri"><input type="radio" name="karar" value="Takibe Alındı (MHRS yok)"> Takibe Alındı (MHRS yok)</label>
-    </div>
-    <button class="kmore" id="kMoreBtn" onclick="togKarar()">
-      <span id="kMoreTxt">Diğer seçenekleri göster</span><span class="arr">▼</span>
-    </button>
-    <div id="kararExtra" style="display:none;flex-direction:column;gap:7px;margin-top:7px">
-      <label class="ri"><input type="radio" name="karar" value="Aile Düşünecek"> Aile Düşünecek</label>
-      <label class="ri"><input type="radio" name="karar" value="Aile Takip Edecek"> Aile Takip Edecek</label>
-      <label class="ri"><input type="radio" name="karar" value="Ayrıldı (Biz Ayırdık)"> Ayrıldı (Biz Ayırdık)</label>
-      <label class="ri"><input type="radio" name="karar" value="Ayrıldı (Memnun Değil)"> Ayrıldı (Memnun Değil)</label>
-      <label class="ri"><input type="radio" name="karar" value="Ayrıldı (Zorunlu Sebeplerle)"> Ayrıldı (Zorunlu Sebeplerle)</label>
-      <label class="ri"><input type="radio" name="karar" value="Başka Kuruma Gitti"> Başka Kuruma Gitti</label>
-      <label class="ri"><input type="radio" name="karar" value="ERİKLİ"> ERİKLİ</label>
-      <label class="ri"><input type="radio" name="karar" value="Eski Kurumuna Devam"> Eski Kurumuna Devam</label>
-      <label class="ri"><input type="radio" name="karar" value="İlaç Tedavisi/Beklesin"> İlaç Tedavisi / Beklesin</label>
-      <label class="ri"><input type="radio" name="karar" value="Mezun Oldu"> Mezun Oldu</label>
-      <label class="ri"><input type="radio" name="karar" value="Rapor Çıkmadı"> Rapor Çıkmadı</label>
-      <label class="ri"><input type="radio" name="karar" value="Rapor İhtiyacı Yok"> Rapor İhtiyacı Yok</label>
-      <label class="ri"><input type="radio" name="karar" value="Rapordan Vazgeçti"> Rapordan Vazgeçti</label>
-      <label class="ri"><input type="radio" name="karar" value="Rapor Yenilemedi (Kurum)"> Rapor Yenilemedi (Kurum)</label>
-      <label class="ri"><input type="radio" name="karar" value="Rapor Yenilemedi (Veli)"> Rapor Yenilemedi (Veli)</label>
-      <label class="ri"><input type="radio" name="karar" value="İşlemde"> İşlemde</label>
-    </div>
-  </div>
-
-  <!-- FOTOĞRAF -->
-  <div class="card">
-    <div class="clabel">📷 Fotoğraf</div>
-    <div class="fbtns">
-      <div class="fbtn" onclick="document.getElementById('fKam').click()">📷 Kamera</div>
-      <div class="fbtn" onclick="document.getElementById('fGal').click()">🖼️ Galeri</div>
-    </div>
-    <div id="fotoPreview" class="hidden">
-      <div class="fprev"><img id="fotoImg" alt=""><button class="frecrop" onclick="reCrop('foto')">✂️ Kırp</button></div>
-    </div>
-    <input type="file" id="fKam" accept="image/*" capture="environment" style="display:none" onchange="handleFile(this,'foto')">
-    <input type="file" id="fGal" accept="image/*" style="display:none" onchange="handleFile(this,'foto')">
-    <input type="hidden" id="fotoData">
-  </div>
-
-  <!-- KİMLİK -->
-  <div class="card">
-    <div class="clabel">🪪 Kimlikler</div>
-    <div class="fbtns">
-      <div class="fbtn" onclick="document.getElementById('kKam').click()">📷 Kamera</div>
-      <div class="fbtn" onclick="document.getElementById('kGal').click()">🖼️ Galeri</div>
-    </div>
-    <div id="kimlikPreview" class="hidden">
-      <div class="fprev"><img id="kimlikImg" alt=""><button class="frecrop" onclick="reCrop('kimlik')">✂️ Kırp</button></div>
-    </div>
-    <input type="file" id="kKam" accept="image/*" capture="environment" style="display:none" onchange="handleFile(this,'kimlik')">
-    <input type="file" id="kGal" accept="image/*" style="display:none" onchange="handleFile(this,'kimlik')">
-    <input type="hidden" id="kimlikData">
-  </div>
-
-  <div class="navb">
-    <button class="btn btn-back" onclick="goTo(7)">← Geri</button>
-    <button class="btn btn-submit btn-next" onclick="v8()">✓ Gönder</button>
-  </div>
-</div>
-
-<!-- SUCCESS -->
-<div id="secSuccess" class="hidden">
-  <div class="sucwrap">
-    <div class="sucico">✓</div>
-    <h2>Gönderildi!</h2>
-    <p>Öğrenci tanıma formu başarıyla kaydedildi.</p>
-    <button class="btn btn-next" style="display:inline-block" onclick="location.reload()">+ Yeni Form</button>
-  </div>
-</div>
-
-</div><!-- .app -->
-<div class="toast" id="toast"></div>
-
-<!-- CROP MODAL -->
-<div class="cropmodal hidden" id="cropModal" style="display:none">
-  <div class="cropsheet">
-    <div class="chandle"></div>
-    <div class="ctitle">✂️ Fotoğrafı Kırp</div>
-    <div class="cwrap" id="cwrap"><canvas id="cropCanvas"></canvas></div>
-    <div class="chint">Sürükle · Yakınlaştır</div>
-    <div class="czrow">
-      <span style="font-size:18px">🔍</span>
-      <input type="range" id="cropZoom" min="0.3" max="4" step="0.05" value="1" oninput="onZoom()">
-      <span id="zoomVal">1×</span>
-    </div>
-    <div class="cacts">
-      <button class="ccancel" onclick="closeCrop()">İptal</button>
-      <button class="capply" onclick="applyCrop()">✓ Uygula</button>
-    </div>
-  </div>
-</div>
-
-<script>
-const WH="https://script.google.com/macros/s/AKfycbzT_uF6HsczXuF7kuBbsemF28uBdFB2VGXlZTGOcllXnUPN5dZhFutV2jLc8hV9JWje_Q/exec";
-const D={sinif:null,tani:null,saglik:{},dilProb:{},rehabSure:null,raporOlas:null};
-
-/* ─ INIT ─ */
-(function(){
-  const now=new Date(),p=n=>String(n).padStart(2,'0');
-  document.getElementById('gorusmeTarihi').value=`${now.getFullYear()}-${p(now.getMonth()+1)}-${p(now.getDate())}`;
-  const gEl=document.getElementById('dobGun');
-  for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=p(i);o.textContent=i;gEl.appendChild(o);}
-  const yEl=document.getElementById('dobYil'),cy=now.getFullYear();
-  for(let y=cy;y>=cy-25;y--){const o=document.createElement('option');o.value=y;o.textContent=y;yEl.appendChild(o);}
-  updAkademik();
-})();
-
-function getDob(){
-  const g=document.getElementById('dobGun').value,a=document.getElementById('dobAy').value,y=document.getElementById('dobYil').value;
-  return(g&&a&&y)?`${y}-${a}-${g}`:[y,a,g].filter(Boolean).join('-');
+// ───────────────────────────────────────────────────────────────
+function doGet(e) {
+  return doPost(e);
 }
 
-/* ─ TOAST ─ */
-let toastTimer;
-function toast(msg){
-  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
-}
-function flashCard(id){
-  const el=document.getElementById(id);if(!el)return;
-  el.classList.add('err');setTimeout(()=>el.classList.remove('err'),1400);
-}
+function doPost(e) {
+  try {
+    var params = e.parameter;
+    var rawData = params.data;
+    if (!rawData) return ok("no data");
 
-/* ─ VALIDATION ─ */
-function v1(){
-  if(!document.getElementById('ogrenciAd').value.trim()||!document.getElementById('ogrenciSoyad').value.trim()){flashCard('cAd');toast('⚠️ Öğrenci adı ve soyadı zorunlu');return;}
-  if(!D.sinif){flashCard('cSinif');toast('⚠️ Sınıf seçimi zorunlu');return;}
-  goTo(2);
-}
-function v2(){
-  if(!Object.values(D.saglik).some(v=>v)){flashCard('cSaglik');toast('⚠️ En az bir durum seçiniz');return;}
-  goTo(3);
-}
-function v3(){
-  if(!['ak_okuma','ak_anlama','ak_yazma','ak_mat','ak_ifade','ak_kavram'].some(n=>document.querySelector(`input[name="${n}"]:checked`))){flashCard('cAkademik');toast('⚠️ En az bir akademik alan değerlendirmesi zorunlu');return;}
-  if(!D.tani){flashCard('cTani');toast('⚠️ Tanı / rapor durumu zorunlu');return;}
-  if(D.tani==='Raporlu Dil')goTo(4);
-  else if(['Raporlu Dil+','Aday Dil','Aday Dil+'].includes(D.tani))goTo(5);
-  else goTo(6);
-}
-function v6(){
-  if(!document.getElementById('adres').value.trim()){flashCard('cAdres');toast('⚠️ Adres zorunlu');return;}  goTo(7);
-}
-function v8(){
-  if(!document.querySelector('input[name="aileAAA"]:checked')){flashCard('cAAA');toast('⚠️ AAA aile değerlendirmesi zorunlu');return;}
-  if(!document.querySelector('input[name="temelIhtiyac"]:checked')){flashCard('cIhtiyac');toast('⚠️ Temel ihtiyaç alanı zorunlu');return;}
-  const raporluTani=D.tani&&D.tani.startsWith('Raporlu');
-  if(!raporluTani&&!D.raporOlas){flashCard('cRaporOlas');toast('⚠️ Rapor çıkma olasılığı zorunlu');return;}
-  submitForm();
-}
+    var data = JSON.parse(decodeURIComponent(rawData));
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheets()[0];
 
-/* ─ SAĞLIK ─ */
-function togSaglik(el,k){el.classList.toggle('on');D.saglik[k]=el.classList.contains('on');el.querySelector('.tdot').textContent=D.saglik[k]?'✓':'';}
-function getSaglikStr(){
-  const L={okuldanKacma:'Okuldan kaçma',uygunsuzDavranis:'Uygunsuz davranış',epilepsi:'Epilepsi/nöbet',sinirKrizi:'Sinir krizi',aglamaKrizi:'Ağlama krizleri',kendiZarar:'Kendine zarar',cevreZarar:'Çevresine zarar',tuvalet:'Tuvalet alışkanlığı yok',komutAlmiyor:'Komut almıyor',dehap:'DEHAP',travma:'Travma',ilac:'Düzenli ilaç',alerji:'Ciddi alerji',fizyolojik:'Fizyolojik farklılık',zihinsel:'Zihinsel gelişim farklılığı',iletisim:'İletişim problemi'};
-  return Object.entries(L).filter(([k])=>D.saglik[k]).map(([,v])=>v).join('; ')||'';
-}
+    // Öğrenci adı (klasör adı için)
+    var ogrenciAd = (data.ogrenciAd || "") + " " + (data.ogrenciSoyad || "");
+    ogrenciAd = ogrenciAd.trim() || "Isimsiz_" + new Date().getTime();
 
-/* ─ SINIF ─ */
-function selectSinif(el,val){
-  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');D.sinif=val;updAkademik();
-}
-function updAkademik(){
-  const k=(D.sinif==='Anaokulu-Kreş'||D.sinif==='Okula Gitmeyen');
-  ['row-okuma','row-anlama','row-yazma','row-mat'].forEach(id=>{const r=document.getElementById(id);if(r)r.classList.toggle('roff',k);});
-  const kr=document.getElementById('row-kavram');if(kr)kr.classList.toggle('roff',!k);
-}
+    // Tarih damgası
+    var tarih = data.gorusmeTarihi || Utilities.formatDate(new Date(), "Europe/Istanbul", "yyyy-MM-dd");
 
-/* ─ SÜTUN TÜMÜNÜ SEÇ ─ */
-const AKROWS=['ak_okuma','ak_anlama','ak_yazma','ak_mat','ak_ifade','ak_kavram'];
-function fillCol(val){AKROWS.forEach(n=>{const r=document.querySelector(`input[name="${n}"][value="${val}"]`);if(r)r.checked=true;});}
+    // Klasör adı: "AdSoyad - 2025-01-15"
+    var klasorAdi = ogrenciAd + " - " + tarih;
 
-/* ─ DİL — kuralsız serbest multi-select ─ */
-function togDil(el){
-  const k=el.dataset.dil;
-  el.classList.toggle('on');
-  D.dilProb[k]=el.classList.contains('on');
-  const dot=el.querySelector('.tdot');
-  if(dot)dot.textContent=D.dilProb[k]?'✓':'';
-}
-function getDilStr(){
-  const MAP={
-    dil1:'İletişim-etkileşim başlatamıyor/sürdüremiyor',
-    dil2:'Sözsüz iletişim/jest-mimik yoluyla iletişim sağlıyor',
-    dil3:'Hiç sözel iletişimi yok',
-    dil4:'Az sayıda kelime söyleyebiliyor',
-    dil5:'Cümle kuramıyor',
-    dil6:'Sesleri yuvarlıyor',
-    dil7:'Kekeliyor'
-  };
-  return Object.entries(MAP).filter(([k])=>D.dilProb[k]).map(([,v])=>v).join('; ');
-}
+    // ── FOTOĞRAF & KİMLİK DRIVE'A KAYDET ──────────────────────
+    var fotoUrl = "";
+    var kimlikUrl = "";
 
-/* ─ TANI → Rapor Olasılığı kartı ─ */
-function onTani(el){
-  D.tani=el.value;
-  const isRaporlu=D.tani.startsWith('Raporlu');
-  document.getElementById('cRaporOlas').classList.toggle('hidden',isRaporlu);
-}
+    if (data.fotoData && data.fotoData.length > 100) {
+      fotoUrl = fotoyuKaydet(data.fotoData, klasorAdi, ogrenciAd + "_foto.jpg");
+    }
 
-/* ─ VEFAT ─ */
-function onVefat(){
-  const aV=document.querySelector('input[name="saglikAnne"]:checked')?.value==='Vefat';
-  const bV=document.querySelector('input[name="saglikBaba"]:checked')?.value==='Vefat';
-  // Eğitim satırları pasifleştir
-  setRoff('egAnneRow',aV);setRoff('egBabaRow',bV);
-  // Birliktelik pasifleştir
-  const birV=aV||bV;
-  ['berEvet','berBos'].forEach(id=>{
-    const el=document.getElementById(id);
-    el.style.opacity=birV?'0.28':'';el.style.pointerEvents=birV?'none':'';
-    el.querySelector('input').disabled=birV;
-  });
-  // Anne vefat banner + alt alan
-  document.getElementById('anneVefatBanner').classList.toggle('hidden',!aV);
-  document.getElementById('anneAltWrap').style.display=aV?'':'none';
-  // Baba vefat banner + alt alan
-  document.getElementById('babaVefatBanner').classList.toggle('hidden',!bV);
-  document.getElementById('babaAltWrap').style.display=bV?'':'none';
-}
-function setRoff(id,off){
-  const row=document.getElementById(id);if(!row)return;
-  row.classList.toggle('roff',off);
-  row.querySelectorAll('input').forEach(r=>{r.disabled=off;if(off)r.checked=false;});
-}
+    if (data.kimlikData && data.kimlikData.length > 100) {
+      kimlikUrl = fotoyuKaydet(data.kimlikData, klasorAdi, ogrenciAd + "_kimlik.jpg");
+    }
 
-/* ─ DİĞER ─ */
-function togOzel(v){document.getElementById('ozelAcikCard').classList.toggle('hidden',v!=='Evet');}
-function goBackSec6(){if(D.tani==='Raporlu Dil')goTo(4);else if(['Raporlu Dil+','Aday Dil','Aday Dil+'].includes(D.tani))goTo(5);else goTo(3);}
-function selSc(el,k,val){el.parentElement.querySelectorAll('.scbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');D[k]=val;}
-function togRehab(v){document.getElementById('rehabDetail').classList[v==='Evet'?'remove':'add']('hidden');}
-function rVal(n){const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:'';}
-function togKarar(){
-  const ex=document.getElementById('kararExtra'),btn=document.getElementById('kMoreBtn'),txt=document.getElementById('kMoreTxt');
-  const open=btn.classList.contains('open');
-  ex.style.display=open?'none':'flex';btn.classList.toggle('open',!open);
-  txt.textContent=open?'Diğer seçenekleri göster':'Daha az göster';
-}
+    // ── SHEETS'E YAZ ──────────────────────────────────────────
+    // Başlık satırı yoksa ekle
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(baslikSatiri());
+    }
 
-/* ─ RADIO ON STYLE ─ */
-document.querySelectorAll('input[type=radio]').forEach(r=>{
-  r.addEventListener('change',function(){
-    document.querySelectorAll(`input[name="${this.name}"]`).forEach(x=>{const p=x.closest('.ri');if(p)p.classList.remove('on');});
-    const p=this.closest('.ri');if(p)p.classList.add('on');
-  });
-});
+    var satirVerisi = [
+      new Date(),
+      data.uzman || "",
+      data.gorusmeTarihi || "",
+      data.ogrenciAd || "",
+      data.ogrenciSoyad || "",
+      data.okul || "",
+      data.sinif || "",
+      data.dogumTarihi || "",
+      data.saglikDurum || "",
+      data.gorusmeNot || "",
+      data.ak_okuma || "",
+      data.ak_anlama || "",
+      data.ak_yazma || "",
+      data.ak_mat || "",
+      data.ak_ifade || "",
+      data.ak_kavram || "",
+      data.tani || "",
+      data.dilModul || "",
+      data.aileDil || "",
+      data.dilProb || "",
+      data.ozelEgitim || "",
+      data.ozelEgitimAcik || "",
+      data.saglikAnne || "",
+      data.saglikBaba || "",
+      data.egitimAnne || "",
+      data.egitimBaba || "",
+      data.beraberlik || "",
+      data.adres || "",
+      data.anneAd || "",
+      data.anneIletisim || "",
+      data.anneMeslek || "",
+      data.anneAlt || "",
+      data.babaAd || "",
+      data.babaIletisim || "",
+      data.babaMeslek || "",
+      data.babaAlt || "",
+      data.tcNo || "",
+      data.rehab || "",
+      data.rehabMerkez || "",
+      data.rehabSure || "",
+      data.aileAAA || "",
+      data.temelIhtiyac || "",
+      data.raporOlas || "",
+      data.karar || "",
+      fotoUrl,    // Fotoğraf Drive linki
+      kimlikUrl,  // Kimlik Drive linki
+    ];
 
-/* ─ NAV ─ */
-function goTo(n){
-  document.querySelectorAll('.sec').forEach(s=>s.classList.add('hidden'));
-  document.getElementById('secSuccess').classList.add('hidden');
-  document.getElementById('sec'+n).classList.remove('hidden');
-  document.getElementById('pFill').style.width=Math.round((n/8)*100)+'%';
-  document.getElementById('stepBadge').textContent=n+' / 8';
-  if(n===8){
-    const not1=document.getElementById('gorusmeNot').value.trim();
-    const prev=document.getElementById('notOnizleme');
-    if(not1){prev.textContent=not1;prev.style.display='block';}
-    else{prev.style.display='none';}
+    sheet.appendRow(satirVerisi);
+
+    return ok("success");
+
+  } catch (err) {
+    return ok("error: " + err.message);
   }
-  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ══ CROP ═════════════════════════════════════ */
-let cropTgt=null,cropImg=new Image();
-const OW=600,OH=800;
-let cr={ox:0,oy:0,scale:1,drag:false,lx:0,ly:0};
+// ───────────────────────────────────────────────────────────────
+// Fotoğrafı Drive'a kaydeder, linki döndürür
+function fotoyuKaydet(base64Data, klasorAdi, dosyaAdi) {
+  try {
+    // base64 prefix'i temizle (data:image/jpeg;base64,...)
+    var base64 = base64Data.replace(/^data:image\/\w+;base64,/, "");
+    var bytes = Utilities.base64Decode(base64);
+    var blob = Utilities.newBlob(bytes, "image/jpeg", dosyaAdi);
 
-function handleFile(inp,tgt){
-  const f=inp.files[0];if(!f)return;
-  const rd=new FileReader();
-  rd.onload=e=>{
-    cropTgt=tgt;const img=new Image();
-    img.onload=()=>{
-      cropImg=img;
-      const s=Math.max(OW/img.naturalWidth,OH/img.naturalHeight);
-      cr={ox:(OW-img.naturalWidth*s)/2,oy:(OH-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
-      document.getElementById('cropZoom').value=s;
-      document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
-      openCrop();
-    };img.src=e.target.result;
-  };rd.readAsDataURL(f);
-}
-function reCrop(tgt){
-  const src=document.getElementById(tgt+'Img').src;if(!src||src.length<50)return;
-  cropTgt=tgt;const img=new Image();
-  img.onload=()=>{
-    cropImg=img;const s=Math.max(OW/img.naturalWidth,OH/img.naturalHeight);
-    cr={ox:(OW-img.naturalWidth*s)/2,oy:(OH-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
-    document.getElementById('cropZoom').value=s;document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
-    openCrop();
-  };img.src=src;
-}
-function openCrop(){
-  const m=document.getElementById('cropModal');m.style.display='';m.classList.remove('hidden');
-  setTimeout(()=>{setupCv();renderCrop();},80);
-}
-function closeCrop(){
-  const m=document.getElementById('cropModal');m.classList.add('hidden');m.style.display='none';cr.drag=false;
-}
-function setupCv(){
-  const wrap=document.getElementById('cwrap'),old=document.getElementById('cropCanvas');
-  const dw=Math.min(wrap.clientWidth||400,530),dh=Math.round(dw*(OH/OW));
-  const cv=old.cloneNode(false);cv.id='cropCanvas';cv.width=dw;cv.height=dh;
-  cv.style.cssText='display:block;width:100%;touch-action:none;cursor:grab';
-  old.parentNode.replaceChild(cv,old);
-  cv.addEventListener('mousedown',sd);cv.addEventListener('touchstart',sd,{passive:false});
-  cv.addEventListener('mousemove',dd);cv.addEventListener('touchmove',dd,{passive:false});
-  cv.addEventListener('mouseup',()=>cr.drag=false);
-  cv.addEventListener('touchend',()=>cr.drag=false);
-  cv.addEventListener('mouseleave',()=>cr.drag=false);
-}
-function sd(e){cr.drag=true;const cv=document.getElementById('cropCanvas'),sc=cv.width/OW,pt=e.touches?e.touches[0]:e;cr.lx=pt.clientX/sc;cr.ly=pt.clientY/sc;e.preventDefault();}
-function dd(e){if(!cr.drag)return;const cv=document.getElementById('cropCanvas'),sc=cv.width/OW,pt=e.touches?e.touches[0]:e;const nx=pt.clientX/sc,ny=pt.clientY/sc;cr.ox+=(nx-cr.lx);cr.oy+=(ny-cr.ly);cr.lx=nx;cr.ly=ny;renderCrop();e.preventDefault();}
-function onZoom(){cr.scale=parseFloat(document.getElementById('cropZoom').value);document.getElementById('zoomVal').textContent=cr.scale.toFixed(2)+'×';renderCrop();}
-function renderCrop(){
-  const cv=document.getElementById('cropCanvas');if(!cv||!cv.width)return;
-  const ctx=cv.getContext('2d'),sc=cv.width/OW;
-  ctx.fillStyle='#1a1a1a';ctx.fillRect(0,0,cv.width,cv.height);
-  ctx.save();ctx.scale(sc,sc);ctx.drawImage(cropImg,cr.ox,cr.oy,cropImg.naturalWidth*cr.scale,cropImg.naturalHeight*cr.scale);ctx.restore();
-  ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;
-  for(let i=1;i<3;i++){ctx.beginPath();ctx.moveTo(cv.width*i/3,0);ctx.lineTo(cv.width*i/3,cv.height);ctx.stroke();ctx.beginPath();ctx.moveTo(0,cv.height*i/3);ctx.lineTo(cv.width,cv.height*i/3);ctx.stroke();}
-  ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=2;ctx.strokeRect(1,1,cv.width-2,cv.height-2);
-}
-function applyCrop(){
-  const out=document.createElement('canvas');out.width=OW;out.height=OH;
-  const ctx=out.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,OW,OH);
-  ctx.drawImage(cropImg,cr.ox,cr.oy,cropImg.naturalWidth*cr.scale,cropImg.naturalHeight*cr.scale);
-  const url=out.toDataURL('image/jpeg',.75);
-  document.getElementById(cropTgt+'Img').src=url;
-  document.getElementById(cropTgt+'Data').value=url;
-  document.getElementById(cropTgt+'Preview').classList.remove('hidden');
-  closeCrop();
+    // Ana klasörü bul veya oluştur
+    var anaKlasor = DriveApp.getFolderById(FOTO_KLASOR_ID);
+
+    // Öğrenciye özel alt klasör: varsa bul, yoksa oluştur
+    var altKlasorler = anaKlasor.getFoldersByName(klasorAdi);
+    var altKlasor;
+    if (altKlasorler.hasNext()) {
+      altKlasor = altKlasorler.next();
+    } else {
+      altKlasor = anaKlasor.createFolder(klasorAdi);
+    }
+
+    // Dosyayı kaydet
+    var dosya = altKlasor.createFile(blob);
+
+    // Herkese görünür link (sadece link bilenler görebilir)
+    dosya.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+    return dosya.getUrl();
+
+  } catch (err) {
+    return "HATA: " + err.message;
+  }
 }
 
-/* ─ TELEFON FORMAT & VALİDASYON ─ */
-function formatTel(el){
-  // Sadece rakam bırak
-  let v=el.value.replace(/\D/g,'');
-  // 0 ile başlamıyorsa başa ekle
-  if(v.length>0&&v[0]!=='0')v='0'+v;
-  // max 11 hane
-  if(v.length>11)v=v.slice(0,11);
-  el.value=v;
-  el.style.borderColor=v.length===11&&/^05\d{9}$/.test(v)?'var(--green)':v.length>0?'var(--bd)':'var(--bd)';
-}
-function validateTel(el){
-  const v=el.value.trim();
-  if(v===''){ el.style.borderColor='var(--bd)'; return true; }
-  const ok=/^05\d{9}$/.test(v);
-  el.style.borderColor=ok?'var(--green)':'var(--red)';
-  el.style.boxShadow=ok?'':'0 0 0 3px rgba(209,43,30,.1)';
-  if(!ok){ el.focus(); }
-  return ok;
-}
-function checkTels(){
-  const a=document.getElementById('anneIletisim');
-  const b=document.getElementById('babaIletisim');
-  const aVal=a.value.trim(), bVal=b.value.trim();
-  // En az biri dolu ve format doğru olmalı
-  if(aVal===''&&bVal===''){toast('⚠️ En az bir telefon numarası giriniz');return false;}
-  if(aVal!==''&&!/^05\d{9}$/.test(aVal)){a.style.borderColor='var(--red)';a.style.boxShadow='0 0 0 3px rgba(209,43,30,.1)';toast('⚠️ Anne telefonu 05xxxxxxxxx formatında olmalı');return false;}
-  if(bVal!==''&&!/^05\d{9}$/.test(bVal)){b.style.borderColor='var(--red)';b.style.boxShadow='0 0 0 3px rgba(209,43,30,.1)';toast('⚠️ Baba telefonu 05xxxxxxxxx formatında olmalı');return false;}
-  return true;
+// ───────────────────────────────────────────────────────────────
+function ok(msg) {
+  return ContentService
+    .createTextOutput(JSON.stringify({status: msg}))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
-/* ─ SUBMIT ─ */
-function submitForm(){
-  const btn=document.querySelector('.btn-submit');btn.textContent='Gönderiliyor…';btn.disabled=true;
-  const p={
-    uzman:document.getElementById('uzman').value,
-    gorusmeTarihi:document.getElementById('gorusmeTarihi').value,
-    ogrenciAd:document.getElementById('ogrenciAd').value,
-    ogrenciSoyad:document.getElementById('ogrenciSoyad').value,
-    okul:document.getElementById('okul').value,
-    sinif:D.sinif||'',dogumTarihi:getDob(),
-    gorusmeNot:document.getElementById('gorusmeNot').value+(document.getElementById('gorusmeNot2').value.trim()?'\n---\n'+document.getElementById('gorusmeNot2').value:''),
-    saglikDurum:getSaglikStr(),
-    ak_okuma:rVal('ak_okuma'),ak_anlama:rVal('ak_anlama'),ak_yazma:rVal('ak_yazma'),ak_mat:rVal('ak_mat'),ak_ifade:rVal('ak_ifade'),ak_kavram:rVal('ak_kavram'),
-    tani:D.tani||'',dilModul:rVal('dilModul'),aileDil:rVal('aileDil'),dilProb:getDilStr(),
-    ozelEgitim:rVal('ozelEgitim'),ozelEgitimAcik:document.getElementById('ozelEgitimAcik').value,
-    saglikAnne:rVal('saglikAnne'),saglikBaba:rVal('saglikBaba'),
-    egitimAnne:rVal('egitimAnne'),egitimBaba:rVal('egitimBaba'),
-    beraberlik:rVal('beraberlik'),adres:document.getElementById('adres').value,
-    anneAd:document.getElementById('anneAd').value,anneIletisim:document.getElementById('anneIletisim').value,
-    anneMeslek:document.getElementById('anneMeslek').value,anneAlt:document.getElementById('anneAlt').value,    babaAd:document.getElementById('babaAd').value,babaIletisim:document.getElementById('babaIletisim').value,
-    babaMeslek:document.getElementById('babaMeslek').value,babaAlt:document.getElementById('babaAlt').value,
-    tcNo:document.getElementById('tcNo').value,
-    rehab:rVal('rehab'),rehabMerkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:'',
-    rehabSure:D.rehabSure||'',aileAAA:rVal('aileAAA'),temelIhtiyac:rVal('temelIhtiyac'),
-    raporOlas:D.raporOlas||'',karar:rVal('karar'),
-  };
-  const url=WH+'?data='+encodeURIComponent(JSON.stringify(p));
-  const done=()=>{
-    document.getElementById('sec8').classList.add('hidden');
-    document.getElementById('secSuccess').classList.remove('hidden');
-    document.getElementById('pFill').style.width='100%';
-    document.getElementById('stepBadge').textContent='✓';
-    window.scrollTo({top:0,behavior:'smooth'});
-  };
-  const img=new Image();img.onload=img.onerror=done;img.src=url;
-  setTimeout(()=>{if(document.getElementById('secSuccess').classList.contains('hidden'))done();},3500);
+// ───────────────────────────────────────────────────────────────
+// Sheets başlık satırı
+function baslikSatiri() {
+  return [
+    "Kayıt Zamanı", "Uzman", "Görüşme Tarihi",
+    "Ad", "Soyad", "Okul", "Sınıf", "Doğum Tarihi",
+    "Sağlık Durumu", "Görüşme Notu",
+    "Okuma", "Anlama", "Yazma", "Matematik", "İfade", "Kavram",
+    "Tanı", "Dil Modülü", "Ailede Dil Problemi", "Dil Problemi Detay",
+    "Özel Eğitim", "Özel Eğitim Açık",
+    "Anne Sağlık", "Baba Sağlık",
+    "Anne Eğitim", "Baba Eğitim",
+    "Birlikte mi", "Adres",
+    "Anne Adı", "Anne Tel", "Anne Meslek", "Anne Alternatif",
+    "Baba Adı", "Baba Tel", "Baba Meslek", "Baba Alternatif",
+    "Öğrenci TC",
+    "Rehabilitasyon", "Rehab Merkez", "Rehab Süre",
+    "AAA", "Temel İhtiyaç", "Rapor Olasılığı", "Karar",
+    "Fotoğraf (Drive)", "Kimlik (Drive)"
+  ];
 }
-</script>
-</body>
-</html>
