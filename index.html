@@ -9,72 +9,43 @@
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f0eb;min-height:100vh;padding:24px 16px;color:#2c2c2a}
 .shell{max-width:740px;margin:0 auto}
 .header{background:linear-gradient(135deg,#c17f3c,#e8a84c);border-radius:20px;padding:28px 32px;margin-bottom:24px;color:#fff}
-.header h1{font-size:22px;font-weight:600;display:flex;align-items:center;gap:10px}
+.header h1{font-size:22px;font-weight:600}
 .header p{font-size:13px;opacity:.85;margin-top:6px}
 .progress-bar{background:rgba(255,255,255,.3);border-radius:99px;height:6px;margin-top:16px}
 .progress-fill{background:#fff;border-radius:99px;height:6px;transition:width .4s ease}
 .progress-label{font-size:12px;opacity:.8;margin-top:6px}
 .section-badge{display:inline-flex;align-items:center;gap:8px;background:#e8a84c;color:#fff;font-size:12px;font-weight:600;padding:6px 14px;border-radius:99px;margin-bottom:14px}
-.section-title{font-size:19px;font-weight:600;color:#2c2c2a;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.section-title{font-size:19px;font-weight:600;color:#2c2c2a;margin-bottom:4px}
 .section-desc{font-size:13px;color:#888;margin-bottom:20px}
-.card{background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:14px;border:1px solid #ede8e0;transition:box-shadow .2s}
-.card:focus-within{box-shadow:0 2px 12px rgba(193,127,60,.12)}
+.card{background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:14px;border:1px solid #ede8e0}
 .field-label{font-size:14px;font-weight:600;color:#2c2c2a;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.field-label .icon{font-size:16px}
-.req{color:#e05c3a;font-size:13px}
+.req{color:#e05c3a}
 input[type=text],input[type=date],textarea{width:100%;border:1.5px solid #e0dbd4;border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;background:#fafaf9;color:#2c2c2a;outline:none;transition:border-color .2s}
 input[type=text]:focus,input[type=date]:focus,textarea:focus{border-color:#c17f3c;background:#fff}
 textarea{resize:vertical;min-height:80px;line-height:1.6}
-/* Telefon */
-.tel-wrap{display:flex;align-items:center;gap:0;border:1.5px solid #e0dbd4;border-radius:10px;overflow:hidden;background:#fafaf9;transition:border-color .2s}
-.tel-wrap:focus-within{border-color:#c17f3c;background:#fff}
-.tel-prefix{padding:11px 12px;background:#f0ebe4;color:#888;font-size:14px;font-weight:600;border-right:1.5px solid #e0dbd4;white-space:nowrap;user-select:none}
-.tel-wrap input{border:none;border-radius:0;background:transparent;padding:11px 12px;flex:1;outline:none;font-size:14px}
-/* Tarih picker */
-.date-picker{display:flex;gap:8px}
-.date-picker select{flex:1;border:1.5px solid #e0dbd4;border-radius:10px;padding:11px 10px;font-size:14px;font-family:inherit;background:#fafaf9;color:#2c2c2a;outline:none;transition:border-color .2s;cursor:pointer}
-.date-picker select:focus{border-color:#c17f3c;background:#fff}
-/* Adres */
-.adres-suggestions{position:relative}
-.adres-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #c17f3c;border-top:none;border-radius:0 0 10px 10px;z-index:100;max-height:200px;overflow-y:auto;display:none}
-.adres-list.show{display:block}
-.adres-item{padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid #f0ebe4;color:#2c2c2a}
-.adres-item:hover{background:#fdf8f3;color:#c17f3c}
-.adres-item:last-child{border-bottom:none}
-.konum-info{margin-top:8px;padding:8px 12px;background:#f0f7f0;border-radius:8px;font-size:12px;color:#2a7a4b;display:none}
-.konum-info.show{display:block}
-
-/* Radio items */
 .radio-group{display:flex;flex-direction:column;gap:8px}
 .radio-item{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid #e0dbd4;border-radius:10px;cursor:pointer;transition:all .15s;font-size:14px;user-select:none}
 .radio-item:hover{border-color:#c17f3c;background:#fdf8f3}
 .radio-item.selected{border-color:#c17f3c;background:#fdf8f3;font-weight:500}
-.radio-item input[type=radio]{width:20px;height:20px;accent-color:#c17f3c;cursor:pointer;flex-shrink:0}
-
-/* Grid table */
+.radio-item input[type=radio]{width:22px;height:22px;accent-color:#c17f3c;cursor:pointer;flex-shrink:0}
 .grid-wrap{overflow-x:auto}
 .grid-table{width:100%;border-collapse:collapse;font-size:13px;min-width:400px}
-.grid-table th{background:#f7f3ee;color:#888;font-weight:600;padding:10px 12px;text-align:center;border-bottom:2px solid #ede8e0;font-size:12px;white-space:nowrap}
-.grid-table th:first-child{text-align:left;width:160px}
-.grid-table td{padding:10px 12px;border-bottom:1px solid #f0ebe4;text-align:center;vertical-align:middle}
+.grid-table th{background:#f7f3ee;color:#888;font-weight:600;padding:8px 10px;text-align:center;border-bottom:2px solid #ede8e0;font-size:11px}
+.grid-table th:first-child{text-align:left}
+.grid-table td{padding:10px 10px;border-bottom:1px solid #f0ebe4;text-align:center;vertical-align:middle}
 .grid-table td:first-child{text-align:left;font-weight:500;color:#3a3a38;font-size:13px}
 .grid-table tr:last-child td{border-bottom:none}
 .grid-table tr:hover td{background:#fdf9f6}
 .grid-table input[type=radio]{width:22px;height:22px;accent-color:#c17f3c;cursor:pointer}
-/* All-select header button */
-.col-all{cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .15s;display:inline-block}
+.col-all{cursor:pointer;padding:4px 6px;border-radius:6px;transition:background .15s;display:inline-block;text-align:center}
 .col-all:hover{background:rgba(193,127,60,.15)}
-.col-all-icon{font-size:16px;display:block}
-.col-all-label{font-size:10px;color:#c17f3c;font-weight:600;margin-top:2px}
-
-/* Scale */
+.col-all-icon{font-size:15px;display:block}
+.col-all-label{font-size:9px;color:#c17f3c;font-weight:600;margin-top:1px;white-space:nowrap}
 .scale-row{display:flex;gap:8px;margin-top:8px}
 .scale-btn{flex:1;text-align:center;padding:12px 4px;border:1.5px solid #e0dbd4;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .15s;color:#888;user-select:none}
 .scale-btn:hover{border-color:#c17f3c;color:#c17f3c;background:#fdf8f3}
 .scale-btn.selected{border-color:#c17f3c;background:#c17f3c;color:#fff}
-.scale-labels{display:flex;justify-content:space-between;font-size:11px;color:#bbb;margin-top:5px;padding:0 2px}
-
-/* Nav */
+.scale-labels{display:flex;justify-content:space-between;font-size:11px;color:#bbb;margin-top:5px}
 .nav{display:flex;gap:10px;margin-top:24px}
 .btn{padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
 .btn-back{background:#fff;border:1.5px solid #e0dbd4;color:#666}
@@ -82,35 +53,35 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 .btn-next{background:#c17f3c;color:#fff;margin-left:auto}
 .btn-next:hover{background:#a86930}
 .btn-submit{background:#2a7a4b;color:#fff}
-.btn-submit:hover{background:#1e5c38}
 .hidden{display:none}
-
-/* Chips */
 .chip-group{display:flex;flex-wrap:wrap;gap:8px}
 .chip{padding:9px 16px;border:1.5px solid #e0dbd4;border-radius:99px;font-size:13px;cursor:pointer;transition:all .15s;color:#555;user-select:none;font-weight:500}
 .chip:hover{border-color:#c17f3c;color:#c17f3c}
 .chip.selected{border-color:#c17f3c;background:#c17f3c;color:#fff}
-
-/* File upload */
-.upload-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px;border:1.5px solid #e0dbd4;border-radius:10px;cursor:pointer;transition:all .15s;background:#fafaf9;font-size:13px;font-weight:500;color:#666;user-select:none}
+.upload-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px;border:1.5px solid #e0dbd4;border-radius:10px;cursor:pointer;transition:all .15s;background:#fafaf9;font-size:13px;font-weight:500;color:#666}
 .upload-btn:hover{border-color:#c17f3c;color:#c17f3c;background:#fdf8f3}
 .upload-btn .uicon{font-size:24px}
-
-/* Success */
 .success{text-align:center;padding:48px 24px}
 .success-icon{width:72px;height:72px;background:#e8f5ee;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px}
 .success h2{font-size:20px;font-weight:600;margin-bottom:8px}
 .success p{color:#888;font-size:14px}
-
-/* Divider */
-.divider{height:1px;background:#f0ebe4;margin:12px 0}
+.error-box{background:#fdecea;border:1.5px solid #e05c3a;border-radius:10px;padding:12px 16px;margin-bottom:14px;color:#c0392b;font-size:13px;font-weight:500;display:none;align-items:center;gap:8px}
+.adres-wrap{position:relative}
+.adres-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #c17f3c;border-top:none;border-radius:0 0 10px 10px;z-index:100;max-height:200px;overflow-y:auto;display:none}
+.adres-list.show{display:block}
+.adres-item{padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid #f0ebe4}
+.adres-item:hover{background:#fdf8f3;color:#c17f3c}
+.adres-item:last-child{border-bottom:none}
+.konum-info{margin-top:6px;padding:7px 12px;background:#f0f7f0;border-radius:8px;font-size:12px;color:#2a7a4b;display:none}
 </style>
 </head>
 <body>
 <div class="shell">
+  <div class="error-box" id="errorBox"></div>
+
   <div class="header">
     <h1>📋 Öğrenci Tanıma Formu</h1>
-    <p>Lütfen tüm zorunlu alanları eksiksiz doldurunuz.</p>
+    <p>Zorunlu alanları eksiksiz doldurunuz.</p>
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:12.5%"></div></div>
     <div class="progress-label" id="progressLabel">Bölüm 1 / 8</div>
   </div>
@@ -120,46 +91,27 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
     <div class="section-badge">📋 Bölüm 1 / 8</div>
     <div class="section-title">👤 Genel Bilgiler</div>
     <div class="section-desc">Öğrenci ve görüşme temel bilgileri</div>
-
+    <div class="card"><div class="field-label">🧑‍💼 İlgili HİÜ Uzmanı <span class="req">*</span></div><input type="text" id="uzman" placeholder="Ad Soyad"></div>
+    <div class="card"><div class="field-label">📅 Görüşme Tarihi <span class="req">*</span></div><input type="date" id="gorusmeTarihi"></div>
+    <div class="card"><div class="field-label">🧒 Öğrencinin Adı <span class="req">*</span></div><input type="text" id="ogrenciAd" placeholder="Ad"></div>
+    <div class="card"><div class="field-label">🧒 Öğrencinin Soyadı <span class="req">*</span></div><input type="text" id="ogrenciSoyad" placeholder="Soyad"></div>
+    <div class="card"><div class="field-label">🏫 Devam Ettiği Okul</div><input type="text" id="okul" placeholder="Okul adı"></div>
     <div class="card">
-      <div class="field-label"><span class="icon">🧑‍💼</span> İlgili Halkla İlişkiler Uzmanı <span class="req">*</span></div>
-      <input type="text" id="uzman" placeholder="Ad Soyad">
-    </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">📅</span> Görüşme Tarihi <span class="req">*</span></div>
-      <input type="date" id="gorusmeTarihi">
-    </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">🧒</span> Öğrencinin Adı <span class="req">*</span></div>
-      <input type="text" id="ogrenciAd" placeholder="Ad">
-    </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">🧒</span> Öğrencinin Soyadı <span class="req">*</span></div>
-      <input type="text" id="ogrenciSoyad" placeholder="Soyad">
-    </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">🏫</span> Devam Ettiği Okul</div>
-      <input type="text" id="okul" placeholder="Okul adı">
-    </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">🎒</span> Sınıfı</div>
+      <div class="field-label">🎒 Sınıfı</div>
       <div class="chip-group">
-        <div class="chip" onclick="selectChip(this,'sinif','Anaokulu-Kreş')">Anaokulu-Kreş</div>
-        <div class="chip" onclick="selectChip(this,'sinif','Açıktan/Mezun')">Açıktan/Mezun</div>
-        <div class="chip" onclick="selectChip(this,'sinif','1')">1. Sınıf</div>
-        <div class="chip" onclick="selectChip(this,'sinif','2')">2. Sınıf</div>
-        <div class="chip" onclick="selectChip(this,'sinif','3')">3. Sınıf</div>
-        <div class="chip" onclick="selectChip(this,'sinif','4')">4. Sınıf</div>
-        <div class="chip" onclick="selectChip(this,'sinif','5')">5. Sınıf</div>
-        <div class="chip" onclick="selectChip(this,'sinif','6')">6. Sınıf</div>
-        <div class="chip" onclick="selectChip(this,'sinif','7')">7. Sınıf</div>
-        <div class="chip" onclick="selectChip(this,'sinif','8+')">8+</div>
+        <div class="chip" onclick="selChip(this,'sinif','Anaokulu-Kreş')">Anaokulu-Kreş</div>
+        <div class="chip" onclick="selChip(this,'sinif','Açıktan/Mezun')">Açıktan/Mezun</div>
+        <div class="chip" onclick="selChip(this,'sinif','1')">1. Sınıf</div>
+        <div class="chip" onclick="selChip(this,'sinif','2')">2. Sınıf</div>
+        <div class="chip" onclick="selChip(this,'sinif','3')">3. Sınıf</div>
+        <div class="chip" onclick="selChip(this,'sinif','4')">4. Sınıf</div>
+        <div class="chip" onclick="selChip(this,'sinif','5')">5. Sınıf</div>
+        <div class="chip" onclick="selChip(this,'sinif','6')">6. Sınıf</div>
+        <div class="chip" onclick="selChip(this,'sinif','7')">7. Sınıf</div>
+        <div class="chip" onclick="selChip(this,'sinif','8+')">8+</div>
       </div>
     </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">🎂</span> Öğrencinin Doğum Tarihi</div>
-      <input type="date" id="dogumTarihi">
-    </div>
+    <div class="card"><div class="field-label">🎂 Öğrencinin Doğum Tarihi</div><input type="date" id="dogumTarihi"></div>
     <div class="nav"><button class="btn btn-next" onclick="goTo(2,1)">İleri →</button></div>
   </div>
 
@@ -167,39 +119,27 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
   <div id="sec2" class="hidden">
     <div class="section-badge">📝 Bölüm 2 / 8</div>
     <div class="section-title">🗒️ Notlar & Sağlık</div>
-    <div class="section-desc">Görüşme notları ve öğrenci sağlık bilgileri</div>
-
+    <div class="card"><div class="field-label">📝 Görüşme Notları</div><textarea id="gorusmeNot" placeholder="Görüşmede edinilen izlenimler..."></textarea></div>
     <div class="card">
-      <div class="field-label"><span class="icon">📝</span> Görüşme Notları</div>
-      <textarea id="gorusmeNot" placeholder="Görüşmede edinilen izlenimler..."></textarea>
-    </div>
-
-    <div class="card">
-      <div class="field-label"><span class="icon">🏥</span> Sağlık Durumu <span class="req">*</span></div>
-      <div class="grid-wrap">
-        <table class="grid-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th><div class="col-all" onclick="selectCol('saglik','Evet',this)"><span class="col-all-icon">✅</span><span class="col-all-label">Tümü Evet</span></div></th>
-              <th><div class="col-all" onclick="selectCol('saglik','Hayır',this)"><span class="col-all-icon">❌</span><span class="col-all-label">Tümü Hayır</span></div></th>
-            </tr>
-            <tr>
-              <th></th>
-              <th style="font-weight:600;color:#2c2c2a">Evet</th>
-              <th style="font-weight:600;color:#2c2c2a">Hayır</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Fizyolojik/psikolojik travma veya ameliyat</td><td><input type="radio" name="saglik1" value="Evet"></td><td><input type="radio" name="saglik1" value="Hayır"></td></tr>
-            <tr><td>Düzenli kullandığı ilaç</td><td><input type="radio" name="saglik2" value="Evet"></td><td><input type="radio" name="saglik2" value="Hayır"></td></tr>
-            <tr><td>Ciddi alerji</td><td><input type="radio" name="saglik3" value="Evet"></td><td><input type="radio" name="saglik3" value="Hayır"></td></tr>
-            <tr><td>Fizyolojik gelişim geriliği (genel)</td><td><input type="radio" name="saglik4" value="Evet"></td><td><input type="radio" name="saglik4" value="Hayır"></td></tr>
-            <tr><td>Fizyolojik etken (yarık damak vb.)</td><td><input type="radio" name="saglik5" value="Evet"></td><td><input type="radio" name="saglik5" value="Hayır"></td></tr>
-            <tr><td>Zihinsel gelişim farklılığı</td><td><input type="radio" name="saglik6" value="Evet"></td><td><input type="radio" name="saglik6" value="Hayır"></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="field-label">🏥 Sağlık Durumu <span class="req">*</span></div>
+      <div class="grid-wrap"><table class="grid-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th><div class="col-all" onclick="selCol(['saglik1','saglik2','saglik3','saglik4','saglik5','saglik6'],'Evet')"><span class="col-all-icon">✅</span><span class="col-all-label">Tümü Evet</span></div></th>
+            <th><div class="col-all" onclick="selCol(['saglik1','saglik2','saglik3','saglik4','saglik5','saglik6'],'Hayır')"><span class="col-all-icon">❌</span><span class="col-all-label">Tümü Hayır</span></div></th>
+          </tr>
+          <tr><th></th><th>Evet</th><th>Hayır</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Fizyolojik/psikolojik travma veya ameliyat</td><td><input type="radio" name="saglik1" value="Evet"></td><td><input type="radio" name="saglik1" value="Hayır"></td></tr>
+          <tr><td>Düzenli kullandığı ilaç</td><td><input type="radio" name="saglik2" value="Evet"></td><td><input type="radio" name="saglik2" value="Hayır"></td></tr>
+          <tr><td>Ciddi alerji</td><td><input type="radio" name="saglik3" value="Evet"></td><td><input type="radio" name="saglik3" value="Hayır"></td></tr>
+          <tr><td>Fizyolojik gelişim geriliği (genel)</td><td><input type="radio" name="saglik4" value="Evet"></td><td><input type="radio" name="saglik4" value="Hayır"></td></tr>
+          <tr><td>Fizyolojik etken (yarık damak vb.)</td><td><input type="radio" name="saglik5" value="Evet"></td><td><input type="radio" name="saglik5" value="Hayır"></td></tr>
+          <tr><td>Zihinsel gelişim farklılığı</td><td><input type="radio" name="saglik6" value="Evet"></td><td><input type="radio" name="saglik6" value="Hayır"></td></tr>
+        </tbody>
+      </table></div>
     </div>
     <div class="nav"><button class="btn btn-back" onclick="goTo(1)">← Geri</button><button class="btn btn-next" onclick="goTo(3,2)">İleri →</button></div>
   </div>
@@ -208,78 +148,55 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
   <div id="sec3" class="hidden">
     <div class="section-badge">🎓 Bölüm 3 / 8</div>
     <div class="section-title">📚 Akademik Durum & Tanı</div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">📊</span> Akademik/sosyal/davranışsal durumu <span class="req">*</span></div>
-      <div class="grid-wrap">
-        <table class="grid-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th><div class="col-all" onclick="selectCol('ak','Değerlendirme dışı',this)"><span class="col-all-icon">⬜</span><span class="col-all-label">Tümü</span></div></th>
-              <th><div class="col-all" onclick="selectCol('ak','Akranları düzeyinde',this)"><span class="col-all-icon">✅</span><span class="col-all-label">Tümü</span></div></th>
-              <th><div class="col-all" onclick="selectCol('ak','Zayıf',this)"><span class="col-all-icon">⚠️</span><span class="col-all-label">Tümü</span></div></th>
-              <th><div class="col-all" onclick="selectCol('ak','Çok zayıf',this)"><span class="col-all-icon">❗</span><span class="col-all-label">Tümü</span></div></th>
-            </tr>
-            <tr>
-              <th></th>
-              <th>Değerlendirme dışı</th>
-              <th>Akranları düzeyinde</th>
-              <th>Zayıf</th>
-              <th>Çok zayıf</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>📖 Okuma-Anlama</td><td><input type="radio" name="ak1" value="Değerlendirme dışı"></td><td><input type="radio" name="ak1" value="Akranları düzeyinde"></td><td><input type="radio" name="ak1" value="Zayıf"></td><td><input type="radio" name="ak1" value="Çok zayıf"></td></tr>
-            <tr><td>✏️ Yazma</td><td><input type="radio" name="ak2" value="Değerlendirme dışı"></td><td><input type="radio" name="ak2" value="Akranları düzeyinde"></td><td><input type="radio" name="ak2" value="Zayıf"></td><td><input type="radio" name="ak2" value="Çok zayıf"></td></tr>
-            <tr><td>🔢 Matematik</td><td><input type="radio" name="ak3" value="Değerlendirme dışı"></td><td><input type="radio" name="ak3" value="Akranları düzeyinde"></td><td><input type="radio" name="ak3" value="Zayıf"></td><td><input type="radio" name="ak3" value="Çok zayıf"></td></tr>
-            <tr><td>💬 İfade Becerisi</td><td><input type="radio" name="ak4" value="Değerlendirme dışı"></td><td><input type="radio" name="ak4" value="Akranları düzeyinde"></td><td><input type="radio" name="ak4" value="Zayıf"></td><td><input type="radio" name="ak4" value="Çok zayıf"></td></tr>
-            <tr><td>🤝 İletişim</td><td><input type="radio" name="ak5" value="Değerlendirme dışı"></td><td><input type="radio" name="ak5" value="Akranları düzeyinde"></td><td><input type="radio" name="ak5" value="Zayıf"></td><td><input type="radio" name="ak5" value="Çok zayıf"></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="field-label">📊 Akademik/sosyal/davranışsal durum <span class="req">*</span></div>
+      <div class="grid-wrap"><table class="grid-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th><div class="col-all" onclick="selCol(['ak1','ak2','ak3','ak4','ak5'],'Değerlendirme dışı')"><span class="col-all-icon">⬜</span><span class="col-all-label">Tümü</span></div></th>
+            <th><div class="col-all" onclick="selCol(['ak1','ak2','ak3','ak4','ak5'],'Akranları düzeyinde')"><span class="col-all-icon">✅</span><span class="col-all-label">Tümü</span></div></th>
+            <th><div class="col-all" onclick="selCol(['ak1','ak2','ak3','ak4','ak5'],'Zayıf')"><span class="col-all-icon">⚠️</span><span class="col-all-label">Tümü</span></div></th>
+            <th><div class="col-all" onclick="selCol(['ak1','ak2','ak3','ak4','ak5'],'Çok zayıf')"><span class="col-all-icon">❗</span><span class="col-all-label">Tümü</span></div></th>
+          </tr>
+          <tr><th></th><th>Değerlendirme dışı</th><th>Akranları düzeyinde</th><th>Zayıf</th><th>Çok zayıf</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>📖 Okuma-Anlama</td><td><input type="radio" name="ak1" value="Değerlendirme dışı"></td><td><input type="radio" name="ak1" value="Akranları düzeyinde"></td><td><input type="radio" name="ak1" value="Zayıf"></td><td><input type="radio" name="ak1" value="Çok zayıf"></td></tr>
+          <tr><td>✏️ Yazma</td><td><input type="radio" name="ak2" value="Değerlendirme dışı"></td><td><input type="radio" name="ak2" value="Akranları düzeyinde"></td><td><input type="radio" name="ak2" value="Zayıf"></td><td><input type="radio" name="ak2" value="Çok zayıf"></td></tr>
+          <tr><td>🔢 Matematik</td><td><input type="radio" name="ak3" value="Değerlendirme dışı"></td><td><input type="radio" name="ak3" value="Akranları düzeyinde"></td><td><input type="radio" name="ak3" value="Zayıf"></td><td><input type="radio" name="ak3" value="Çok zayıf"></td></tr>
+          <tr><td>💬 İfade Becerisi</td><td><input type="radio" name="ak4" value="Değerlendirme dışı"></td><td><input type="radio" name="ak4" value="Akranları düzeyinde"></td><td><input type="radio" name="ak4" value="Zayıf"></td><td><input type="radio" name="ak4" value="Çok zayıf"></td></tr>
+          <tr><td>🤝 İletişim</td><td><input type="radio" name="ak5" value="Değerlendirme dışı"></td><td><input type="radio" name="ak5" value="Akranları düzeyinde"></td><td><input type="radio" name="ak5" value="Zayıf"></td><td><input type="radio" name="ak5" value="Çok zayıf"></td></tr>
+        </tbody>
+      </table></div>
     </div>
-
+    <div class="card"><div class="field-label">🌟 Olumlu davranış ve beceriler</div><textarea id="olumluDavranis" placeholder="Açıklayınız..."></textarea></div>
+    <div class="card"><div class="field-label">🎯 Öncelikli kazanılmasını istediğiniz beceriler</div><textarea id="oncelikliBeceri" placeholder="Açıklayınız..."></textarea></div>
+    <div class="card"><div class="field-label">⚠️ Davranış problemleri</div><textarea id="davranisProb" placeholder="Açıklayınız..."></textarea></div>
+    <div class="card"><div class="field-label">🏛️ Kurumumuzdan en temel beklentiniz</div><textarea id="kurumBeklenti" placeholder="Açıklayınız..."></textarea></div>
     <div class="card">
-      <div class="field-label"><span class="icon">🌟</span> Olumlu davranış ve beceriler</div>
-      <textarea id="olumluDavranis" placeholder="Çocuğunuzda olumlu bulduğunuz ve geliştirilmesini istediğiniz..."></textarea>
-    </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">🎯</span> Öncelikli kazanılmasını istediğiniz beceriler</div>
-      <textarea id="oncelikliBeceri" placeholder="Çocuğunuzun öncelikli olarak kazanmasını istediğiniz..."></textarea>
-    </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">⚠️</span> Davranış problemleri</div>
-      <textarea id="davranisProb" placeholder="Çocuğunuzda davranış problemi olarak tanımladığınız hususlar..."></textarea>
-    </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">🏛️</span> Kurumumuzdan en temel beklentiniz</div>
-      <textarea id="kurumBeklenti" placeholder="Beklentilerinizi yazınız..."></textarea>
-    </div>
-
-    <div class="card">
-      <div class="field-label"><span class="icon">📄</span> Rapor/tanı durumu <span class="req">*</span></div>
+      <div class="field-label">📄 Rapor/tanı durumu <span class="req">*</span></div>
       <div class="radio-group">
-        <label class="radio-item"><input type="radio" name="tani" value="Aday (Z/ÖÖ/Y)" onchange="handleTani(this)"> Aday (Z/ÖÖ/Y)</label>
-        <label class="radio-item"><input type="radio" name="tani" value="Aday Dil" onchange="handleTani(this)"> Aday Dil</label>
-        <label class="radio-item"><input type="radio" name="tani" value="Aday Dil+" onchange="handleTani(this)"> Aday Dil+</label>
-        <label class="radio-item"><input type="radio" name="tani" value="Raporlu Z" onchange="handleTani(this)"> Raporlu Z</label>
-        <label class="radio-item"><input type="radio" name="tani" value="Raporlu ÖÖG" onchange="handleTani(this)"> Raporlu ÖÖG</label>
-        <label class="radio-item"><input type="radio" name="tani" value="Raporlu Y" onchange="handleTani(this)"> Raporlu Y</label>
-        <label class="radio-item"><input type="radio" name="tani" value="Raporlu Dil+" onchange="handleTani(this)"> Raporlu Dil+</label>
-        <label class="radio-item"><input type="radio" name="tani" value="Raporlu Dil" onchange="handleTani(this)"> Raporlu Dil</label>
-        <label class="radio-item"><input type="radio" name="tani" value="Eksik Raporlu" onchange="handleTani(this)"> Eksik Raporlu</label>
+        <label class="radio-item"><input type="radio" name="tani" value="Aday (Z/ÖÖ/Y)"> Aday (Z/ÖÖ/Y)</label>
+        <label class="radio-item"><input type="radio" name="tani" value="Aday Dil"> Aday Dil</label>
+        <label class="radio-item"><input type="radio" name="tani" value="Aday Dil+"> Aday Dil+</label>
+        <label class="radio-item"><input type="radio" name="tani" value="Raporlu Z"> Raporlu Z</label>
+        <label class="radio-item"><input type="radio" name="tani" value="Raporlu ÖÖG"> Raporlu ÖÖG</label>
+        <label class="radio-item"><input type="radio" name="tani" value="Raporlu Y"> Raporlu Y</label>
+        <label class="radio-item"><input type="radio" name="tani" value="Raporlu Dil+"> Raporlu Dil+</label>
+        <label class="radio-item"><input type="radio" name="tani" value="Raporlu Dil"> Raporlu Dil</label>
+        <label class="radio-item"><input type="radio" name="tani" value="Eksik Raporlu"> Eksik Raporlu</label>
       </div>
     </div>
-    <div class="nav"><button class="btn btn-back" onclick="goTo(2)">← Geri</button><button class="btn btn-next" onclick="handleSec3Next()">İleri →</button></div>
+    <div class="nav"><button class="btn btn-back" onclick="goTo(2)">← Geri</button><button class="btn btn-next" onclick="sec3Next()">İleri →</button></div>
   </div>
 
-  <!-- BÖLÜM 4 — Raporlu Dil -->
+  <!-- BÖLÜM 4 -->
   <div id="sec4" class="hidden">
     <div class="section-badge">🗣️ Bölüm 4 / 8</div>
     <div class="section-title">🗣️ Raporlu Dil</div>
     <div class="card">
-      <div class="field-label"><span class="icon">📦</span> Gelişimsel dil modülü var mı? <span class="req">*</span></div>
+      <div class="field-label">📦 Gelişimsel dil modülü var mı? <span class="req">*</span></div>
       <div class="radio-group">
         <label class="radio-item"><input type="radio" name="dilModul" value="Var"> Var</label>
         <label class="radio-item"><input type="radio" name="dilModul" value="Yok"> Yok</label>
@@ -289,19 +206,19 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
     <div class="nav"><button class="btn btn-back" onclick="goTo(3)">← Geri</button><button class="btn btn-next" onclick="goTo(6,4)">İleri →</button></div>
   </div>
 
-  <!-- BÖLÜM 5 — Dil+ -->
+  <!-- BÖLÜM 5 -->
   <div id="sec5" class="hidden">
     <div class="section-badge">🗣️ Bölüm 5 / 8</div>
     <div class="section-title">🗣️ Dil Gelişimi Detayları</div>
     <div class="card">
-      <div class="field-label"><span class="icon">👨‍👩‍👧</span> Ailede başka dil konuşma problemi yaşayan var mı? <span class="req">*</span></div>
+      <div class="field-label">👨‍👩‍👧 Ailede başka dil problemi yaşayan var mı? <span class="req">*</span></div>
       <div class="radio-group">
         <label class="radio-item"><input type="radio" name="aileDil" value="Evet"> Evet</label>
         <label class="radio-item"><input type="radio" name="aileDil" value="Hayır"> Hayır</label>
       </div>
     </div>
     <div class="card">
-      <div class="field-label"><span class="icon">🔍</span> Dil gelişimi problemi nasıl tanımlanır? <span class="req">*</span></div>
+      <div class="field-label">🔍 Dil problemi nasıl tanımlanır? <span class="req">*</span></div>
       <div class="radio-group">
         <label class="radio-item"><input type="radio" name="dilProb" value="Hiç konuşamıyor"> Hiç konuşamıyor.</label>
         <label class="radio-item"><input type="radio" name="dilProb" value="Az kelime"> Yaşına göre az sayıda kelime söyleyebiliyor.</label>
@@ -313,151 +230,124 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
     <div class="nav"><button class="btn btn-back" onclick="goTo(3)">← Geri</button><button class="btn btn-next" onclick="goTo(6,5)">İleri →</button></div>
   </div>
 
-  <!-- BÖLÜM 6 — Aile -->
+  <!-- BÖLÜM 6 -->
   <div id="sec6" class="hidden">
     <div class="section-badge">👨‍👩‍👧 Bölüm 6 / 8</div>
     <div class="section-title">👨‍👩‍👧 Aile ve İletişim Bilgileri</div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">👶</span> Ailenin kaç çocuğu var? <span class="req">*</span></div>
+      <div class="field-label">👶 Ailenin kaç çocuğu var? <span class="req">*</span></div>
       <div class="chip-group">
-        <div class="chip" onclick="selectChip(this,'cocukSayisi','1')">1</div>
-        <div class="chip" onclick="selectChip(this,'cocukSayisi','2')">2</div>
-        <div class="chip" onclick="selectChip(this,'cocukSayisi','3')">3</div>
-        <div class="chip" onclick="selectChip(this,'cocukSayisi','4')">4</div>
-        <div class="chip" onclick="selectChip(this,'cocukSayisi','5')">5</div>
-        <div class="chip" onclick="selectChip(this,'cocukSayisi','6')">6</div>
-        <div class="chip" onclick="selectChip(this,'cocukSayisi','7+')">7+</div>
+        <div class="chip" onclick="selChip(this,'cocukSayisi','1')">1</div>
+        <div class="chip" onclick="selChip(this,'cocukSayisi','2')">2</div>
+        <div class="chip" onclick="selChip(this,'cocukSayisi','3')">3</div>
+        <div class="chip" onclick="selChip(this,'cocukSayisi','4')">4</div>
+        <div class="chip" onclick="selChip(this,'cocukSayisi','5')">5</div>
+        <div class="chip" onclick="selChip(this,'cocukSayisi','6')">6</div>
+        <div class="chip" onclick="selChip(this,'cocukSayisi','7+')">7+</div>
       </div>
     </div>
     <div class="card">
-      <div class="field-label"><span class="icon">🎓</span> Ailede özel eğitim alan başka birey var mı? <span class="req">*</span></div>
+      <div class="field-label">🎓 Ailede özel eğitim alan başka birey? <span class="req">*</span></div>
       <div class="radio-group">
         <label class="radio-item"><input type="radio" name="ozelEgitim" value="Evet"> Evet</label>
         <label class="radio-item"><input type="radio" name="ozelEgitim" value="Hayır"> Hayır</label>
       </div>
     </div>
+    <div class="card"><div class="field-label">📝 Özel eğitim açıklama</div><textarea id="ozelEgitimAcik" placeholder="Varsa açıklayınız..."></textarea></div>
     <div class="card">
-      <div class="field-label"><span class="icon">📝</span> Özel eğitim alan bireyler (varsa) açıklama</div>
-      <textarea id="ozelEgitimAcik" placeholder="Açıklayınız..."></textarea>
-    </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">📍</span> Adres <span class="req">*</span></div>
-      <div class="adres-suggestions">
-        <textarea id="adres" placeholder="Mahalle, sokak, il/ilçe..." oninput="adresSuggest(this.value)" rows="2"></textarea>
+      <div class="field-label">📍 Adres <span class="req">*</span></div>
+      <div class="adres-wrap">
+        <textarea id="adres" placeholder="Mahalle, sokak, il/ilçe..." rows="2" oninput="adresSuggest(this.value)"></textarea>
         <div class="adres-list" id="adresList"></div>
       </div>
       <div class="konum-info" id="konumInfo">📍 <span id="konumText"></span></div>
     </div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">👪</span> Ebeveynlerin özlük/üveylik durumu <span class="req">*</span></div>
-      <div class="grid-wrap">
-        <table class="grid-table">
-          <thead><tr><th></th><th>Öz</th><th>Üvey</th></tr></thead>
-          <tbody>
-            <tr><td>👩 Anne</td><td><input type="radio" name="ozUveyAnne" value="Öz"></td><td><input type="radio" name="ozUveyAnne" value="Üvey"></td></tr>
-            <tr><td>👨 Baba</td><td><input type="radio" name="ozUveyBaba" value="Öz"></td><td><input type="radio" name="ozUveyBaba" value="Üvey"></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="field-label">👪 Ebeveynlerin özlük/üveylik durumu <span class="req">*</span></div>
+      <div class="grid-wrap"><table class="grid-table">
+        <thead><tr><th></th><th>Öz</th><th>Üvey</th></tr></thead>
+        <tbody>
+          <tr><td>👩 Anne</td><td><input type="radio" name="ozUveyAnne" value="Öz"></td><td><input type="radio" name="ozUveyAnne" value="Üvey"></td></tr>
+          <tr><td>👨 Baba</td><td><input type="radio" name="ozUveyBaba" value="Öz"></td><td><input type="radio" name="ozUveyBaba" value="Üvey"></td></tr>
+        </tbody>
+      </table></div>
     </div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">❤️</span> Ebeveyn sağlık durumu <span class="req">*</span></div>
-      <div class="grid-wrap">
-        <table class="grid-table">
-          <thead><tr><th></th><th>Sağ</th><th>Vefat</th></tr></thead>
-          <tbody>
-            <tr><td>👩 Anne</td><td><input type="radio" name="saglikAnne" value="Sağ"></td><td><input type="radio" name="saglikAnne" value="Vefat"></td></tr>
-            <tr><td>👨 Baba</td><td><input type="radio" name="saglikBaba" value="Sağ"></td><td><input type="radio" name="saglikBaba" value="Vefat"></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="field-label">❤️ Ebeveyn sağlık durumu <span class="req">*</span></div>
+      <div class="grid-wrap"><table class="grid-table">
+        <thead><tr><th></th><th>Sağ</th><th>Vefat</th></tr></thead>
+        <tbody>
+          <tr><td>👩 Anne</td><td><input type="radio" name="saglikAnne" value="Sağ"></td><td><input type="radio" name="saglikAnne" value="Vefat"></td></tr>
+          <tr><td>👨 Baba</td><td><input type="radio" name="saglikBaba" value="Sağ"></td><td><input type="radio" name="saglikBaba" value="Vefat"></td></tr>
+        </tbody>
+      </table></div>
     </div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">🎓</span> Anne/Baba eğitim durumu <span class="req">*</span></div>
-      <div class="grid-wrap">
-        <table class="grid-table">
-          <thead>
-            <tr><th></th><th>Okur-yazar değil</th><th>Okur/İlko.</th><th>Ortaokul/Lise</th><th>Üniversite</th><th>Vefat</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>👩 Anne</td><td><input type="radio" name="egitimAnne" value="Okur-yazar değil"></td><td><input type="radio" name="egitimAnne" value="Okur/İlko."></td><td><input type="radio" name="egitimAnne" value="Ortaokul/Lise"></td><td><input type="radio" name="egitimAnne" value="Üniversite"></td><td><input type="radio" name="egitimAnne" value="Vefat"></td></tr>
-            <tr><td>👨 Baba</td><td><input type="radio" name="egitimBaba" value="Okur-yazar değil"></td><td><input type="radio" name="egitimBaba" value="Okur/İlko."></td><td><input type="radio" name="egitimBaba" value="Ortaokul/Lise"></td><td><input type="radio" name="egitimBaba" value="Üniversite"></td><td><input type="radio" name="egitimBaba" value="Vefat"></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="field-label">🎓 Eğitim durumu <span class="req">*</span></div>
+      <div class="grid-wrap"><table class="grid-table">
+        <thead><tr><th></th><th>Okur-yazar değil</th><th>Okur/İlko.</th><th>Ortaokul/Lise</th><th>Üniversite</th><th>Vefat</th></tr></thead>
+        <tbody>
+          <tr><td>👩 Anne</td><td><input type="radio" name="egitimAnne" value="Okur-yazar değil"></td><td><input type="radio" name="egitimAnne" value="Okur/İlko."></td><td><input type="radio" name="egitimAnne" value="Ortaokul/Lise"></td><td><input type="radio" name="egitimAnne" value="Üniversite"></td><td><input type="radio" name="egitimAnne" value="Vefat"></td></tr>
+          <tr><td>👨 Baba</td><td><input type="radio" name="egitimBaba" value="Okur-yazar değil"></td><td><input type="radio" name="egitimBaba" value="Okur/İlko."></td><td><input type="radio" name="egitimBaba" value="Ortaokul/Lise"></td><td><input type="radio" name="egitimBaba" value="Üniversite"></td><td><input type="radio" name="egitimBaba" value="Vefat"></td></tr>
+        </tbody>
+      </table></div>
     </div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">🏛️</span> Sosyal güvenlik kurumu <span class="req">*</span></div>
-      <div class="grid-wrap">
-        <table class="grid-table">
-          <thead><tr><th></th><th>SGK/BAĞKUR</th><th>Emekli Sandığı</th><th>Yok/Bilinmiyor</th><th>Vefat</th></tr></thead>
-          <tbody>
-            <tr><td>👩 Anne</td><td><input type="radio" name="sgkAnne" value="SGK/BAĞKUR"></td><td><input type="radio" name="sgkAnne" value="Emekli Sandığı"></td><td><input type="radio" name="sgkAnne" value="Yok/Bilinmiyor"></td><td><input type="radio" name="sgkAnne" value="Vefat"></td></tr>
-            <tr><td>👨 Baba</td><td><input type="radio" name="sgkBaba" value="SGK/BAĞKUR"></td><td><input type="radio" name="sgkBaba" value="Emekli Sandığı"></td><td><input type="radio" name="sgkBaba" value="Yok/Bilinmiyor"></td><td><input type="radio" name="sgkBaba" value="Vefat"></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="field-label">🏛️ Sosyal güvenlik kurumu <span class="req">*</span></div>
+      <div class="grid-wrap"><table class="grid-table">
+        <thead><tr><th></th><th>SGK/BAĞKUR</th><th>Emekli Sandığı</th><th>Yok/Bilinmiyor</th><th>Vefat</th></tr></thead>
+        <tbody>
+          <tr><td>👩 Anne</td><td><input type="radio" name="sgkAnne" value="SGK/BAĞKUR"></td><td><input type="radio" name="sgkAnne" value="Emekli Sandığı"></td><td><input type="radio" name="sgkAnne" value="Yok/Bilinmiyor"></td><td><input type="radio" name="sgkAnne" value="Vefat"></td></tr>
+          <tr><td>👨 Baba</td><td><input type="radio" name="sgkBaba" value="SGK/BAĞKUR"></td><td><input type="radio" name="sgkBaba" value="Emekli Sandığı"></td><td><input type="radio" name="sgkBaba" value="Yok/Bilinmiyor"></td><td><input type="radio" name="sgkBaba" value="Vefat"></td></tr>
+        </tbody>
+      </table></div>
     </div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">🏠</span> Anne baba birlikte mi yaşıyor? <span class="req">*</span></div>
+      <div class="field-label">🏠 Anne baba birlikte mi yaşıyor? <span class="req">*</span></div>
       <div class="radio-group">
         <label class="radio-item"><input type="radio" name="beraberlik" value="Evet"> Evet</label>
         <label class="radio-item"><input type="radio" name="beraberlik" value="Boşanmış/Ayrı"> Boşanmış/Ayrı</label>
         <label class="radio-item"><input type="radio" name="beraberlik" value="Vefat nedeniyle ayrı"> Vefat nedeniyle ayrı.</label>
       </div>
     </div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">👩</span> Anne Bilgileri</div>
+      <div class="field-label">👩 Anne Bilgileri</div>
       <input type="text" id="anneAd" placeholder="Anne adı" style="margin-bottom:10px">
-      <input type="text" id="anneIletisim" placeholder="05XXXXXXXXX" maxlength="11" oninput="formatTel(this)" inputmode="numeric">
+      <input type="text" id="anneIletisim" placeholder="05XXXXXXXXX" maxlength="11" inputmode="numeric" oninput="formatTel(this)" style="margin-bottom:10px">
+      <input type="text" id="anneMeslek" placeholder="💼 Anne mesleği">
     </div>
     <div class="card">
-      <div class="field-label"><span class="icon">👨</span> Baba Bilgileri</div>
+      <div class="field-label">👨 Baba Bilgileri</div>
       <input type="text" id="babaAd" placeholder="Baba adı" style="margin-bottom:10px">
-      <input type="text" id="babaIletisim" placeholder="05XXXXXXXXX" maxlength="11" oninput="formatTel(this)" inputmode="numeric" style="margin-bottom:10px">
+      <input type="text" id="babaIletisim" placeholder="05XXXXXXXXX" maxlength="11" inputmode="numeric" oninput="formatTel(this)" style="margin-bottom:10px">
       <input type="text" id="babaMeslek" placeholder="💼 Baba mesleği">
     </div>
-    <div class="card">
-      <div class="field-label"><span class="icon">🪪</span> Öğrenci TC Kimlik No <span class="req">*</span></div>
-      <input type="text" id="tcNo" placeholder="11 haneli TC kimlik no" maxlength="11">
-    </div>
-
-    <div class="nav"><button class="btn btn-back" onclick="goBackFromSec6()">← Geri</button><button class="btn btn-next" onclick="goTo(7,6)">İleri →</button></div>
+    <div class="card"><div class="field-label">🪪 Öğrenci TC Kimlik No <span class="req">*</span></div><input type="text" id="tcNo" placeholder="11 haneli TC kimlik no" maxlength="11" inputmode="numeric"></div>
+    <div class="nav"><button class="btn btn-back" onclick="geriSec6()">← Geri</button><button class="btn btn-next" onclick="goTo(7,6)">İleri →</button></div>
   </div>
 
-  <!-- BÖLÜM 7 — Rehabilitasyon -->
+  <!-- BÖLÜM 7 -->
   <div id="sec7" class="hidden">
     <div class="section-badge">🏥 Bölüm 7 / 8</div>
     <div class="section-title">🏥 Rehabilitasyon Merkezi</div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">🏥</span> Rehabilitasyon merkezine gitti mi/gidiyor mu? <span class="req">*</span></div>
+      <div class="field-label">🏥 Rehabilitasyon merkezine gitti mi/gidiyor mu? <span class="req">*</span></div>
       <div class="radio-group">
-        <label class="radio-item"><input type="radio" name="rehab" value="Evet" onchange="toggleRehab('Evet')"> Evet</label>
-        <label class="radio-item"><input type="radio" name="rehab" value="Hayır" onchange="toggleRehab('Hayır')"> Hayır</label>
+        <label class="radio-item"><input type="radio" name="rehab" value="Evet" onchange="toggleRehab(true)"> Evet</label>
+        <label class="radio-item"><input type="radio" name="rehab" value="Hayır" onchange="toggleRehab(false)"> Hayır</label>
       </div>
     </div>
     <div id="rehabDetail" class="hidden">
+      <div class="card"><div class="field-label">📍 Hangi rehabilitasyon merkezine gidiyor?</div><textarea id="rehabMerkez" placeholder="Merkez adı..."></textarea></div>
       <div class="card">
-        <div class="field-label"><span class="icon">📍</span> Hangi rehabilitasyon merkezine gidiyor?</div>
-        <textarea id="rehabMerkez" placeholder="Merkez adı ve bilgileri..."></textarea>
-      </div>
-      <div class="card">
-        <div class="field-label"><span class="icon">⏱️</span> Ne kadar süredir gitti/gidiyor? (yıl)</div>
+        <div class="field-label">⏱️ Ne kadar süredir? (yıl)</div>
         <div class="scale-row">
-          <div class="scale-btn" onclick="selectScale(this,'rehabSureVal','0')">0</div>
-          <div class="scale-btn" onclick="selectScale(this,'rehabSureVal','1')">1</div>
-          <div class="scale-btn" onclick="selectScale(this,'rehabSureVal','2')">2</div>
-          <div class="scale-btn" onclick="selectScale(this,'rehabSureVal','3')">3</div>
-          <div class="scale-btn" onclick="selectScale(this,'rehabSureVal','4')">4</div>
-          <div class="scale-btn" onclick="selectScale(this,'rehabSureVal','5+')">5+</div>
+          <div class="scale-btn" onclick="selScale(this,'rehabSureVal','0')">0</div>
+          <div class="scale-btn" onclick="selScale(this,'rehabSureVal','1')">1</div>
+          <div class="scale-btn" onclick="selScale(this,'rehabSureVal','2')">2</div>
+          <div class="scale-btn" onclick="selScale(this,'rehabSureVal','3')">3</div>
+          <div class="scale-btn" onclick="selScale(this,'rehabSureVal','4')">4</div>
+          <div class="scale-btn" onclick="selScale(this,'rehabSureVal','5+')">5+</div>
         </div>
       </div>
     </div>
@@ -468,22 +358,20 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
   <div id="sec8" class="hidden">
     <div class="section-badge">⚖️ Bölüm 8 / 8</div>
     <div class="section-title">⚖️ Karar</div>
-
-    <div class="card" id="raporOlasilikCard">
-      <div class="field-label"><span class="icon">📊</span> Rapor çıkma olasılığı nedir? <span class="req">*</span></div>
-      <div style="font-size:12px;color:#aaa;margin-bottom:10px">1 düşük ihtimal — 5 yüksek ihtimal</div>
+    <div class="card" id="raporKart">
+      <div class="field-label">📊 Rapor çıkma olasılığı <span class="req">*</span></div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:10px">1 düşük — 5 yüksek ihtimal</div>
       <div class="scale-row">
-        <div class="scale-btn" onclick="selectScale(this,'raporOlasilik','1')">1</div>
-        <div class="scale-btn" onclick="selectScale(this,'raporOlasilik','2')">2</div>
-        <div class="scale-btn" onclick="selectScale(this,'raporOlasilik','3')">3</div>
-        <div class="scale-btn" onclick="selectScale(this,'raporOlasilik','4')">4</div>
-        <div class="scale-btn" onclick="selectScale(this,'raporOlasilik','5')">5</div>
+        <div class="scale-btn" onclick="selScale(this,'raporOlasilik','1')">1</div>
+        <div class="scale-btn" onclick="selScale(this,'raporOlasilik','2')">2</div>
+        <div class="scale-btn" onclick="selScale(this,'raporOlasilik','3')">3</div>
+        <div class="scale-btn" onclick="selScale(this,'raporOlasilik','4')">4</div>
+        <div class="scale-btn" onclick="selScale(this,'raporOlasilik','5')">5</div>
       </div>
-      <div class="scale-labels"><span>Düşük ihtimal</span><span>Yüksek ihtimal</span></div>
+      <div class="scale-labels"><span>Düşük</span><span>Yüksek</span></div>
     </div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">✅</span> KARAR <span class="req">*</span></div>
+      <div class="field-label">✅ KARAR <span class="req">*</span></div>
       <div class="radio-group">
         <label class="radio-item"><input type="radio" name="karar" value="KAYDEDİLDİ"> 📌 KAYDEDİLDİ</label>
         <label class="radio-item"><input type="radio" name="karar" value="Kaydı Yapılacak"> 🕐 Kaydı Yapılacak</label>
@@ -498,29 +386,26 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
         <label class="radio-item"><input type="radio" name="karar" value="Özel Ders Alacak"> 📚 Özel Ders Alacak</label>
       </div>
     </div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">📸</span> Fotoğraf</div>
+      <div class="field-label">📸 Fotoğraf</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="upload-btn" onclick="document.getElementById('fotoKamera').click()"><span class="uicon">📷</span>Kameradan Çek</div>
         <div class="upload-btn" onclick="document.getElementById('fotoGaleri').click()"><span class="uicon">🖼️</span>Galeriden Seç</div>
       </div>
-      <div id="fotoPreview" class="hidden" style="margin-top:10px"><img id="fotoImg" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px;border:1px solid #ede8e0"></div>
-      <input type="file" id="fotoKamera" accept="image/*" capture="environment" style="display:none" onchange="previewFile(this,'fotoImg','fotoPreview')">
-      <input type="file" id="fotoGaleri" accept="image/*" style="display:none" onchange="previewFile(this,'fotoImg','fotoPreview')">
+      <div id="fotoPreview" class="hidden" style="margin-top:10px"><img id="fotoImg" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px"></div>
+      <input type="file" id="fotoKamera" accept="image/*" capture="environment" style="display:none" onchange="prevFile(this,'fotoImg','fotoPreview')">
+      <input type="file" id="fotoGaleri" accept="image/*" style="display:none" onchange="prevFile(this,'fotoImg','fotoPreview')">
     </div>
-
     <div class="card">
-      <div class="field-label"><span class="icon">🪪</span> Kimlikler</div>
+      <div class="field-label">🪪 Kimlikler</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="upload-btn" onclick="document.getElementById('kimlikKamera').click()"><span class="uicon">📷</span>Kameradan Çek</div>
         <div class="upload-btn" onclick="document.getElementById('kimlikGaleri').click()"><span class="uicon">🖼️</span>Galeriden Seç</div>
       </div>
-      <div id="kimlikPreview" class="hidden" style="margin-top:10px"><img id="kimlikImg" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px;border:1px solid #ede8e0"></div>
-      <input type="file" id="kimlikKamera" accept="image/*" capture="environment" style="display:none" onchange="previewFile(this,'kimlikImg','kimlikPreview')">
-      <input type="file" id="kimlikGaleri" accept="image/*" style="display:none" onchange="previewFile(this,'kimlikImg','kimlikPreview')">
+      <div id="kimlikPreview" class="hidden" style="margin-top:10px"><img id="kimlikImg" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px"></div>
+      <input type="file" id="kimlikKamera" accept="image/*" capture="environment" style="display:none" onchange="prevFile(this,'kimlikImg','kimlikPreview')">
+      <input type="file" id="kimlikGaleri" accept="image/*" style="display:none" onchange="prevFile(this,'kimlikImg','kimlikPreview')">
     </div>
-
     <div class="nav">
       <button class="btn btn-back" onclick="goTo(7)">← Geri</button>
       <button class="btn btn-submit btn-next" onclick="submitForm()">✓ Formu Gönder</button>
@@ -540,60 +425,160 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 
 <script>
 const WEBHOOK = "https://script.google.com/macros/s/AKfycbzT_uF6HsczXuF7kuBbsemF28uBdFB2VGXlZTGOcllXnUPN5dZhFutV2jLc8hV9JWje_Q/exec";
-const data = {sinif:null,cocukSayisi:null,tani:null,rehabSureVal:null,raporOlasilik:null};
-const AYLAR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const D = {sinif:null,cocukSayisi:null,tani:null,rehabSureVal:null,raporOlasilik:null,lat:null,lon:null};
 
-function initDatePicker(prefix, minYear, maxYear){
-  const g = document.getElementById(prefix+'Gun');
-  const a = document.getElementById(prefix+'Ay');
-  const y = document.getElementById(prefix+'Yil');
-  if(!g||!a||!y) return;
-  g.innerHTML = '<option value="">Gün</option>';
-  a.innerHTML = '<option value="">Ay</option>';
-  y.innerHTML = '<option value="">Yıl</option>';
-  for(let i=1;i<=31;i++){
-    const o=document.createElement('option');
-    o.value=String(i).padStart(2,'0');
-    o.textContent=i;
-    g.appendChild(o);
+function rad(name){const e=document.querySelector(`input[name="${name}"]:checked`);return e?e.value:"";}
+function val(id){const e=document.getElementById(id);return e?e.value:"";}
+
+function showErr(msg){
+  const b=document.getElementById('errorBox');
+  b.innerHTML='⚠️ '+msg;
+  b.style.display='flex';
+  b.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function clearErr(){document.getElementById('errorBox').style.display='none';}
+
+function validate(n){
+  clearErr();
+  if(n===1){
+    if(!val('uzman').trim()) return showErr('İlgili uzman boş bırakılamaz.')||false;
+    if(!val('gorusmeTarihi')) return showErr('Görüşme tarihi seçilmedi.')||false;
+    if(!val('ogrenciAd').trim()) return showErr('Öğrencinin adı boş bırakılamaz.')||false;
+    if(!val('ogrenciSoyad').trim()) return showErr('Öğrencinin soyadı boş bırakılamaz.')||false;
   }
-  AYLAR.forEach((m,i)=>{
-    const o=document.createElement('option');
-    o.value=String(i+1).padStart(2,'0');
-    o.textContent=m;
-    a.appendChild(o);
+  if(n===2){
+    for(let i=1;i<=6;i++) if(!rad('saglik'+i)) return showErr('Tüm sağlık satırları işaretlenmeli.')||false;
+  }
+  if(n===3){
+    for(let i=1;i<=5;i++) if(!rad('ak'+i)) return showErr('Tüm akademik durum satırları işaretlenmeli.')||false;
+    if(!D.tani) return showErr('Rapor/tanı durumu seçilmedi.')||false;
+  }
+  if(n===4) if(!rad('dilModul')) return showErr('Gelişimsel dil modülü seçilmedi.')||false;
+  if(n===5){
+    if(!rad('aileDil')) return showErr('Ailede dil problemi sorusu cevaplanmadı.')||false;
+    if(!rad('dilProb')) return showErr('Dil problemi tanımı seçilmedi.')||false;
+  }
+  if(n===6){
+    if(!D.cocukSayisi) return showErr('Çocuk sayısı seçilmedi.')||false;
+    if(!rad('ozelEgitim')) return showErr('Özel eğitim sorusu cevaplanmadı.')||false;
+    if(!val('adres').trim()) return showErr('Adres boş bırakılamaz.')||false;
+    if(!rad('ozUveyAnne')) return showErr('Anne özlük/üveylik durumu seçilmedi.')||false;
+    if(!rad('ozUveyBaba')) return showErr('Baba özlük/üveylik durumu seçilmedi.')||false;
+    if(!rad('saglikAnne')) return showErr('Anne sağlık durumu seçilmedi.')||false;
+    if(!rad('saglikBaba')) return showErr('Baba sağlık durumu seçilmedi.')||false;
+    if(!rad('egitimAnne')) return showErr('Anne eğitim durumu seçilmedi.')||false;
+    if(!rad('egitimBaba')) return showErr('Baba eğitim durumu seçilmedi.')||false;
+    if(!rad('sgkAnne')) return showErr('Anne SGK durumu seçilmedi.')||false;
+    if(!rad('sgkBaba')) return showErr('Baba SGK durumu seçilmedi.')||false;
+    if(!rad('beraberlik')) return showErr('Birliktelik durumu seçilmedi.')||false;
+    const anneTel=val('anneIletisim').trim();
+    if(!anneTel) return showErr('Anne iletişim numarası boş bırakılamaz.')||false;
+    if(!/^05\d{9}$/.test(anneTel)) return showErr('Anne telefonu 05XXXXXXXXX formatında olmalı.')||false;
+    const babaTel=val('babaIletisim').trim();
+    if(babaTel && !/^05\d{9}$/.test(babaTel)) return showErr('Baba telefonu 05XXXXXXXXX formatında olmalı.')||false;
+    if(!val('babaMeslek').trim()) return showErr('Baba mesleği boş bırakılamaz.')||false;
+    const tc=val('tcNo').trim();
+    if(!tc) return showErr('TC Kimlik No boş bırakılamaz.')||false;
+    if(tc.length!==11) return showErr('TC Kimlik No 11 haneli olmalı.')||false;
+  }
+  if(n===7) if(!rad('rehab')) return showErr('Rehabilitasyon sorusu cevaplanmadı.')||false;
+  if(n===8){
+    if(!D.raporOlasilik && !(D.tani&&D.tani.startsWith('Raporlu'))) return showErr('Rapor çıkma olasılığı seçilmedi.')||false;
+    if(!rad('karar')) return showErr('Karar seçilmedi.')||false;
+  }
+  return true;
+}
+
+function goTo(n, fromSec){
+  if(fromSec !== undefined && !validate(fromSec)) return false;
+  clearErr();
+  for(let i=1;i<=8;i++) document.getElementById('sec'+i).classList.add('hidden');
+  document.getElementById('secSuccess').classList.add('hidden');
+  document.getElementById('sec'+n).classList.remove('hidden');
+  document.getElementById('progressFill').style.width=Math.round((n/8)*100)+'%';
+  document.getElementById('progressLabel').textContent='Bölüm '+n+' / 8';
+  if(n===8){
+    document.getElementById('raporKart').classList[D.tani&&D.tani.startsWith('Raporlu')?'add':'remove']('hidden');
+    if(D.tani&&D.tani.startsWith('Raporlu')) D.raporOlasilik='—';
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+  return true;
+}
+
+function sec3Next(){
+  if(!validate(3)) return;
+  if(D.tani==='Raporlu Dil') goTo(4);
+  else if(D.tani==='Raporlu Dil+'||D.tani==='Aday Dil'||D.tani==='Aday Dil+') goTo(5);
+  else goTo(6);
+}
+
+function geriSec6(){
+  if(D.tani==='Raporlu Dil') goTo(4);
+  else if(D.tani==='Raporlu Dil+'||D.tani==='Aday Dil'||D.tani==='Aday Dil+') goTo(5);
+  else goTo(3);
+}
+
+function selChip(el,key,v){
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  D[key]=v;
+}
+
+function selScale(el,key,v){
+  el.parentElement.querySelectorAll('.scale-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  D[key]=v;
+}
+
+function selCol(names,val){
+  names.forEach(name=>{
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{ if(r.value===val) r.checked=true; });
   });
-  for(let i=maxYear;i>=minYear;i--){
-    const o=document.createElement('option');
-    o.value=i;
-    o.textContent=i;
-    y.appendChild(o);
-  }
 }
 
-function getDateVal(prefix){
-  const g=document.getElementById(prefix+'Gun').value;
-  const a=document.getElementById(prefix+'Ay').value;
-  const y=document.getElementById(prefix+'Yil').value;
-  if(!g||!a||!y) return '';
-  return `${y}-${a}-${g}`;
+function toggleRehab(show){
+  document.getElementById('rehabDetail').classList[show?'remove':'add']('hidden');
 }
 
-// Telefon: sadece 05 ile başlayan 11 haneli numara
+function prevFile(input,imgId,previewId){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    document.getElementById(imgId).src=e.target.result;
+    document.getElementById(previewId).classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
 function formatTel(el){
   let v=el.value.replace(/\D/g,'');
-  if(v.length>0 && v[0]!=='0') v='0'+v;
-  if(v.length>1 && v[1]!=='5') v=v[0]+'5'+v.slice(2);
+  if(v.length>0&&v[0]!=='0') v='0'+v;
+  if(v.length>1&&v[1]!=='5') v=v.slice(0,1)+'5'+v.slice(2);
   el.value=v.slice(0,11);
 }
-function getFullTel(inputId){
-  return document.getElementById(inputId).value.trim();
-}
-function validTel(val){
-  return val==='' || /^05\d{9}$/.test(val);
-}
 
-// Adres autocomplete (Nominatim / OpenStreetMap - ücretsiz)
+// Tanı seçimi
+document.querySelectorAll('input[name="tani"]').forEach(r=>{
+  r.addEventListener('change',function(){
+    document.querySelectorAll('input[name="tani"]').forEach(x=>{
+      const p=x.closest('.radio-item'); if(p) p.classList.remove('selected');
+    });
+    this.closest('.radio-item').classList.add('selected');
+    D.tani=this.value;
+  });
+});
+
+// Radio görsel seçim
+document.querySelectorAll('input[type=radio]').forEach(r=>{
+  r.addEventListener('change',function(){
+    document.querySelectorAll(`input[name="${this.name}"]`).forEach(x=>{
+      const p=x.closest('.radio-item'); if(p) p.classList.remove('selected');
+    });
+    const p=this.closest('.radio-item'); if(p) p.classList.add('selected');
+  });
+});
+
+// Adres autocomplete
 let adresTimer=null;
 function adresSuggest(q){
   clearTimeout(adresTimer);
@@ -601,7 +586,7 @@ function adresSuggest(q){
   if(q.length<4){list.classList.remove('show');return;}
   adresTimer=setTimeout(async()=>{
     try{
-      const res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Türkiye')}&format=json&limit=5&accept-language=tr`);
+      const res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+' Türkiye')}&format=json&limit=5&accept-language=tr`);
       const json=await res.json();
       list.innerHTML='';
       if(!json.length){list.classList.remove('show');return;}
@@ -612,11 +597,9 @@ function adresSuggest(q){
         d.onclick=()=>{
           document.getElementById('adres').value=item.display_name;
           list.classList.remove('show');
-          // Konum bilgisi göster
-          const ki=document.getElementById('konumInfo');
           document.getElementById('konumText').textContent=`Enlem: ${parseFloat(item.lat).toFixed(5)}, Boylam: ${parseFloat(item.lon).toFixed(5)}`;
-          ki.classList.add('show');
-          data.lat=item.lat; data.lon=item.lon;
+          document.getElementById('konumInfo').style.display='block';
+          D.lat=item.lat; D.lon=item.lon;
         };
         list.appendChild(d);
       });
@@ -625,231 +608,40 @@ function adresSuggest(q){
   },400);
 }
 document.addEventListener('click',e=>{
-  if(!e.target.closest('.adres-suggestions')) document.getElementById('adresList').classList.remove('show');
+  if(!e.target.closest('.adres-wrap')) document.getElementById('adresList').classList.remove('show');
 });
-
-function goTo(n){
-  for(let i=1;i<=8;i++) document.getElementById('sec'+i).classList.add('hidden');
-  document.getElementById('secSuccess').classList.add('hidden');
-  document.getElementById('sec'+n).classList.remove('hidden');
-  document.getElementById('progressFill').style.width=Math.round((n/8)*100)+'%';
-  document.getElementById('progressLabel').textContent='Bölüm '+n+' / 8';
-  if(n===8) updateRaporOlasilik();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function getRadioVal(name){
-  const el=document.querySelector(`input[name="${name}"]:checked`);
-  return el?el.value:"";
-}
-
-function handleTani(el){
-  document.querySelectorAll('input[name="tani"]').forEach(r=>{
-    const p=r.closest('.radio-item');
-    if(p) p.classList.remove('selected');
-  });
-  el.closest('.radio-item').classList.add('selected');
-  data.tani=el.value;
-}
-
-function handleSec3Next(){
-  if(!validateSec(3)) return;
-  if(data.tani==='Raporlu Dil') goTo(4);
-  else if(data.tani==='Raporlu Dil+'||data.tani==='Aday Dil'||data.tani==='Aday Dil+') goTo(5);
-  else goTo(6);
-}
-
-function goBackFromSec6(){
-  if(data.tani==='Raporlu Dil') goTo(4);
-  else if(data.tani==='Raporlu Dil+'||data.tani==='Aday Dil'||data.tani==='Aday Dil+') goTo(5);
-  else goTo(3);
-}
-
-// Tanı "Raporlu" içeriyorsa rapor olasılığı kartını gizle
-function updateRaporOlasilik(){
-  const kart=document.getElementById('raporOlasilikCard');
-  if(data.tani && data.tani.startsWith('Raporlu')){
-    kart.classList.add('hidden');
-    data.raporOlasilik='—';
-  } else {
-    kart.classList.remove('hidden');
-  }
-}
-
-// Tüm sütunu seç
-function selectCol(prefix,val,btn){
-  // prefix: 'saglik' → saglik1..saglik6, 'ak' → ak1..ak5
-  const names = prefix==='saglik'
-    ?['saglik1','saglik2','saglik3','saglik4','saglik5','saglik6']
-    :['ak1','ak2','ak3','ak4','ak5'];
-  names.forEach(name=>{
-    const radios=document.querySelectorAll(`input[name="${name}"]`);
-    radios.forEach(r=>{ if(r.value===val) r.checked=true; });
-  });
-}
-
-function selectChip(el,key,val){
-  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  data[key]=val;
-}
-
-function selectScale(el,key,val){
-  el.parentElement.querySelectorAll('.scale-btn').forEach(b=>b.classList.remove('selected'));
-  el.classList.add('selected');
-  data[key]=val;
-}
-
-function toggleRehab(v){
-  document.getElementById('rehabDetail').classList[v==='Evet'?'remove':'add']('hidden');
-}
-
-function previewFile(input,imgId,previewId){
-  const file=input.files[0];
-  if(!file) return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    document.getElementById(imgId).src=e.target.result;
-    document.getElementById(previewId).classList.remove('hidden');
-  };
-  reader.readAsDataURL(file);
-}
-
-document.querySelectorAll('input[type=radio]').forEach(r=>{
-  r.addEventListener('change',function(){
-    document.querySelectorAll(`input[name="${this.name}"]`).forEach(x=>{
-      const p=x.closest('.radio-item');
-      if(p) p.classList.remove('selected');
-    });
-    const p=this.closest('.radio-item');
-    if(p) p.classList.add('selected');
-  });
-});
-
-// Validasyon & uyarı
-function showError(msg){
-  let el=document.getElementById('formError');
-  if(!el){
-    el=document.createElement('div');
-    el.id='formError';
-    el.style.cssText='background:#fdecea;border:1.5px solid #e05c3a;border-radius:10px;padding:12px 16px;margin-bottom:14px;color:#c0392b;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px';
-    document.querySelector('.shell').insertBefore(el, document.querySelector('.shell').children[1]);
-  }
-  el.innerHTML='⚠️ '+msg;
-  el.style.display='flex';
-  el.scrollIntoView({behavior:'smooth',block:'center'});
-}
-function clearError(){ const el=document.getElementById('formError'); if(el) el.style.display='none'; }
-
-function validateSec(n){
-  clearError();
-  if(n===1){
-    if(!document.getElementById('uzman').value.trim()) return showError('İlgili Halkla İlişkiler Uzmanı boş bırakılamaz.')||false;
-    if(!document.getElementById('gorusmeTarihi').value) return showError('Görüşme Tarihi seçilmedi.')||false;
-    if(!document.getElementById('ogrenciAd').value.trim()) return showError('Öğrencinin Adı boş bırakılamaz.')||false;
-    if(!document.getElementById('ogrenciSoyad').value.trim()) return showError('Öğrencinin Soyadı boş bırakılamaz.')||false;
-  }
-  if(n===2){
-    const names=['saglik1','saglik2','saglik3','saglik4','saglik5','saglik6'];
-    for(let nm of names){ if(!document.querySelector(`input[name="${nm}"]:checked`)) return showError('Tüm sağlık durumu satırları işaretlenmeli.')||false; }
-  }
-  if(n===3){
-    const akNames=['ak1','ak2','ak3','ak4','ak5'];
-    for(let nm of akNames){ if(!document.querySelector(`input[name="${nm}"]:checked`)) return showError('Tüm akademik durum satırları işaretlenmeli.')||false; }
-    if(!data.tani) return showError('Rapor/tanı durumu seçilmedi.')||false;
-  }
-  if(n===4){
-    if(!document.querySelector('input[name="dilModul"]:checked')) return showError('Gelişimsel dil modülü seçilmedi.')||false;
-  }
-  if(n===5){
-    if(!document.querySelector('input[name="aileDil"]:checked')) return showError('Ailede dil problemi sorusu cevaplanmadı.')||false;
-    if(!document.querySelector('input[name="dilProb"]:checked')) return showError('Dil problemi tanımı seçilmedi.')||false;
-  }
-  if(n===6){
-    if(!data.cocukSayisi) return showError('Ailenin kaç çocuğu olduğu seçilmedi.')||false;
-    if(!document.querySelector('input[name="ozelEgitim"]:checked')) return showError('Özel eğitim sorusu cevaplanmadı.')||false;
-    if(!document.getElementById('adres').value.trim()) return showError('Adres boş bırakılamaz.')||false;
-    if(!document.querySelector('input[name="ozUveyAnne"]:checked')) return showError('Anne özlük/üveylik durumu seçilmedi.')||false;
-    if(!document.querySelector('input[name="ozUveyBaba"]:checked')) return showError('Baba özlük/üveylik durumu seçilmedi.')||false;
-    if(!document.querySelector('input[name="saglikAnne"]:checked')) return showError('Anne sağlık durumu seçilmedi.')||false;
-    if(!document.querySelector('input[name="saglikBaba"]:checked')) return showError('Baba sağlık durumu seçilmedi.')||false;
-    if(!document.querySelector('input[name="egitimAnne"]:checked')) return showError('Anne eğitim durumu seçilmedi.')||false;
-    if(!document.querySelector('input[name="egitimBaba"]:checked')) return showError('Baba eğitim durumu seçilmedi.')||false;
-    if(!document.querySelector('input[name="sgkAnne"]:checked')) return showError('Anne SGK durumu seçilmedi.')||false;
-    if(!document.querySelector('input[name="sgkBaba"]:checked')) return showError('Baba SGK durumu seçilmedi.')||false;
-    if(!document.querySelector('input[name="beraberlik"]:checked')) return showError('Anne baba birliktelik durumu seçilmedi.')||false;
-    if(!document.getElementById('anneIletisim').value.trim()) return showError('Anne İletişim boş bırakılamaz.')||false;
-    if(!validTel(document.getElementById('anneIletisim').value.trim())) return showError('Anne telefonu 05XXXXXXXXX formatında olmalı.')||false;
-    if(!validTel(document.getElementById('babaIletisim').value.trim())) return showError('Baba telefonu 05XXXXXXXXX formatında olmalı.')||false;
-    if(!document.getElementById('babaMeslek').value.trim()) return showError('Baba Mesleği boş bırakılamaz.')||false;
-    if(!document.getElementById('tcNo').value.trim()) return showError('TC Kimlik No boş bırakılamaz.')||false;
-    if(document.getElementById('tcNo').value.trim().length!==11) return showError('TC Kimlik No 11 haneli olmalı.')||false;
-  }
-  if(n===7){
-    if(!document.querySelector('input[name="rehab"]:checked')) return showError('Rehabilitasyon sorusu cevaplanmadı.')||false;
-  }
-  if(n===8){
-    if(!data.raporOlasilik && !(data.tani&&data.tani.startsWith('Raporlu'))) return showError('Rapor çıkma olasılığı seçilmedi.')||false;
-    if(!document.querySelector('input[name="karar"]:checked')) return showError('Karar seçilmedi.')||false;
-  }
-  return true;
-}
-
-
 
 function submitForm(){
-  if(!validateSec(8)) return;
+  if(!validate(8)) return;
   const btn=document.querySelector('.btn-submit');
   btn.textContent='Gönderiliyor...';
   btn.disabled=true;
 
   const payload={
-    uzman:document.getElementById('uzman').value,
-    gorusmeTarihi:document.getElementById('gorusmeTarihi').value,
-    ogrenciAd:document.getElementById('ogrenciAd').value,
-    ogrenciSoyad:document.getElementById('ogrenciSoyad').value,
-    okul:document.getElementById('okul').value,
-    sinif:data.sinif||"",
-    dogumTarihi:document.getElementById('dogumTarihi').value,
-    gorusmeNot:document.getElementById('gorusmeNot').value,
-    saglik1:getRadioVal('saglik1'),saglik2:getRadioVal('saglik2'),
-    saglik3:getRadioVal('saglik3'),saglik4:getRadioVal('saglik4'),
-    saglik5:getRadioVal('saglik5'),saglik6:getRadioVal('saglik6'),
-    ak1:getRadioVal('ak1'),ak2:getRadioVal('ak2'),ak3:getRadioVal('ak3'),
-    ak4:getRadioVal('ak4'),ak5:getRadioVal('ak5'),
-    olumluDavranis:document.getElementById('olumluDavranis').value,
-    oncelikliBeceri:document.getElementById('oncelikliBeceri').value,
-    davranisProb:document.getElementById('davranisProb').value,
-    kurumBeklenti:document.getElementById('kurumBeklenti').value,
-    tani:data.tani||"",
-    dilModul:getRadioVal('dilModul'),
-    aileDil:getRadioVal('aileDil'),
-    dilProb:getRadioVal('dilProb'),
-    cocukSayisi:data.cocukSayisi||"",
-    ozelEgitim:getRadioVal('ozelEgitim'),
-    ozelEgitimAcik:document.getElementById('ozelEgitimAcik').value,
-    adres:document.getElementById('adres').value,
-    ozUveyAnne:getRadioVal('ozUveyAnne'),ozUveyBaba:getRadioVal('ozUveyBaba'),
-    saglikAnne:getRadioVal('saglikAnne'),saglikBaba:getRadioVal('saglikBaba'),
-    egitimAnne:getRadioVal('egitimAnne'),egitimBaba:getRadioVal('egitimBaba'),
-    sgkAnne:getRadioVal('sgkAnne'),sgkBaba:getRadioVal('sgkBaba'),
-    beraberlik:getRadioVal('beraberlik'),
-    anneAd:document.getElementById('anneAd').value,
-    anneIletisim:getFullTel('anneIletisim'),
-    anneMeslek:document.getElementById('anneMeslek').value,
-    babaAd:document.getElementById('babaAd').value,
-    babaIletisim:getFullTel('babaIletisim'),
-    babaMeslek:document.getElementById('babaMeslek').value,
-    tcNo:document.getElementById('tcNo').value,
-    rehab:getRadioVal('rehab'),
-    rehabMerkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:"",
-    rehabSureVal:data.rehabSureVal||"",
-    raporOlasilik:data.raporOlasilik||"",
-    karar:getRadioVal('karar'),
+    uzman:val('uzman'), gorusmeTarihi:val('gorusmeTarihi'),
+    ogrenciAd:val('ogrenciAd'), ogrenciSoyad:val('ogrenciSoyad'),
+    okul:val('okul'), sinif:D.sinif||"", dogumTarihi:val('dogumTarihi'),
+    gorusmeNot:val('gorusmeNot'),
+    saglik1:rad('saglik1'),saglik2:rad('saglik2'),saglik3:rad('saglik3'),
+    saglik4:rad('saglik4'),saglik5:rad('saglik5'),saglik6:rad('saglik6'),
+    ak1:rad('ak1'),ak2:rad('ak2'),ak3:rad('ak3'),ak4:rad('ak4'),ak5:rad('ak5'),
+    olumluDavranis:val('olumluDavranis'), oncelikliBeceri:val('oncelikliBeceri'),
+    davranisProb:val('davranisProb'), kurumBeklenti:val('kurumBeklenti'),
+    tani:D.tani||"", dilModul:rad('dilModul'), aileDil:rad('aileDil'), dilProb:rad('dilProb'),
+    cocukSayisi:D.cocukSayisi||"", ozelEgitim:rad('ozelEgitim'),
+    ozelEgitimAcik:val('ozelEgitimAcik'), adres:val('adres'),
+    ozUveyAnne:rad('ozUveyAnne'), ozUveyBaba:rad('ozUveyBaba'),
+    saglikAnne:rad('saglikAnne'), saglikBaba:rad('saglikBaba'),
+    egitimAnne:rad('egitimAnne'), egitimBaba:rad('egitimBaba'),
+    sgkAnne:rad('sgkAnne'), sgkBaba:rad('sgkBaba'),
+    beraberlik:rad('beraberlik'),
+    anneAd:val('anneAd'), anneIletisim:val('anneIletisim'), anneMeslek:val('anneMeslek'),
+    babaAd:val('babaAd'), babaIletisim:val('babaIletisim'), babaMeslek:val('babaMeslek'),
+    tcNo:val('tcNo'), rehab:rad('rehab'),
+    rehabMerkez:val('rehabMerkez'), rehabSureVal:D.rehabSureVal||"",
+    raporOlasilik:D.raporOlasilik||"", karar:rad('karar'),
+    lat:D.lat||"", lon:D.lon||""
   };
-
-  const encoded=encodeURIComponent(JSON.stringify(payload));
-  const url=WEBHOOK+"?data="+encoded;
 
   const img=new Image();
   img.onload=img.onerror=function(){
@@ -859,7 +651,7 @@ function submitForm(){
     document.getElementById('progressLabel').textContent='Tamamlandı ✓';
     window.scrollTo({top:0,behavior:'smooth'});
   };
-  img.src=url;
+  img.src=WEBHOOK+'?data='+encodeURIComponent(JSON.stringify(payload));
 
   setTimeout(()=>{
     if(document.getElementById('secSuccess').classList.contains('hidden')){
