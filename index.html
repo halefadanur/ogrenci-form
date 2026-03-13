@@ -127,11 +127,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
     </div>
     <div class="card">
       <div class="field-label"><span class="icon">📅</span> Görüşme Tarihi <span class="req">*</span></div>
-      <div class="date-picker">
-        <select id="gorusmeTarihiGun"><option value="">Gün</option></select>
-        <select id="gorusmeTarihiAy"><option value="">Ay</option></select>
-        <select id="gorusmeTarihiYil"><option value="">Yıl</option></select>
-      </div>
+      <input type="date" id="gorusmeTarihi">
     </div>
     <div class="card">
       <div class="field-label"><span class="icon">🧒</span> Öğrencinin Adı <span class="req">*</span></div>
@@ -168,7 +164,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
         <select id="dogumTarihiYil"><option value="">Yıl</option></select>
       </div>
     </div>
-    <div class="nav"><button class="btn btn-next" onclick="goTo(2)">İleri →</button></div>
+    <div class="nav"><button class="btn btn-next" onclick="goTo(2,1)">İleri →</button></div>
   </div>
 
   <!-- BÖLÜM 2 -->
@@ -209,7 +205,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
         </table>
       </div>
     </div>
-    <div class="nav"><button class="btn btn-back" onclick="goTo(1)">← Geri</button><button class="btn btn-next" onclick="goTo(3)">İleri →</button></div>
+    <div class="nav"><button class="btn btn-back" onclick="goTo(1)">← Geri</button><button class="btn btn-next" onclick="goTo(3,2)">İleri →</button></div>
   </div>
 
   <!-- BÖLÜM 3 -->
@@ -294,7 +290,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
         <label class="radio-item"><input type="radio" name="dilModul" value="Bilinmiyor"> Bilinmiyor</label>
       </div>
     </div>
-    <div class="nav"><button class="btn btn-back" onclick="goTo(3)">← Geri</button><button class="btn btn-next" onclick="goTo(6)">İleri →</button></div>
+    <div class="nav"><button class="btn btn-back" onclick="goTo(3)">← Geri</button><button class="btn btn-next" onclick="goTo(6,4)">İleri →</button></div>
   </div>
 
   <!-- BÖLÜM 5 — Dil+ -->
@@ -318,7 +314,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
         <label class="radio-item"><input type="radio" name="dilProb" value="Takılıyor/kekeliyor"> Takılıyor, kekeliyor, yuvarlıyor.</label>
       </div>
     </div>
-    <div class="nav"><button class="btn btn-back" onclick="goTo(3)">← Geri</button><button class="btn btn-next" onclick="goTo(6)">İleri →</button></div>
+    <div class="nav"><button class="btn btn-back" onclick="goTo(3)">← Geri</button><button class="btn btn-next" onclick="goTo(6,5)">İleri →</button></div>
   </div>
 
   <!-- BÖLÜM 6 — Aile -->
@@ -424,19 +420,12 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
     <div class="card">
       <div class="field-label"><span class="icon">👩</span> Anne Bilgileri</div>
       <input type="text" id="anneAd" placeholder="Anne adı" style="margin-bottom:10px">
-      <div class="tel-wrap" style="margin-bottom:10px">
-        <span class="tel-prefix">0 (5</span>
-        <input type="text" id="anneIletisim" placeholder="XX) XXX XX XX" maxlength="9" oninput="formatTel(this)">
-      </div>
-      <input type="text" id="anneMeslek" placeholder="💼 Anne mesleği">
+      <input type="text" id="anneIletisim" placeholder="05XXXXXXXXX" maxlength="11" oninput="formatTel(this)" inputmode="numeric">
     </div>
     <div class="card">
       <div class="field-label"><span class="icon">👨</span> Baba Bilgileri</div>
       <input type="text" id="babaAd" placeholder="Baba adı" style="margin-bottom:10px">
-      <div class="tel-wrap" style="margin-bottom:10px">
-        <span class="tel-prefix">0 (5</span>
-        <input type="text" id="babaIletisim" placeholder="XX) XXX XX XX" maxlength="9" oninput="formatTel(this)">
-      </div>
+      <input type="text" id="babaIletisim" placeholder="05XXXXXXXXX" maxlength="11" oninput="formatTel(this)" inputmode="numeric" style="margin-bottom:10px">
       <input type="text" id="babaMeslek" placeholder="💼 Baba mesleği">
     </div>
     <div class="card">
@@ -444,7 +433,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
       <input type="text" id="tcNo" placeholder="11 haneli TC kimlik no" maxlength="11">
     </div>
 
-    <div class="nav"><button class="btn btn-back" onclick="goBackFromSec6()">← Geri</button><button class="btn btn-next" onclick="goTo(7)">İleri →</button></div>
+    <div class="nav"><button class="btn btn-back" onclick="goBackFromSec6()">← Geri</button><button class="btn btn-next" onclick="goTo(7,6)">İleri →</button></div>
   </div>
 
   <!-- BÖLÜM 7 — Rehabilitasyon -->
@@ -476,7 +465,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
         </div>
       </div>
     </div>
-    <div class="nav"><button class="btn btn-back" onclick="goTo(6)">← Geri</button><button class="btn btn-next" onclick="goTo(8)">İleri →</button></div>
+    <div class="nav"><button class="btn btn-back" onclick="goTo(6)">← Geri</button><button class="btn btn-next" onclick="goTo(8,7)">İleri →</button></div>
   </div>
 
   <!-- BÖLÜM 8 -->
@@ -576,18 +565,18 @@ function getDateVal(prefix){
   return `${y}-${a}-${g}`;
 }
 
-// Telefon formatlama
+// Telefon: sadece 05 ile başlayan 11 haneli numara
 function formatTel(el){
   let v=el.value.replace(/\D/g,'');
-  if(v.length>2) v=v.slice(0,2)+') '+v.slice(2);
-  if(v.length>7) v=v.slice(0,7)+' '+v.slice(7);
-  if(v.length>10) v=v.slice(0,10)+' '+v.slice(10);
-  el.value=v;
+  if(v.length>0 && v[0]!=='0') v='0'+v;
+  if(v.length>1 && v[1]!=='5') v=v[0]+'5'+v.slice(2);
+  el.value=v.slice(0,11);
 }
-
 function getFullTel(inputId){
-  const val=document.getElementById(inputId).value.trim();
-  return val ? '05'+val.replace(/\D/g,'') : '';
+  return document.getElementById(inputId).value.trim();
+}
+function validTel(val){
+  return val==='' || /^05\d{9}$/.test(val);
 }
 
 // Adres autocomplete (Nominatim / OpenStreetMap - ücretsiz)
@@ -650,7 +639,7 @@ function handleTani(el){
 }
 
 function handleSec3Next(){
-  if(!data.tani) return alert('Lütfen tanı durumu seçiniz.');
+  if(!validateSec(3)) return;
   if(data.tani==='Raporlu Dil') goTo(4);
   else if(data.tani==='Raporlu Dil+'||data.tani==='Aday Dil'||data.tani==='Aday Dil+') goTo(5);
   else goTo(6);
@@ -723,13 +712,79 @@ document.querySelectorAll('input[type=radio]').forEach(r=>{
   });
 });
 
-// Init date pickers
-initDatePicker('gorusmeTarihi', 2020, 2030);
-initDatePicker('dogumTarihi', 1990, 2026);
+// Validasyon & uyarı
+function showError(msg){
+  let el=document.getElementById('formError');
+  if(!el){
+    el=document.createElement('div');
+    el.id='formError';
+    el.style.cssText='background:#fdecea;border:1.5px solid #e05c3a;border-radius:10px;padding:12px 16px;margin-bottom:14px;color:#c0392b;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px';
+    document.querySelector('.shell').insertBefore(el, document.querySelector('.shell').children[1]);
+  }
+  el.innerHTML='⚠️ '+msg;
+  el.style.display='flex';
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function clearError(){ const el=document.getElementById('formError'); if(el) el.style.display='none'; }
+
+function validateSec(n){
+  clearError();
+  if(n===1){
+    if(!document.getElementById('uzman').value.trim()) return showError('İlgili Halkla İlişkiler Uzmanı boş bırakılamaz.')||false;
+    if(!document.getElementById('gorusmeTarihi').value) return showError('Görüşme Tarihi seçilmedi.')||false;
+    if(!document.getElementById('ogrenciAd').value.trim()) return showError('Öğrencinin Adı boş bırakılamaz.')||false;
+    if(!document.getElementById('ogrenciSoyad').value.trim()) return showError('Öğrencinin Soyadı boş bırakılamaz.')||false;
+  }
+  if(n===2){
+    const names=['saglik1','saglik2','saglik3','saglik4','saglik5','saglik6'];
+    for(let nm of names){ if(!document.querySelector(`input[name="${nm}"]:checked`)) return showError('Tüm sağlık durumu satırları işaretlenmeli.')||false; }
+  }
+  if(n===3){
+    const akNames=['ak1','ak2','ak3','ak4','ak5'];
+    for(let nm of akNames){ if(!document.querySelector(`input[name="${nm}"]:checked`)) return showError('Tüm akademik durum satırları işaretlenmeli.')||false; }
+    if(!data.tani) return showError('Rapor/tanı durumu seçilmedi.')||false;
+  }
+  if(n===4){
+    if(!document.querySelector('input[name="dilModul"]:checked')) return showError('Gelişimsel dil modülü seçilmedi.')||false;
+  }
+  if(n===5){
+    if(!document.querySelector('input[name="aileDil"]:checked')) return showError('Ailede dil problemi sorusu cevaplanmadı.')||false;
+    if(!document.querySelector('input[name="dilProb"]:checked')) return showError('Dil problemi tanımı seçilmedi.')||false;
+  }
+  if(n===6){
+    if(!data.cocukSayisi) return showError('Ailenin kaç çocuğu olduğu seçilmedi.')||false;
+    if(!document.querySelector('input[name="ozelEgitim"]:checked')) return showError('Özel eğitim sorusu cevaplanmadı.')||false;
+    if(!document.getElementById('adres').value.trim()) return showError('Adres boş bırakılamaz.')||false;
+    if(!document.querySelector('input[name="ozUveyAnne"]:checked')) return showError('Anne özlük/üveylik durumu seçilmedi.')||false;
+    if(!document.querySelector('input[name="ozUveyBaba"]:checked')) return showError('Baba özlük/üveylik durumu seçilmedi.')||false;
+    if(!document.querySelector('input[name="saglikAnne"]:checked')) return showError('Anne sağlık durumu seçilmedi.')||false;
+    if(!document.querySelector('input[name="saglikBaba"]:checked')) return showError('Baba sağlık durumu seçilmedi.')||false;
+    if(!document.querySelector('input[name="egitimAnne"]:checked')) return showError('Anne eğitim durumu seçilmedi.')||false;
+    if(!document.querySelector('input[name="egitimBaba"]:checked')) return showError('Baba eğitim durumu seçilmedi.')||false;
+    if(!document.querySelector('input[name="sgkAnne"]:checked')) return showError('Anne SGK durumu seçilmedi.')||false;
+    if(!document.querySelector('input[name="sgkBaba"]:checked')) return showError('Baba SGK durumu seçilmedi.')||false;
+    if(!document.querySelector('input[name="beraberlik"]:checked')) return showError('Anne baba birliktelik durumu seçilmedi.')||false;
+    if(!document.getElementById('anneIletisim').value.trim()) return showError('Anne İletişim boş bırakılamaz.')||false;
+    if(!validTel(document.getElementById('anneIletisim').value.trim())) return showError('Anne telefonu 05XXXXXXXXX formatında olmalı.')||false;
+    if(!validTel(document.getElementById('babaIletisim').value.trim())) return showError('Baba telefonu 05XXXXXXXXX formatında olmalı.')||false;
+    if(!document.getElementById('babaMeslek').value.trim()) return showError('Baba Mesleği boş bırakılamaz.')||false;
+    if(!document.getElementById('tcNo').value.trim()) return showError('TC Kimlik No boş bırakılamaz.')||false;
+    if(document.getElementById('tcNo').value.trim().length!==11) return showError('TC Kimlik No 11 haneli olmalı.')||false;
+  }
+  if(n===7){
+    if(!document.querySelector('input[name="rehab"]:checked')) return showError('Rehabilitasyon sorusu cevaplanmadı.')||false;
+  }
+  if(n===8){
+    if(!data.raporOlasilik && !(data.tani&&data.tani.startsWith('Raporlu'))) return showError('Rapor çıkma olasılığı seçilmedi.')||false;
+    if(!document.querySelector('input[name="karar"]:checked')) return showError('Karar seçilmedi.')||false;
+  }
+  return true;
+}
 
 
 
 function submitForm(){
+  if(!validateSec(8)) return;
   const btn=document.querySelector('.btn-submit');
   btn.textContent='Gönderiliyor...';
   btn.disabled=true;
