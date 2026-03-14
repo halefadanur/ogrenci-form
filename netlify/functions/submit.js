@@ -9,15 +9,48 @@ exports.handler = async (event) => {
 
   try {
     const body = JSON.parse(event.body);
+    
+    const SUPA_URL = 'https://zciraijmwxcwhryidlki.supabase.co';
+    const SUPA_KEY = 'sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou';
+
+    // Fotoğraf yükle
+    async function uploadFoto(base64Data, dosyaAdi) {
+      try {
+        const base64 = base64Data.replace(/^data:image\/\w+;base64,/, '');
+        const buffer = Buffer.from(base64, 'base64');
+        const res = await fetch(SUPA_URL + '/storage/v1/object/fotograflar/' + encodeURIComponent(dosyaAdi), {
+          method: 'POST',
+          headers: {
+            'apikey': SUPA_KEY,
+            'Authorization': 'Bearer ' + SUPA_KEY,
+            'Content-Type': 'image/jpeg',
+            'x-upsert': 'true'
+          },
+          body: buffer
+        });
+        if (res.ok) return SUPA_URL + '/storage/v1/object/public/fotograflar/' + encodeURIComponent(dosyaAdi);
+        return '';
+      } catch(e) { return ''; }
+    }
+
+    const ad = ((body.ad || '') + '_' + (body.soyad || '') + '_' + (body.gorusme_tarihi || '')).replace(/\s/g, '_');
+
+    if (body.fotoData && body.fotoData.length > 100) {
+      body.foto_url = await uploadFoto(body.fotoData, ad + '_foto.jpg');
+    }
+    if (body.kimlikData && body.kimlikData.length > 100) {
+      body.kimlik_url = await uploadFoto(body.kimlikData, ad + '_kimlik.jpg');
+    }
+
     delete body.fotoData;
     delete body.kimlikData;
 
-    const res = await fetch('https://zciraijmwxcwhryidlki.supabase.co/rest/v1/ogrenciler', {
+    const res = await fetch(SUPA_URL + '/rest/v1/ogrenciler', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': 'sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou',
-        'Authorization': 'Bearer sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou',
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer ' + SUPA_KEY,
         'Prefer': 'return=minimal'
       },
       body: JSON.stringify(body)
