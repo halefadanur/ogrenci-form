@@ -235,7 +235,10 @@ if (!d) {
 }
 
 function v(key) {
+  // Hem orijinal key hem lowercase hem uppercase ilk harf dene
   var val = d[key];
+  if (val === undefined || val === null || String(val).trim() === '') val = d[key.toLowerCase()];
+  if (val === undefined || val === null || String(val).trim() === '') val = d[key.charAt(0).toUpperCase() + key.slice(1)];
   return (val !== undefined && val !== null && String(val).trim() !== '') ? String(val).trim() : null;
 }
 
@@ -257,17 +260,17 @@ function tf(t) {
 }
 
 function doldur(d) {
-  var ad    = v('Ad')    || '';
-  var soyad = v('Soyad') || '';
+  var ad    = v('ad')    || '';
+  var soyad = v('soyad') || '';
   var tam   = (ad + ' ' + soyad).trim();
 
   document.getElementById('pbarTitle').textContent = tam + ' — ' + tip;
   document.getElementById('hAd').textContent       = tam || '—';
-  document.getElementById('hSinif').textContent    = v('Sınıf')          || '—';
-  document.getElementById('hDogum').textContent    = tf(v('Doğum Tarihi'))|| '—';
-  document.getElementById('hOkul').textContent     = v('Okul')           || '—';
-  document.getElementById('hTarih').textContent    = 'Görüşme: ' + (tf(v('Görüşme Tarihi')) || '—');
-  document.getElementById('hUzman').textContent    = v('Uzman')          || '—';
+  document.getElementById('hSinif').textContent    = v('sinif')          || '—';
+  document.getElementById('hDogum').textContent    = tf(v('dogum_tarihi'))|| '—';
+  document.getElementById('hOkul').textContent     = v('okul')           || '—';
+  document.getElementById('hTarih').textContent    = 'Görüşme: ' + (tf(v('gorusme_tarihi')) || '—');
+  document.getElementById('hUzman').textContent    = v('uzman')          || '—';
 
   // FOTOĞRAF
   var fotoUrl = v('foto_url') || v('Fotoğraf (Drive)');
@@ -310,7 +313,7 @@ function doldur(d) {
   }
 
   // SAĞLIK
-  var sag = v('Sağlık Durumu');
+  var sag = v('saglik_durum');
   if (sag) {
     var sw = document.getElementById('saglikTags');
     sag.split(';').forEach(function(s) {
@@ -322,9 +325,9 @@ function doldur(d) {
   } else { document.getElementById('secSaglik').style.display = 'none'; }
 
   // DİL
-  var dilP = v('Dil Problemi Detay');
-  var dilM = v('Dil Modülü');
-  var ailD = v('Ailede Dil Problemi');
+  var dilP = v('dil_prob');
+  var dilM = v('dil_modul');
+  var ailD = v('aile_dil');
   var dw   = document.getElementById('dilTags');
   var hasDil = false;
   if (dilM && dilM !== 'Yok' && dilM !== 'Hayır') {
@@ -340,14 +343,14 @@ function doldur(d) {
   if (!hasDil) document.getElementById('secDil').style.display = 'none';
 
   // NOT
-  var not = v('Görüşme Notu');
+  var not = v('gorusme_not');
   if (not) document.getElementById('fNot').textContent = not;
   else document.getElementById('secNot').style.display = 'none';
 
   // AİLE VEFAT
-  if (v('Anne Sağlık') === 'Vefat')
+  if (v('saglik_anne') === 'Vefat')
     document.getElementById('anneVefat').innerHTML = '<div class="vb">⚠️ Vefat</div>';
-  if (v('Baba Sağlık') === 'Vefat')
+  if (v('saglik_baba') === 'Vefat')
     document.getElementById('babaVefat').innerHTML = '<div class="vb">⚠️ Vefat</div>';
 
   set('aAnneAd',  'Anne Adı');
@@ -356,7 +359,7 @@ function doldur(d) {
   set('aBabaTel', 'Baba Tel');
 
   // Ayrı yaşıyorsa belirt
-  var ber = v('Birlikte mi');
+  var ber = v('beraberlik');
   var berEl = document.getElementById('fBer');
   if (ber) {
     berEl.textContent = ber;
@@ -366,25 +369,25 @@ function doldur(d) {
   set('fAdres', 'Adres');
 
   // REHABİLİTASYON
-  var rehab = v('Rehabilitasyon');
+  var rehab = v('rehab');
   if (rehab === 'Evet') {
     document.getElementById('fRehab').textContent = 'Evet';
-    var m = v('Rehab Merkez') || '';
-    var s = v('Rehab Süre') ? v('Rehab Süre') + ' yıl' : '';
+    var m = v('rehab_merkez') || '';
+    var s = v('rehab_sure') ? v('rehab_sure') + ' yıl' : '';
     document.getElementById('fRehabD').textContent = [m, s].filter(Boolean).join(' · ') || '—';
   } else { document.getElementById('secRehab').style.display = 'none'; }
 
   // TC
-  var tc = v('Öğrenci TC');
+  var tc = v('tc_no');
   if (tc) document.getElementById('fTC').textContent = tc;
   else document.getElementById('secTC').style.display = 'none';
 
   // AAA & KARAR
   set('fAAA', 'AAA');
-  var ro = v('Rapor Olasılığı');
+  var ro = v('rapor_olasilik');
   document.getElementById('fROlas').textContent = ro ? ro + ' / 5' : '—';
 
-  var karar = v('Karar') || '—';
+  var karar = v('karar') || '—';
   document.getElementById('fKarar').textContent = karar;
   var kb = document.getElementById('kararBanner');
   if (/kayded/i.test(karar))           kb.className = 'kb kb-k';
@@ -394,7 +397,7 @@ function doldur(d) {
 
   // FOOTER
   document.getElementById('footL').textContent = tam + ' — Öğrenci Tanıma Formu';
-  document.getElementById('footR').textContent = 'Görüşme: ' + (tf(v('Görüşme Tarihi')) || '—') + ' · ' + (v('Uzman') || '—');
+  document.getElementById('footR').textContent = 'Görüşme: ' + (tf(v('gorusme_tarihi')) || '—') + ' · ' + (v('uzman') || '—');
 }
 </script>
 </body>
