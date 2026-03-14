@@ -176,6 +176,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .sucwrap h2{font-size:25px;font-weight:900;letter-spacing:-.4px;margin-bottom:7px}
 .sucwrap p{color:var(--sub);font-size:15px;margin-bottom:26px}
 
+/* ─ CAP FIRST ─ */
+function capFirst(el){
+  const v=el.value;
+  if(v.length>0) el.value=v.charAt(0).toUpperCase()+v.slice(1);
+}
+
 /* ─ TOAST ─ */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);background:#1a1610;color:#fff;padding:11px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:9998;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .28s;opacity:0;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
@@ -207,7 +213,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <div class="card">
     <div class="clabel">🧑‍💼 Uzman</div>
-    <input type="text" id="uzman" value="Serpil" placeholder="Ad Soyad">
+    <input type="text" id="uzman" value="Serpil" placeholder="Ad Soyad" oninput="capFirst(this)">
   </div>
   <div class="card">
     <div class="clabel">📅 Görüşme Tarihi</div>
@@ -216,13 +222,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="card" id="cAd">
     <div class="clabel">🎒 Öğrenci Adı Soyadı <span class="rq">*</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-      <input type="text" id="ogrenciAd" placeholder="Ad">
-      <input type="text" id="ogrenciSoyad" placeholder="Soyad">
+      <input type="text" id="ogrenciAd" placeholder="Ad" oninput="capFirst(this)">
+      <input type="text" id="ogrenciSoyad" placeholder="Soyad" oninput="capFirst(this)">
     </div>
   </div>
   <div class="card">
     <div class="clabel">🏫 Okul</div>
-    <input type="text" id="okul" placeholder="Devam ettiği okul">
+    <input type="text" id="okul" placeholder="Devam ettiği okul" oninput="capFirst(this)">
   </div>
   <div class="card" id="cSinif">
     <div class="clabel">📚 Sınıf <span class="rq">*</span></div>
@@ -360,7 +366,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
   <div class="navb">
     <button class="btn btn-back" onclick="goTo(3)">← Geri</button>
-    <button class="btn btn-next" onclick="goTo(6)">İleri →</button>
+    <button class="btn btn-next" onclick="goTo(5)">İleri →</button>
   </div>
 </div>
 
@@ -390,7 +396,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
   <div class="navb">
-    <button class="btn btn-back" onclick="goTo(3)">← Geri</button>
+    <button class="btn btn-back" onclick="D.tani==='Raporlu Dil'?goTo(4):goTo(3)">← Geri</button>
     <button class="btn btn-next" onclick="goTo(6)">İleri →</button>
   </div>
 </div>
@@ -415,17 +421,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
   <div class="card">
-    <div class="clabel">❤️ Ebeveyn Sağlık Durumu</div>
+    <div class="clabel">❤️ Ebeveyn Sağlık Durumu <span class="hint-text">· işaretlenmezse vefat sayılır</span></div>
     <table class="gtable">
-      <thead><tr><th></th><th>Sağ</th><th>Vefat</th></tr></thead>
+      <thead><tr><th></th><th>Sağ</th></tr></thead>
       <tbody>
         <tr><td>Anne</td>
           <td><input type="radio" name="saglikAnne" value="Sağ" onchange="onVefat()"></td>
-          <td><input type="radio" name="saglikAnne" value="Vefat" onchange="onVefat()"></td>
         </tr>
         <tr><td>Baba</td>
           <td><input type="radio" name="saglikBaba" value="Sağ" onchange="onVefat()"></td>
-          <td><input type="radio" name="saglikBaba" value="Vefat" onchange="onVefat()"></td>
         </tr>
       </tbody>
     </table>
@@ -460,7 +464,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <div class="card" id="cAdres">
     <div class="clabel">📍 Adres <span class="rq">*</span></div>
-    <textarea id="adres" placeholder="Açık adres..."></textarea>
+    <textarea id="adres" placeholder="Açık adres..." oninput="capFirst(this)"></textarea>
   </div>
 
   <!-- ANNE -->
@@ -469,9 +473,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div id="anneVefatBanner" class="hidden">
       <div class="vbanner">⚠️ Anne vefat — Alternatif bilgi giriniz</div>
     </div>
-    <div class="fl"><div class="ftitle">Adı</div><input type="text" id="anneAd" placeholder="Anne adı"></div>
+    <div class="fl"><div class="ftitle">Adı</div><input type="text" id="anneAd" placeholder="Anne adı" oninput="capFirst(this)"></div>
     <div class="fl"><div class="ftitle">İletişim</div><input type="text" id="anneIletisim" placeholder="05xxxxxxxxx" maxlength="11" inputmode="numeric" oninput="formatTel(this)" onblur="validateTel(this)"></div>
-    <div class="fl"><div class="ftitle">Mesleği</div><input type="text" id="anneMeslek" value="Ev Hanımı"></div>
+    <div class="fl"><div class="ftitle">Mesleği</div><input type="text" id="anneMeslek" value="Ev Hanımı" oninput="capFirst(this)"></div>
     <div class="fl" id="anneAltWrap" style="display:none">
       <div class="ftitle">Alternatif Veli / Not</div>
       <input type="text" id="anneAlt" placeholder="Veli, vasi vb. alternatif bilgi">
@@ -484,9 +488,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div id="babaVefatBanner" class="hidden">
       <div class="vbanner">⚠️ Baba vefat — Alternatif bilgi giriniz</div>
     </div>
-    <div class="fl"><div class="ftitle">Adı</div><input type="text" id="babaAd" placeholder="Baba adı"></div>
+    <div class="fl"><div class="ftitle">Adı</div><input type="text" id="babaAd" placeholder="Baba adı" oninput="capFirst(this)"></div>
     <div class="fl"><div class="ftitle">İletişim</div><input type="text" id="babaIletisim" placeholder="05xxxxxxxxx" maxlength="11" inputmode="numeric" oninput="formatTel(this)" onblur="validateTel(this)"></div>
-    <div class="fl"><div class="ftitle">Mesleği</div><input type="text" id="babaMeslek" value="İşçi"></div>
+    <div class="fl"><div class="ftitle">Mesleği</div><input type="text" id="babaMeslek" value="İşçi" oninput="capFirst(this)"></div>
     <div class="fl" id="babaAltWrap" style="display:none">
       <div class="ftitle">Alternatif Veli / Not</div>
       <input type="text" id="babaAlt" placeholder="Veli, vasi vb. alternatif bilgi">
@@ -550,7 +554,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="card" id="cAAA">
     <div class="clabel">⭐ AAA — Aile Değerlendirmesi <span class="rq">*</span></div>
     <div class="rstack">
-      <label class="ri"><input type="radio" name="aileAAA" value="Aile standart"> Aile standart</label>
       <label class="ri"><input type="radio" name="aileAAA" value="Aile ilgili"> Aile ilgili</label>
       <label class="ri"><input type="radio" name="aileAAA" value="Aile bilinçli"> Aile bilinçli</label>
     </div>
@@ -708,6 +711,12 @@ function getDob(){
   return(g&&a&&y)?`${y}-${a}-${g}`:[y,a,g].filter(Boolean).join('-');
 }
 
+/* ─ CAP FIRST ─ */
+function capFirst(el){
+  const v=el.value;
+  if(v.length>0) el.value=v.charAt(0).toUpperCase()+v.slice(1);
+}
+
 /* ─ TOAST ─ */
 let toastTimer;
 function toast(msg){
@@ -735,9 +744,15 @@ function v3(){
   if(D.tani==='Raporlu Dil')goTo(4);
   else if(['Raporlu Dil+','Aday Dil','Aday Dil+'].includes(D.tani))goTo(5);
   else goTo(6);
+  // Not: Raporlu Dil sec4'ten sec5'e geçiyor (aşağıda düzeltildi)
 }
 function v6(){
-  if(!document.getElementById('adres').value.trim()){flashCard('cAdres');toast('⚠️ Adres zorunlu');return;}  goTo(7);
+  if(!document.getElementById('anneAd').value.trim()){const pg=document.getElementById('pgAnne');pg.classList.add('err');setTimeout(()=>pg.classList.remove('err'),1400);toast('⚠️ Anne adı zorunlu');return;}
+  const anneTel=document.getElementById('anneIletisim').value.trim();
+  if(!anneTel){const pg=document.getElementById('pgAnne');pg.classList.add('err');setTimeout(()=>pg.classList.remove('err'),1400);toast('⚠️ Anne telefonu zorunlu');return;}
+  if(!/^05\d{9}$/.test(anneTel)){const pg=document.getElementById('pgAnne');pg.classList.add('err');setTimeout(()=>pg.classList.remove('err'),1400);toast('⚠️ Anne telefonu 05xxxxxxxxx formatında olmalı');return;}
+  if(!document.getElementById('adres').value.trim()){flashCard('cAdres');toast('⚠️ Adres zorunlu');return;}
+  goTo(7);
 }
 function v8(){
   if(!document.querySelector('input[name="aileAAA"]:checked')){flashCard('cAAA');toast('⚠️ AAA aile değerlendirmesi zorunlu');return;}
@@ -827,7 +842,7 @@ function setRoff(id,off){
 
 /* ─ DİĞER ─ */
 function togOzel(v){document.getElementById('ozelAcikCard').classList.toggle('hidden',v!=='Evet');}
-function goBackSec6(){if(D.tani==='Raporlu Dil')goTo(4);else if(['Raporlu Dil+','Aday Dil','Aday Dil+'].includes(D.tani))goTo(5);else goTo(3);}
+function goBackSec6(){if(['Raporlu Dil','Raporlu Dil+','Aday Dil','Aday Dil+'].includes(D.tani))goTo(5);else goTo(3);}
 function selSc(el,k,val){el.parentElement.querySelectorAll('.scbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');D[k]=val;}
 function togRehab(v){document.getElementById('rehabDetail').classList[v==='Evet'?'remove':'add']('hidden');}
 function rVal(n){const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:'';}
@@ -1010,7 +1025,7 @@ async function submitForm(){
       tani:D.tani||'',dil_modul:rVal('dilModul'),aile_dil:rVal('aileDil'),dil_prob:getDilStr(),
       ozel_egitim:rVal('ozelEgitim'),
       ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
-      saglik_anne:rVal('saglikAnne'),saglik_baba:rVal('saglikBaba'),
+      saglik_anne:rVal('saglikAnne')||'Vefat',saglik_baba:rVal('saglikBaba')||'Vefat',
       egitim_anne:rVal('egitimAnne'),egitim_baba:rVal('egitimBaba'),
       beraberlik:rVal('beraberlik'),
       adres:document.getElementById('adres').value,
