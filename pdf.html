@@ -270,14 +270,10 @@ function doldur(d) {
   document.getElementById('hUzman').textContent    = v('Uzman')          || '—';
 
   // FOTOĞRAF
-  var fotoUrl = v('Fotoğraf (Drive)');
+  var fotoUrl = v('foto_url') || v('Fotoğraf (Drive)');
   if (fotoUrl && fotoUrl.startsWith('http')) {
     var fk = document.getElementById('fotoK');
-    // Drive dosya ID'sini çıkar
-    var dm = fotoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (!dm) dm = fotoUrl.match(/id=([a-zA-Z0-9_-]+)/);
-    var src = dm ? 'https://lh3.googleusercontent.com/d/' + dm[1] : fotoUrl;
-    fk.innerHTML = '<img src="' + src + '" crossorigin="anonymous" onerror="this.parentElement.textContent=\'👤\'">';
+    fk.innerHTML = '<img src="' + fotoUrl + '" onerror="this.parentElement.textContent='👤'">';
   }
 
   // TANI
