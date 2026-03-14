@@ -990,12 +990,10 @@ async function submitForm(){
     const tarih=document.getElementById('gorusmeTarihi').value;
     const ogrenciTam=(ad+' '+soyad).trim();
 
-    // Fotoğraf yükle
-    let fotoUrl='',kimlikUrl='';
+    // Fotoğrafları Netlify function'a gönder - CORS sorunu yok
     const fotoData=document.getElementById('fotoData').value;
     const kimlikData=document.getElementById('kimlikData').value;
-    if(fotoData&&fotoData.length>100) fotoUrl=await uploadFoto(fotoData,ogrenciTam+'_foto_'+tarih+'.jpg');
-    if(kimlikData&&kimlikData.length>100) kimlikUrl=await uploadFoto(kimlikData,ogrenciTam+'_kimlik_'+tarih+'.jpg');
+    let fotoUrl='',kimlikUrl='';
 
     const p={
       uzman:document.getElementById('uzman').value,
@@ -1032,7 +1030,9 @@ async function submitForm(){
       rapor_olasilik:D.raporOlas||'',
       karar:rVal('karar'),
       foto_url:fotoUrl,
-      kimlik_url:kimlikUrl
+      kimlik_url:kimlikUrl,
+      fotoData:fotoData||'',
+      kimlikData:kimlikData||''
     };
 
     await fetch('/.netlify/functions/submit',{
@@ -1048,22 +1048,7 @@ async function submitForm(){
   }
 }
 
-async function uploadFoto(base64Data,dosyaAdi){
-  try{
-    const base64=base64Data.split(',')[1];
-    const binary=atob(base64);
-    const arr=new Uint8Array(binary.length);
-    for(let i=0;i<binary.length;i++) arr[i]=binary.charCodeAt(i);
-    const blob=new Blob([arr],{type:'image/jpeg'});
-    const res=await fetch(SUPA_URL+'/storage/v1/object/fotograflar/'+encodeURIComponent(dosyaAdi),{
-      method:'POST',
-      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'image/jpeg'},
-      body:blob
-    });
-    if(res.ok) return SUPA_URL+'/storage/v1/object/public/fotograflar/'+encodeURIComponent(dosyaAdi);
-    return '';
-  }catch(e){return '';}
-}
+// uploadFoto Netlify function içinde yapılıyor
 </script>
 </body>
 </html>
