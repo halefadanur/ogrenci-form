@@ -169,16 +169,14 @@ body{font-family:'Inter',sans-serif;background:#f0ede8;color:#16130e;-webkit-pri
           <div id="anneVefat"></div>
           <div class="ar"><span class="ak">Adı</span><span class="av" id="aAnneAd">—</span></div>
           <div class="ar"><span class="ak">Tel</span><span class="av" id="aAnneTel">—</span></div>
-          <div class="ar"><span class="ak">Meslek</span><span class="av" id="aAnneMes">—</span></div>
-          <div class="ar"><span class="ak">Eğitim</span><span class="av" id="aAnneEg">—</span></div>
+
         </div>
         <div class="ac ac-b">
           <div class="ac-t">👨 Baba</div>
           <div id="babaVefat"></div>
           <div class="ar"><span class="ak">Adı</span><span class="av" id="aBabaAd">—</span></div>
           <div class="ar"><span class="ak">Tel</span><span class="av" id="aBabaTel">—</span></div>
-          <div class="ar"><span class="ak">Meslek</span><span class="av" id="aBabaMes">—</span></div>
-          <div class="ar"><span class="ak">Eğitim</span><span class="av" id="aBabaEg">—</span></div>
+
         </div>
       </div>
       <div class="g g3">
@@ -275,10 +273,11 @@ function doldur(d) {
   var fotoUrl = v('Fotoğraf (Drive)');
   if (fotoUrl && fotoUrl.startsWith('http')) {
     var fk = document.getElementById('fotoK');
-    var src = fotoUrl;
-    var dm  = fotoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (dm) src = 'https://drive.google.com/uc?export=view&id=' + dm[1];
-    fk.innerHTML = '<img src="' + src + '" onerror="this.parentElement.textContent=\'👤\'">';
+    // Drive dosya ID'sini çıkar
+    var dm = fotoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (!dm) dm = fotoUrl.match(/id=([a-zA-Z0-9_-]+)/);
+    var src = dm ? 'https://lh3.googleusercontent.com/d/' + dm[1] : fotoUrl;
+    fk.innerHTML = '<img src="' + src + '" crossorigin="anonymous" onerror="this.parentElement.textContent=\'👤\'">';
   }
 
   // TANI
@@ -357,12 +356,8 @@ function doldur(d) {
 
   set('aAnneAd',  'Anne Adı');
   set('aAnneTel', 'Anne Tel');
-  set('aAnneMes', 'Anne Meslek');
-  set('aAnneEg',  'Anne Eğitim');
   set('aBabaAd',  'Baba Adı');
   set('aBabaTel', 'Baba Tel');
-  set('aBabaMes', 'Baba Meslek');
-  set('aBabaEg',  'Baba Eğitim');
 
   // Ayrı yaşıyorsa belirt
   var ber = v('Birlikte mi');
