@@ -998,8 +998,29 @@ function submitForm(){
     document.getElementById('stepBadge').textContent='✓';
     window.scrollTo({top:0,behavior:'smooth'});
   };
-  const img=new Image();img.onload=img.onerror=done;img.src=url;
-  setTimeout(()=>{if(document.getElementById('secSuccess').classList.contains('hidden'))done();},3500);
+
+  // Önce ana veriyi gönder, sonra fotoğrafları ayrı gönder
+  const fotoData=document.getElementById('fotoData').value;
+  const kimlikData=document.getElementById('kimlikData').value;
+  const ogrenciAd=(p.ogrenciAd+' '+p.ogrenciSoyad).trim();
+
+  const img=new Image();
+  img.onload=img.onerror=function(){
+    // Ana veri gönderildi, şimdi fotoğrafları gönder
+    const fotolar=[];
+    if(fotoData&&fotoData.length>100) fotolar.push({type:'foto',data:fotoData,ad:ogrenciAd,tarih:p.gorusmeTarihi});
+    if(kimlikData&&kimlikData.length>100) fotolar.push({type:'kimlik',data:kimlikData,ad:ogrenciAd,tarih:p.gorusmeTarihi});
+    if(fotolar.length===0){done();return;}
+    let kalan=fotolar.length;
+    fotolar.forEach(function(f){
+      const fImg=new Image();
+      fImg.onload=fImg.onerror=function(){kalan--;if(kalan===0)done();};
+      fImg.src=WH+'?foto='+encodeURIComponent(JSON.stringify(f));
+    });
+    setTimeout(done,8000);
+  };
+  img.src=url;
+  setTimeout(()=>{if(document.getElementById('secSuccess').classList.contains('hidden'))done();},5000);
 }
 </script>
 </body>
