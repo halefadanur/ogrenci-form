@@ -8,120 +8,111 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:#f0ede8;color:#16130e;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-
-.print-bar{background:#1a1814;color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px}
-.print-bar h3{font-size:13px;font-weight:700;opacity:.75;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.print-btns{display:flex;gap:8px;flex-shrink:0}
-.pbtn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
-.pbtn-print{background:#c9720a;color:#fff}
-.pbtn-close{background:rgba(255,255,255,.12);color:#fff}
-
-.page{width:210mm;min-height:297mm;background:#fff;margin:20px auto;box-shadow:0 8px 40px rgba(0,0,0,.18);overflow:hidden}
+.pbar{background:#1a1814;color:#fff;padding:11px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.pbar h3{font-size:13px;font-weight:700;opacity:.7;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pbtns{display:flex;gap:8px}
+.pb{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+.pb-print{background:#c9720a;color:#fff}
+.pb-close{background:rgba(255,255,255,.1);color:#fff}
+.page{width:210mm;min-height:297mm;background:#fff;margin:20px auto;box-shadow:0 8px 40px rgba(0,0,0,.16);overflow:hidden}
 
 /* HEADER */
-.hdr{background:linear-gradient(135deg,#b05e18,#de8f28);padding:24px 28px 20px;color:#fff;position:relative;overflow:hidden}
-.hdr::before{content:'';position:absolute;right:-40px;bottom:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06)}
-.hdr-row{display:flex;align-items:flex-start;gap:18px;position:relative;z-index:1}
-.hdr-text{flex:1}
-.hdr-tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;opacity:.7;margin-bottom:5px}
-.hdr-name{font-size:24px;font-weight:900;letter-spacing:-.4px;margin-bottom:6px;min-height:32px}
-.hdr-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;opacity:.85}
-.hdr-meta span{display:flex;align-items:center;gap:4px}
-.foto-kutu{width:88px;height:116px;border-radius:11px;overflow:hidden;border:2.5px solid rgba(255,255,255,.32);flex-shrink:0;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:34px}
-.foto-kutu img{width:100%;height:100%;object-fit:cover}
-.form-tip{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:9.5px;font-weight:800;padding:3px 11px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase;backdrop-filter:blur(4px)}
+.hdr{background:linear-gradient(135deg,#b05e18,#de8f28);padding:22px 26px 18px;color:#fff;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;right:-30px;bottom:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hdr-in{display:flex;align-items:flex-start;gap:16px;position:relative;z-index:1}
+.hdr-txt{flex:1}
+.hdr-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;opacity:.65;margin-bottom:4px}
+.hdr-name{font-size:23px;font-weight:900;letter-spacing:-.4px;margin-bottom:5px;min-height:30px}
+.hdr-meta{display:flex;flex-wrap:wrap;gap:9px;font-size:11px;opacity:.82}
+.hdr-meta span{display:flex;align-items:center;gap:3px}
+.tip-badge{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.26);color:#fff;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase}
+.foto-k{width:84px;height:112px;border-radius:10px;overflow:hidden;border:2px solid rgba(255,255,255,.3);flex-shrink:0;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:32px}
+.foto-k img{width:100%;height:100%;object-fit:cover}
 
 /* BODY */
-.body{padding:20px 24px}
-
-/* SECTION */
-.sec{margin-bottom:18px}
-.sec-t{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:#a09a94;margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.body{padding:18px 22px}
+.sec{margin-bottom:16px}
+.sec-t{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:#a09a94;margin-bottom:8px;display:flex;align-items:center;gap:6px}
 .sec-t::after{content:'';flex:1;height:1px;background:#ede8e0}
 
-/* GRID */
-.g{display:grid;gap:7px}
+/* FIELDS */
+.g{display:grid;gap:6px}
 .g2{grid-template-columns:1fr 1fr}
 .g3{grid-template-columns:1fr 1fr 1fr}
 .g4{grid-template-columns:1fr 1fr 1fr 1fr}
-.span2{grid-column:span 2}
-.span3{grid-column:span 3}
-
-.f{background:#f8f5f0;border-radius:8px;padding:8px 11px}
-.fl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a09a94;margin-bottom:2px}
-.fv{font-size:12.5px;font-weight:600;color:#16130e;line-height:1.45}
-.fv.em{color:#c0b8b0;font-style:italic;font-weight:400;font-size:11.5px}
+.s2{grid-column:span 2}.s3{grid-column:span 3}
+.f{background:#f8f5f0;border-radius:8px;padding:7px 10px}
+.fl{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a09a94;margin-bottom:2px}
+.fv{font-size:12px;font-weight:600;color:#16130e;line-height:1.4}
+.fv.em{color:#c8c0b8;font-style:italic;font-weight:400}
 
 /* TAGS */
 .tags{display:flex;flex-wrap:wrap;gap:5px}
-.tag{border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;border:1.5px solid}
-.tag-red{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
-.tag-blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
-.tag-orange{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
-.tag-green{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
-.tag-gray{background:#f9fafb;border-color:#e5e7eb;color:#374151}
+.tag{border-radius:6px;padding:3px 9px;font-size:10.5px;font-weight:600;border:1.5px solid}
+.t-red{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+.t-blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.t-orange{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+.t-green{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+.t-gray{background:#f9fafb;border-color:#e5e7eb;color:#374151}
 
 /* AKADEMİK */
-.ak-t{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:2px}
-.ak-t th{background:#f0ede8;color:#6b6560;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;padding:6px 9px;text-align:left;border-bottom:1.5px solid #e2dbd0}
-.ak-t td{padding:6px 9px;border-bottom:1px solid #f0ebe2;font-weight:500}
-.ak-t tr:last-child td{border-bottom:none}
-.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.akt{width:100%;border-collapse:collapse;font-size:11px}
+.akt th{background:#f0ede8;color:#6b6560;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.4px;padding:6px 8px;text-align:left;border-bottom:1.5px solid #e2dbd0}
+.akt td{padding:6px 8px;border-bottom:1px solid #f0ebe2;font-weight:500;font-size:11.5px}
+.akt tr:last-child td{border-bottom:none}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle}
 .dg{background:#16a34a}.dy{background:#d97706}.dr{background:#dc2626}.dn{background:#9ca3af}
 
 /* AİLE */
-.aile-g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.aile-c{border-radius:10px;padding:11px 13px;border:1.5px solid}
-.aile-a{border-color:#f0c4c4;background:linear-gradient(148deg,#fffafa,#fff)}
-.aile-b{border-color:#c4d6f0;background:linear-gradient(148deg,#f7fbff,#fff)}
-.aile-ct{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
-.aile-a .aile-ct{color:#7a1616}
-.aile-b .aile-ct{color:#163678}
-.aile-r{display:flex;gap:6px;margin-bottom:3px;font-size:11.5px;align-items:baseline}
-.aile-r:last-child{margin-bottom:0}
-.aile-k{color:#a09a94;font-weight:600;min-width:44px;font-size:10px;flex-shrink:0}
-.aile-v{font-weight:600;color:#16130e}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ac{border-radius:9px;padding:10px 12px;border:1.5px solid}
+.ac-a{border-color:#f0c4c4;background:linear-gradient(148deg,#fffafa,#fff)}
+.ac-b{border-color:#c4d6f0;background:linear-gradient(148deg,#f7fbff,#fff)}
+.ac-t{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.ac-a .ac-t{color:#7a1616}.ac-b .ac-t{color:#163678}
+.ar{display:flex;gap:5px;margin-bottom:3px;font-size:11px;align-items:baseline}
+.ar:last-child{margin-bottom:0}
+.ak{color:#a09a94;font-weight:600;min-width:42px;font-size:9.5px;flex-shrink:0}
+.av{font-weight:600;color:#16130e}
 
 /* KARAR */
-.karar-b{border-radius:9px;padding:11px 15px;display:flex;align-items:center;gap:10px;margin-top:6px}
+.kb{border-radius:9px;padding:10px 14px;display:flex;align-items:center;gap:9px;margin-top:6px}
 .kb-k{background:linear-gradient(135deg,#0d4a27,#18733c);color:#fff}
 .kb-r{background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff}
 .kb-t{background:linear-gradient(135deg,#1e3a5f,#1d4ed8);color:#fff}
 .kb-d{background:linear-gradient(135deg,#3d2b00,#c9720a);color:#fff}
-.karar-ico{font-size:20px}
-.karar-txt{font-size:13.5px;font-weight:800}
+.ki{font-size:18px}.kt{font-size:13px;font-weight:800}
 
 /* NOT */
-.not-b{background:#fffbf0;border:1.5px solid #fde68a;border-radius:8px;padding:10px 13px;font-size:11.5px;line-height:1.7;color:#3d2b00;white-space:pre-wrap;word-break:break-word}
+.not{background:#fffbf0;border:1.5px solid #fde68a;border-radius:8px;padding:9px 12px;font-size:11.5px;line-height:1.7;color:#3d2b00;white-space:pre-wrap;word-break:break-word}
 
 /* VEFAT */
-.vefat-b{background:#fef2f2;border:1.5px solid #fecaca;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;color:#b91c1c;margin-bottom:7px;display:inline-flex;align-items:center;gap:5px}
+.vb{background:#fef2f2;border:1.5px solid #fecaca;border-radius:6px;padding:4px 9px;font-size:10.5px;font-weight:700;color:#b91c1c;margin-bottom:6px;display:inline-flex;align-items:center;gap:4px}
 
 /* FOOTER */
-.footer{background:#f8f5f0;border-top:1px solid #e2dbd0;padding:10px 24px;display:flex;justify-content:space-between;font-size:9.5px;color:#a09a94}
+.footer{background:#f8f5f0;border-top:1px solid #e2dbd0;padding:9px 22px;display:flex;justify-content:space-between;font-size:9px;color:#a09a94}
 
 @media print{
-  .print-bar{display:none!important}
+  .pbar{display:none!important}
   body{background:#fff}
   .page{margin:0;box-shadow:none;width:100%;min-height:auto}
 }
 </style>
 </head>
 <body>
-
-<div class="print-bar">
+<div class="pbar">
   <h3 id="pbarTitle">Öğrenci Tanıma Formu</h3>
-  <div class="print-btns">
-    <button class="pbtn pbtn-print" onclick="window.print()">🖨️ Yazdır / PDF</button>
-    <button class="pbtn pbtn-close" onclick="window.close()">✕ Kapat</button>
+  <div class="pbtns">
+    <button class="pb pb-print" onclick="window.print()">🖨️ Yazdır / PDF</button>
+    <button class="pb pb-close" onclick="window.close()">✕</button>
   </div>
 </div>
 
 <div class="page">
   <div class="hdr">
-    <div class="form-tip" id="formTip">TAM FORM</div>
-    <div class="hdr-row">
-      <div class="hdr-text">
+    <div class="tip-badge" id="tipBadge">TAM FORM</div>
+    <div class="hdr-in">
+      <div class="hdr-txt">
         <div class="hdr-tag">Öğrenci Tanıma Formu</div>
         <div class="hdr-name" id="hAd"></div>
         <div class="hdr-meta">
@@ -132,101 +123,100 @@ body{font-family:'Inter',sans-serif;background:#f0ede8;color:#16130e;-webkit-pri
           <span>🧑‍💼 <span id="hUzman">—</span></span>
         </div>
       </div>
-      <div class="foto-kutu" id="fotoKutu">👤</div>
+      <div class="foto-k" id="fotoK">👤</div>
     </div>
   </div>
 
   <div class="body">
 
-    <!-- TANI & AKADEMİK -->
+    <!-- 1. TANI & AKADEMİK -->
     <div class="sec">
       <div class="sec-t">🗂️ Tanı & Akademik Durum</div>
       <div class="g g2" style="margin-bottom:8px">
         <div class="f"><div class="fl">Rapor / Tanı</div><div class="fv" id="fTani">—</div></div>
         <div class="f"><div class="fl">Temel İhtiyaç Alanı</div><div class="fv" id="fIhtiyac">—</div></div>
       </div>
-      <table class="ak-t">
+      <table class="akt">
         <thead><tr><th>Alan</th><th>Değerlendirme</th><th>Alan</th><th>Değerlendirme</th></tr></thead>
         <tbody id="akBody"></tbody>
       </table>
     </div>
 
-    <!-- SAĞLIK -->
+    <!-- 2. SAĞLIK & DAVRANIŞ -->
     <div class="sec" id="secSaglik">
       <div class="sec-t">🩺 Sağlık & Davranış</div>
       <div class="tags" id="saglikTags"></div>
     </div>
 
-    <!-- DİL -->
+    <!-- 3. DİL GELİŞİMİ -->
     <div class="sec" id="secDil">
       <div class="sec-t">🔤 Dil Gelişimi</div>
       <div class="tags" id="dilTags"></div>
     </div>
 
-    <!-- GÖRÜŞME NOTU -->
+    <!-- 4. GÖRÜŞME NOTLARI -->
     <div class="sec" id="secNot">
       <div class="sec-t">📝 Görüşme Notları</div>
-      <div class="not-b" id="fNot"></div>
+      <div class="not" id="fNot"></div>
     </div>
 
-    <!-- AİLE -->
+    <!-- 5. AİLE BİLGİLERİ -->
     <div class="sec">
       <div class="sec-t">👨‍👩‍👧 Aile Bilgileri</div>
-      <div class="aile-g" style="margin-bottom:8px">
-        <div class="aile-c aile-a">
-          <div class="aile-ct">👩 Anne</div>
+      <div class="ag" style="margin-bottom:8px">
+        <div class="ac ac-a">
+          <div class="ac-t">👩 Anne</div>
           <div id="anneVefat"></div>
-          <div class="aile-r"><span class="aile-k">Adı</span><span class="aile-v" id="aAnneAd">—</span></div>
-          <div class="aile-r"><span class="aile-k">Tel</span><span class="aile-v" id="aAnneTel">—</span></div>
-          <div class="aile-r"><span class="aile-k">Meslek</span><span class="aile-v" id="aAnneMeslek">—</span></div>
-          <div class="aile-r"><span class="aile-k">Eğitim</span><span class="aile-v" id="aAnneEgitim">—</span></div>
+          <div class="ar"><span class="ak">Adı</span><span class="av" id="aAnneAd">—</span></div>
+          <div class="ar"><span class="ak">Tel</span><span class="av" id="aAnneTel">—</span></div>
+          <div class="ar"><span class="ak">Meslek</span><span class="av" id="aAnneMes">—</span></div>
+          <div class="ar"><span class="ak">Eğitim</span><span class="av" id="aAnneEg">—</span></div>
         </div>
-        <div class="aile-c aile-b">
-          <div class="aile-ct">👨 Baba</div>
+        <div class="ac ac-b">
+          <div class="ac-t">👨 Baba</div>
           <div id="babaVefat"></div>
-          <div class="aile-r"><span class="aile-k">Adı</span><span class="aile-v" id="aBabaAd">—</span></div>
-          <div class="aile-r"><span class="aile-k">Tel</span><span class="aile-v" id="aBabaTel">—</span></div>
-          <div class="aile-r"><span class="aile-k">Meslek</span><span class="aile-v" id="aBabaMeslek">—</span></div>
-          <div class="aile-r"><span class="aile-k">Eğitim</span><span class="aile-v" id="aBabaEgitim">—</span></div>
+          <div class="ar"><span class="ak">Adı</span><span class="av" id="aBabaAd">—</span></div>
+          <div class="ar"><span class="ak">Tel</span><span class="av" id="aBabaTel">—</span></div>
+          <div class="ar"><span class="ak">Meslek</span><span class="av" id="aBabaMes">—</span></div>
+          <div class="ar"><span class="ak">Eğitim</span><span class="av" id="aBabaEg">—</span></div>
         </div>
       </div>
       <div class="g g3">
-        <div class="f"><div class="fl">Birlikte mi Yaşıyor?</div><div class="fv" id="fBer">—</div></div>
-        <div class="f span2"><div class="fl">Adres</div><div class="fv" id="fAdres">—</div></div>
+        <div class="f"><div class="fl">Birlikte mi?</div><div class="fv" id="fBer">—</div></div>
+        <div class="f s2"><div class="fl">Adres</div><div class="fv" id="fAdres">—</div></div>
       </div>
     </div>
 
-    <!-- ÖĞRENCİ TC -->
-    <div class="sec" id="secTC">
-      <div class="sec-t">🪪 Kimlik</div>
-      <div class="g g2">
-        <div class="f"><div class="fl">Öğrenci TC Kimlik No</div><div class="fv" id="fTC">—</div></div>
-      </div>
-    </div>
-
-    <!-- REHABİLİTASYON -->
+    <!-- 6. REHABİLİTASYON -->
     <div class="sec" id="secRehab">
       <div class="sec-t">🏥 Rehabilitasyon</div>
       <div class="g g3">
         <div class="f"><div class="fl">Durum</div><div class="fv" id="fRehab">—</div></div>
-        <div class="f span2"><div class="fl">Merkez / Süre</div><div class="fv" id="fRehabD">—</div></div>
+        <div class="f s2"><div class="fl">Merkez / Süre</div><div class="fv" id="fRehabD">—</div></div>
       </div>
     </div>
 
-    <!-- DEĞERLENDİRME & KARAR -->
+    <!-- 7. ÖĞRENME TC -->
+    <div class="sec" id="secTC">
+      <div class="sec-t">🪪 Kimlik</div>
+      <div class="g g2">
+        <div class="f"><div class="fl">Öğrenci TC No</div><div class="fv" id="fTC">—</div></div>
+      </div>
+    </div>
+
+    <!-- 8. DEĞERLENDİRME & KARAR -->
     <div class="sec">
       <div class="sec-t">⭐ Değerlendirme & Karar</div>
       <div class="g g2" style="margin-bottom:7px">
         <div class="f"><div class="fl">AAA</div><div class="fv" id="fAAA">—</div></div>
         <div class="f"><div class="fl">Rapor Olasılığı</div><div class="fv" id="fROlas">—</div></div>
       </div>
-      <div id="kararBanner" class="karar-b kb-d">
-        <span class="karar-ico">📋</span>
-        <span class="karar-txt" id="fKarar">—</span>
+      <div id="kararBanner" class="kb kb-d">
+        <span class="ki">📋</span><span class="kt" id="fKarar">—</span>
       </div>
     </div>
 
-  </div><!-- body -->
+  </div>
 
   <div class="footer">
     <span id="footL">Öğrenci Tanıma Formu</span>
@@ -235,226 +225,185 @@ body{font-family:'Inter',sans-serif;background:#f0ede8;color:#16130e;-webkit-pri
 </div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const tip = params.get('tip') || 'TAM FORM';
-const raw = params.get('d');
+// Veri kaynağı: Apps Script tarafından enjekte edilmiş window.__D__
+var d   = window.__D__   || null;
+var tip = window.__TIP__ || "TAM FORM";
 
-// 1. Doğrudan enjekte edilmiş veri (Apps Script modal)
-if (window.__OGRENCI_DATA__) {
-  document.getElementById('formTip').textContent = window.__FORM_TIP__ || 'TAM FORM';
-  doldur(window.__OGRENCI_DATA__);
-}
-// 2. URL parametresi
-else if (raw) {
-  try {
-    const d = JSON.parse(decodeURIComponent(raw));
-    document.getElementById('formTip').textContent = tip;
-    doldur(d);
-  } catch(e) {
-    document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:sans-serif;color:#666"><h2>Veri okunamadı</h2><p>' + e.message + '</p></div>';
-  }
-}
-// 3. Hiçbiri yok
-else {
-  document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:sans-serif;color:#666"><h2 style="margin-bottom:8px">Veri bulunamadı</h2><p>Bu sayfa Sheets menüsünden açılmalıdır.</p></div>';
+if (!d) {
+  document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:sans-serif;color:#888"><h2>Veri bulunamadı</h2><p style="margin-top:8px">Bu sayfa Sheets menüsünden açılmalıdır.</p></div>';
+} else {
+  document.getElementById('tipBadge').textContent = tip;
+  doldur(d);
 }
 
-// Sheets sütun başlıkları → anahtar eşleştirme
-function get(d, keys) {
-  for (const k of keys) {
-    if (d[k] !== undefined && d[k] !== null && String(d[k]).trim() !== '') return String(d[k]).trim();
-  }
-  return null;
+function v(key) {
+  var val = d[key];
+  return (val !== undefined && val !== null && String(val).trim() !== '') ? String(val).trim() : null;
 }
 
-function set(id, v) {
-  const el = document.getElementById(id);
+function set(id, key) {
+  var el = document.getElementById(id);
   if (!el) return;
-  if (v) { el.textContent = v; el.classList.remove('em'); }
-  else   { el.textContent = '—'; el.classList.add('em'); }
+  var val = v(key);
+  if (val) { el.textContent = val; }
+  else { el.textContent = '—'; el.classList.add('em'); }
 }
 
-function tarihFormat(t) {
+function tf(t) {
   if (!t) return null;
-  const m = String(t).match(/(\d{4})-(\d{2})-(\d{2})/);
-  if (m) return m[3]+'.'+m[2]+'.'+m[1];
-  // Sheets Date objesi string: "Fri Dec 03 2021 00:00:00..."
-  const m2 = String(t).match(/(\d{4})\s+\d+:\d+/);
-  if (m2) { const d = new Date(t); return d.getDate()+'.'+(d.getMonth()+1)+'.'+d.getFullYear(); }
-  return t;
+  var s = String(t);
+  var m = s.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return m[3] + '.' + m[2] + '.' + m[1];
+  try { var dt = new Date(s); if (!isNaN(dt)) return dt.getDate()+'.'+(dt.getMonth()+1)+'.'+dt.getFullYear(); } catch(e) {}
+  return s;
 }
 
 function doldur(d) {
-  var K = {
-    ad:       ["Öğrencinin Adı:", "Ad", "ogrenciAd"],
-    soyad:    ["Öğrencinin Soyadı:", "Soyad", "ogrenciSoyad"],
-    uzman:    ["İlgili Halkla İlişkiler Uzmanı", "Uzman", "uzman"],
-    tarih:    ["Görüşme Tarihi", "gorusmeTarihi"],
-    okul:     ["Devam Ettiği Okul", "Okul", "okul"],
-    sinif:    ["Sınıfı", "Sınıf", "sinif"],
-    dogum:    ["Öğrencinin doğum tarihi:", "Doğum Tarihi", "dogumTarihi"],
-    not:      ["GÖRÜŞME NOTLARI", "Görüşme Notu", "gorusmeNot"],
-    saglik:   ["Sağlık Durumu", "saglikDurum"],
-    okuma:    ["Akademik/sosyal/davranışsal durumu nedir? [Okuma-Anlama]", "Okuma", "ak_okuma"],
-    anlama:   ["Anlama", "ak_anlama"],
-    yazma:    ["Akademik/sosyal/davranışsal durumu nedir? [Yazma]", "Yazma", "ak_yazma"],
-    mat:      ["Akademik/sosyal/davranışsal durumu nedir? [Matematik]", "Matematik", "ak_mat"],
-    ifade:    ["Akademik/sosyal/davranışsal durumu nedir? [İfade Becerisi]", "İfade", "ak_ifade"],
-    kavram:   ["Kavram", "ak_kavram"],
-    tani:     ["Rapor/tanı durumu?", "Tanı", "tani"],
-    dilProb:  ["Dil gelişimi ile ilgili problemi nasıl tanımlarsınız?", "Dil Problemi Detay", "dilProb"],
-    dilModul: ["Gelişimsel dil modülü var mı?", "Dil Modülü", "dilModul"],
-    aileDil:  ["Ailede başka dil konuşma problemi yaşayan var mı?", "Ailede Dil Problemi", "aileDil"],
-    ihtiyac:  ["Temel İhtiyaç", "temelIhtiyac"],
-    anneAd:   ["Anne Adı", "anneAd"],
-    anneTel:  ["Anne İletişim", "anneIletisim"],
-    anneMes:  ["Anne Mesleği", "anneMeslek"],
-    anneEg:   ["Anne eğitim durumu: [Anne]", "Anne Eğitim", "egitimAnne"],
-    anneSag:  ["Ebeveyn sağlık durumu: [Anne]", "Anne Sağlık", "saglikAnne"],
-    babaAd:   ["Baba Adı", "babaAd"],
-    babaTel:  ["Baba İletişim", "babaIletisim"],
-    babaMes:  ["Baba Mesleği", "babaMeslek"],
-    babaEg:   ["Anne eğitim durumu: [Baba]", "Baba Eğitim", "egitimBaba"],
-    babaSag:  ["Ebeveyn sağlık durumu: [Baba]", "Baba Sağlık", "saglikBaba"],
-    ber:      ["Anne baba birlikte mi yaşıyor?", "Birlikte mi", "beraberlik"],
-    adres:    ["Adres", "adres"],
-    tc:       ["Öğrenci TC Kimlik No", "tcNo"],
-    rehab:    ["Rehabilitasyon merkezine gitti mi/gidiyor mu?", "Rehabilitasyon", "rehab"],
-    rehabM:   ["Hangi rehabilitasyon merkezine gidiyor?", "Rehab Merkez", "rehabMerkez"],
-    rehabS:   ["Ne kadar süredir gitti/ gidiyor?", "Rehab Süre", "rehabSure"],
-    aaa:      ["AAA", "aileAAA"],
-    rOlas:    ["Rapor çıkma olasılığı nedir?", "Rapor Olasılığı", "raporOlas"],
-    karar:    ["KARAR", "Karar", "karar"],
-    foto:     ["Fotoğraf", "Fotoğraf (Drive)", "fotoData"],
-  };
-  const ad    = get(d, K.ad)    || '';
-  const soyad = get(d, K.soyad) || '';
-  const tam   = (ad + ' ' + soyad).trim();
+  var ad    = v('Ad')    || '';
+  var soyad = v('Soyad') || '';
+  var tam   = (ad + ' ' + soyad).trim();
 
   document.getElementById('pbarTitle').textContent = tam + ' — ' + tip;
-  document.getElementById('hAd').textContent = tam || '—';
-  set('hSinif', get(d, K.sinif));
-  set('hDogum', tarihFormat(get(d, K.dogum)));
-  set('hOkul',  get(d, K.okul));
-  document.getElementById('hTarih').textContent = 'Görüşme: ' + (tarihFormat(get(d, K.tarih)) || '—');
-  set('hUzman', get(d, K.uzman));
+  document.getElementById('hAd').textContent       = tam || '—';
+  document.getElementById('hSinif').textContent    = v('Sınıf')          || '—';
+  document.getElementById('hDogum').textContent    = tf(v('Doğum Tarihi'))|| '—';
+  document.getElementById('hOkul').textContent     = v('Okul')           || '—';
+  document.getElementById('hTarih').textContent    = 'Görüşme: ' + (tf(v('Görüşme Tarihi')) || '—');
+  document.getElementById('hUzman').textContent    = v('Uzman')          || '—';
 
   // FOTOĞRAF
-  const fotoUrl = get(d, K.foto);
+  var fotoUrl = v('Fotoğraf (Drive)');
   if (fotoUrl && fotoUrl.startsWith('http')) {
-    const fk = document.getElementById('fotoKutu');
-    // Google Drive direct img url
-    let imgSrc = fotoUrl;
-    const driveMatch = fotoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (driveMatch) imgSrc = 'https://drive.google.com/uc?export=view&id=' + driveMatch[1];
-    fk.innerHTML = '<img src="'+imgSrc+'" onerror="this.parentElement.textContent=\'👤\'">';
+    var fk = document.getElementById('fotoK');
+    var src = fotoUrl;
+    var dm  = fotoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (dm) src = 'https://drive.google.com/uc?export=view&id=' + dm[1];
+    fk.innerHTML = '<img src="' + src + '" onerror="this.parentElement.textContent=\'👤\'">';
   }
 
   // TANI
-  set('fTani',   get(d, K.tani));
-  set('fIhtiyac',get(d, K.ihtiyac));
+  set('fTani',   'Tanı');
+  set('fIhtiyac','Temel İhtiyaç');
 
   // AKADEMİK
-  const akAlanlari = [
-    {label:'Okuma',    v: get(d,K.okuma)},
-    {label:'Anlama',   v: get(d,K.anlama)},
-    {label:'Yazma',    v: get(d,K.yazma)},
-    {label:'Matematik',v: get(d,K.mat)},
-    {label:'İfade',    v: get(d,K.ifade)},
-    {label:'Kavram',   v: get(d,K.kavram)},
+  var aklar = [
+    {l:'Okuma',     k:'Okuma'},
+    {l:'Anlama',    k:'Anlama'},
+    {l:'Yazma',     k:'Yazma'},
+    {l:'Matematik', k:'Matematik'},
+    {l:'İfade',     k:'İfade'},
+    {l:'Kavram',    k:'Kavram'},
   ];
-  const tbody = document.getElementById('akBody');
-  for (let i=0; i<akAlanlari.length; i+=2) {
-    const tr = tbody.insertRow();
-    [akAlanlari[i], akAlanlari[i+1]].forEach(function(a) {
-      if (!a) {tr.insertCell();tr.insertCell();return;}
-      const c1=tr.insertCell(); c1.textContent=a.label; c1.style.cssText='font-weight:600;font-size:12px;color:#3d3830;padding:6px 9px';
-      const c2=tr.insertCell(); c2.style.cssText='padding:6px 9px';
-      if (a.v) {
-        const cls = a.v==='Akranları düzeyinde'?'dg':a.v==='Zayıf'?'dy':a.v==='Çok zayıf'?'dr':'dn';
-        c2.innerHTML='<span class="dot '+cls+'"></span><span style="font-size:12px;font-weight:500">'+a.v+'</span>';
+  var tbody = document.getElementById('akBody');
+  for (var i = 0; i < aklar.length; i += 2) {
+    var tr = tbody.insertRow();
+    [aklar[i], aklar[i+1]].forEach(function(a) {
+      if (!a) { tr.insertCell(); tr.insertCell(); return; }
+      var c1 = tr.insertCell();
+      c1.textContent = a.l;
+      c1.style.cssText = 'font-weight:600;color:#3d3830;padding:6px 8px';
+      var c2  = tr.insertCell();
+      c2.style.padding = '6px 8px';
+      var val = v(a.k);
+      if (val) {
+        var cls = val==='Akranları düzeyinde'?'dg':val==='Zayıf'?'dy':val==='Çok zayıf'?'dr':'dn';
+        c2.innerHTML = '<span class="dot '+cls+'"></span>' + val;
       } else {
-        c2.innerHTML='<span style="color:#c0b8b0;font-style:italic;font-size:11px">—</span>';
+        c2.innerHTML = '<span style="color:#c8c0b8;font-style:italic">—</span>';
       }
     });
   }
 
   // SAĞLIK
-  const saglik = get(d, K.saglik);
-  if (saglik) {
-    const wrap = document.getElementById('saglikTags');
-    saglik.split(/[;,]/).forEach(function(s){
-      s=s.trim(); if(!s||s==='0'||s.toLowerCase()==='hayır') return;
-      const sp=document.createElement('span'); sp.className='tag tag-red'; sp.textContent=s; wrap.appendChild(sp);
+  var sag = v('Sağlık Durumu');
+  if (sag) {
+    var sw = document.getElementById('saglikTags');
+    sag.split(';').forEach(function(s) {
+      s = s.trim(); if (!s) return;
+      var sp = document.createElement('span');
+      sp.className = 'tag t-red'; sp.textContent = s; sw.appendChild(sp);
     });
-    if (!wrap.children.length) document.getElementById('secSaglik').style.display='none';
-  } else { document.getElementById('secSaglik').style.display='none'; }
+    if (!sw.children.length) document.getElementById('secSaglik').style.display = 'none';
+  } else { document.getElementById('secSaglik').style.display = 'none'; }
 
   // DİL
-  const dilP  = get(d, K.dilProb);
-  const dilM  = get(d, K.dilModul);
-  const ailD  = get(d, K.aileDil);
-  const dilWrap = document.getElementById('dilTags');
-  let hasDil = false;
-  if (dilM && dilM!=='Yok') { const s=document.createElement('span');s.className='tag tag-blue';s.textContent='Modül: '+dilM;dilWrap.appendChild(s);hasDil=true; }
-  if (ailD && ailD==='Evet') { const s=document.createElement('span');s.className='tag tag-orange';s.textContent='Ailede dil problemi var';dilWrap.appendChild(s);hasDil=true; }
-  if (dilP) dilP.split(/[;,]/).forEach(function(s){
+  var dilP = v('Dil Problemi Detay');
+  var dilM = v('Dil Modülü');
+  var ailD = v('Ailede Dil Problemi');
+  var dw   = document.getElementById('dilTags');
+  var hasDil = false;
+  if (dilM && dilM !== 'Yok' && dilM !== 'Hayır') {
+    var s=document.createElement('span');s.className='tag t-blue';s.textContent='Modül: '+dilM;dw.appendChild(s);hasDil=true;
+  }
+  if (ailD === 'Evet') {
+    var s=document.createElement('span');s.className='tag t-orange';s.textContent='Ailede dil problemi var';dw.appendChild(s);hasDil=true;
+  }
+  if (dilP) dilP.split(';').forEach(function(s) {
     s=s.trim();if(!s)return;
-    const sp=document.createElement('span');sp.className='tag tag-orange';sp.textContent=s;dilWrap.appendChild(sp);hasDil=true;
+    var sp=document.createElement('span');sp.className='tag t-orange';sp.textContent=s;dw.appendChild(sp);hasDil=true;
   });
-  if (!hasDil) document.getElementById('secDil').style.display='none';
+  if (!hasDil) document.getElementById('secDil').style.display = 'none';
 
   // NOT
-  const not = get(d, K.not);
-  if (not) document.getElementById('fNot').textContent=not;
-  else document.getElementById('secNot').style.display='none';
+  var not = v('Görüşme Notu');
+  if (not) document.getElementById('fNot').textContent = not;
+  else document.getElementById('secNot').style.display = 'none';
 
-  // AİLE - VEFAT
-  const anneSag = get(d, K.anneSag);
-  const babaSag = get(d, K.babaSag);
-  if (anneSag==='Vefat') document.getElementById('anneVefat').innerHTML='<div class="vefat-b">⚠️ Vefat</div>';
-  if (babaSag==='Vefat')  document.getElementById('babaVefat').innerHTML='<div class="vefat-b">⚠️ Vefat</div>';
+  // AİLE VEFAT
+  if (v('Anne Sağlık') === 'Vefat')
+    document.getElementById('anneVefat').innerHTML = '<div class="vb">⚠️ Vefat</div>';
+  if (v('Baba Sağlık') === 'Vefat')
+    document.getElementById('babaVefat').innerHTML = '<div class="vb">⚠️ Vefat</div>';
 
-  set('aAnneAd',    get(d, K.anneAd));
-  set('aAnneTel',   get(d, K.anneTel));
-  set('aAnneMeslek',get(d, K.anneMes));
-  set('aAnneEgitim',get(d, K.anneEg));
-  set('aBabaAd',    get(d, K.babaAd));
-  set('aBabaTel',   get(d, K.babaTel));
-  set('aBabaMeslek',get(d, K.babaMes));
-  set('aBabaEgitim',get(d, K.babaEg));
-  set('fBer',   get(d, K.ber));
-  set('fAdres', get(d, K.adres));
+  set('aAnneAd',  'Anne Adı');
+  set('aAnneTel', 'Anne Tel');
+  set('aAnneMes', 'Anne Meslek');
+  set('aAnneEg',  'Anne Eğitim');
+  set('aBabaAd',  'Baba Adı');
+  set('aBabaTel', 'Baba Tel');
+  set('aBabaMes', 'Baba Meslek');
+  set('aBabaEg',  'Baba Eğitim');
 
-  // TC
-  const tc = get(d, K.tc);
-  if (tc) set('fTC', tc);
-  else document.getElementById('secTC').style.display='none';
+  // Ayrı yaşıyorsa belirt
+  var ber = v('Birlikte mi');
+  var berEl = document.getElementById('fBer');
+  if (ber) {
+    berEl.textContent = ber;
+    if (ber === 'Boşanmış/Ayrı') berEl.style.color = '#b91c1c';
+  }
+
+  set('fAdres', 'Adres');
 
   // REHABİLİTASYON
-  const rehab = get(d, K.rehab);
-  if (rehab==='Evet') {
-    set('fRehab', 'Evet');
-    const merkez = get(d, K.rehabM)||'';
-    const sure   = get(d, K.rehabS) ? get(d,K.rehabS)+' yıl' : '';
-    document.getElementById('fRehabD').textContent = [merkez,sure].filter(Boolean).join(' · ') || '—';
-  } else { document.getElementById('secRehab').style.display='none'; }
+  var rehab = v('Rehabilitasyon');
+  if (rehab === 'Evet') {
+    document.getElementById('fRehab').textContent = 'Evet';
+    var m = v('Rehab Merkez') || '';
+    var s = v('Rehab Süre') ? v('Rehab Süre') + ' yıl' : '';
+    document.getElementById('fRehabD').textContent = [m, s].filter(Boolean).join(' · ') || '—';
+  } else { document.getElementById('secRehab').style.display = 'none'; }
+
+  // TC
+  var tc = v('Öğrenci TC');
+  if (tc) document.getElementById('fTC').textContent = tc;
+  else document.getElementById('secTC').style.display = 'none';
 
   // AAA & KARAR
-  set('fAAA',  get(d, K.aaa));
-  const ro = get(d, K.rOlas);
-  document.getElementById('fROlas').textContent = ro ? ro+' / 5' : '—';
-  const karar = get(d, K.karar) || '—';
+  set('fAAA', 'AAA');
+  var ro = v('Rapor Olasılığı');
+  document.getElementById('fROlas').textContent = ro ? ro + ' / 5' : '—';
+
+  var karar = v('Karar') || '—';
   document.getElementById('fKarar').textContent = karar;
-  const kb = document.getElementById('kararBanner');
-  if (/kayded/i.test(karar)) kb.className='karar-b kb-k';
-  else if (/^red$/i.test(karar.trim())) kb.className='karar-b kb-r';
-  else if (/takip/i.test(karar)) kb.className='karar-b kb-t';
-  else kb.className='karar-b kb-d';
+  var kb = document.getElementById('kararBanner');
+  if (/kayded/i.test(karar))           kb.className = 'kb kb-k';
+  else if (/^red$/i.test(karar.trim())) kb.className = 'kb kb-r';
+  else if (/takip/i.test(karar))        kb.className = 'kb kb-t';
+  else                                   kb.className = 'kb kb-d';
 
   // FOOTER
   document.getElementById('footL').textContent = tam + ' — Öğrenci Tanıma Formu';
-  document.getElementById('footR').textContent = 'Görüşme: '+(tarihFormat(get(d,K.tarih))||'—')+' · '+(get(d,K.uzman)||'—');
+  document.getElementById('footR').textContent = 'Görüşme: ' + (tf(v('Görüşme Tarihi')) || '—') + ' · ' + (v('Uzman') || '—');
 }
 </script>
 </body>
