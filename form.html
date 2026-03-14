@@ -1030,17 +1030,8 @@ async function submitForm(){
     };
 
     await fetch('/.netlify/functions/submit',{
-  method:'POST',
-  headers:{'Content-Type':'application/json'},
-  body:JSON.stringify(p)
-});
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'apikey':SUPA_KEY,
-        'Authorization':'Bearer '+SUPA_KEY,
-        'Prefer':'return=minimal'
-      },
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify(p)
     });
 
