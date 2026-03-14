@@ -223,9 +223,11 @@ body{font-family:'Inter',sans-serif;background:#f0ede8;color:#16130e;-webkit-pri
 </div>
 
 <script>
-// Veri kaynağı: Apps Script tarafından enjekte edilmiş window.__D__
-var d   = window.__D__   || null;
-var tip = window.__TIP__ || "TAM FORM";
+// Veri kaynağı: window.__D__ veya URL parametresi
+var _params = new URLSearchParams(window.location.search);
+var _raw = _params.get('d');
+var d   = window.__D__ || (_raw ? JSON.parse(decodeURIComponent(_raw)) : null);
+var tip = window.__TIP__ || _params.get('tip') || "TAM FORM";
 
 if (!d) {
   document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:sans-serif;color:#888"><h2>Veri bulunamadı</h2><p style="margin-top:8px">Bu sayfa Sheets menüsünden açılmalıdır.</p></div>';
