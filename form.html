@@ -990,10 +990,11 @@ async function submitForm(){
     const tarih=document.getElementById('gorusmeTarihi').value;
     const ogrenciTam=(ad+' '+soyad).trim();
 
-    // Fotoğrafları Netlify function'a gönder - CORS sorunu yok
     const fotoData=document.getElementById('fotoData').value;
     const kimlikData=document.getElementById('kimlikData').value;
     let fotoUrl='',kimlikUrl='';
+    if(fotoData&&fotoData.length>100) fotoUrl=await uploadFoto(fotoData,ogrenciTam+'_foto_'+tarih+'.jpg');
+    if(kimlikData&&kimlikData.length>100) kimlikUrl=await uploadFoto(kimlikData,ogrenciTam+'_kimlik_'+tarih+'.jpg');
 
     const p={
       uzman:document.getElementById('uzman').value,
@@ -1030,14 +1031,17 @@ async function submitForm(){
       rapor_olasilik:D.raporOlas||'',
       karar:rVal('karar'),
       foto_url:fotoUrl,
-      kimlik_url:kimlikUrl,
-      fotoData:fotoData||'',
-      kimlikData:kimlikData||''
+      kimlik_url:kimlikUrl
     };
 
-    await fetch('/.netlify/functions/submit',{
+    await fetch(SUPA_URL+'/rest/v1/ogrenciler',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SUPA_KEY,
+        'Authorization':'Bearer '+SUPA_KEY,
+        'Prefer':'return=minimal'
+      },
       body:JSON.stringify(p)
     });
 
@@ -1048,7 +1052,28 @@ async function submitForm(){
   }
 }
 
-// uploadFoto Netlify function içinde yapılıyor
+async function uploadFoto(base64Data, dosyaAdi){
+  try{
+    const base64=base64Data.split(',')[1];
+    const binary=atob(base64);
+    const arr=new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i++) arr[i]=binary.charCodeAt(i);
+    const blob=new Blob([arr],{type:'image/jpeg'});
+    const res=await fetch(SUPA_URL+'/storage/v1/object/fotograflar/'+encodeURIComponent(dosyaAdi),{
+      method:'POST',
+      headers:{
+        'apikey':SUPA_KEY,
+        'Authorization':'Bearer '+SUPA_KEY,
+        'Content-Type':'image/jpeg',
+        'x-upsert':'true'
+      },
+      body:blob
+    });
+    if(res.ok) return SUPA_URL+'/storage/v1/object/public/fotograflar/'+encodeURIComponent(dosyaAdi);
+    const err=await res.text(); console.error('foto hata:',err);
+    return '';
+  }catch(e){console.error('foto exception:',e);return '';}
+}
 </script>
 </body>
 </html>
