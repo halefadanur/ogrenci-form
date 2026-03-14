@@ -239,36 +239,25 @@ const params = new URLSearchParams(window.location.search);
 const tip = params.get('tip') || 'TAM FORM';
 const raw = params.get('d');
 
-function loadData() {
-  // 1. Önce URL parametresinden dene
-  if (raw) {
-    try {
-      const d = JSON.parse(decodeURIComponent(raw));
-      document.getElementById('formTip').textContent = tip;
-      doldur(d);
-      return;
-    } catch(e) {}
-  }
-
-  // 2. localStorage'dan dene
+// 1. Doğrudan enjekte edilmiş veri (Apps Script modal)
+if (window.__OGRENCI_DATA__) {
+  document.getElementById('formTip').textContent = window.__FORM_TIP__ || 'TAM FORM';
+  doldur(window.__OGRENCI_DATA__);
+}
+// 2. URL parametresi
+else if (raw) {
   try {
-    const stored = localStorage.getItem('ogrenciData');
-    const storedTip = localStorage.getItem('formTip') || 'TAM FORM';
-    if (stored) {
-      const d = JSON.parse(stored);
-      document.getElementById('formTip').textContent = storedTip;
-      doldur(d);
-      return;
-    }
-  } catch(e) {}
-
-  // 3. Hiçbiri yoksa hata göster
+    const d = JSON.parse(decodeURIComponent(raw));
+    document.getElementById('formTip').textContent = tip;
+    doldur(d);
+  } catch(e) {
+    document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:sans-serif;color:#666"><h2>Veri okunamadı</h2><p>' + e.message + '</p></div>';
+  }
+}
+// 3. Hiçbiri yok
+else {
   document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:sans-serif;color:#666"><h2 style="margin-bottom:8px">Veri bulunamadı</h2><p>Bu sayfa Sheets menüsünden açılmalıdır.</p></div>';
 }
-
-// Sayfa yüklenince hemen dene, sonra 1sn bekleyip tekrar dene (localStorage geç yazılabilir)
-loadData();
-setTimeout(loadData, 1000);
 
 // Sheets sütun başlıkları → anahtar eşleştirme
 function get(d, keys) {
