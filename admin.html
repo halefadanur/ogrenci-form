@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Öğrenci Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0e0c;--surf:#1a1814;--surf2:#222018;
+  --br:#c8700a;--br2:#f0a020;
+  --text:#f0ede8;--sub:#8a8070;--muted:#554f44;
+  --bd:#2a2720;--red:#d12b1e;--green:#176638;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-box{background:var(--surf);border:1px solid var(--bd);border-radius:20px;padding:40px;width:100%;max-width:380px}
+.login-logo{font-size:36px;text-align:center;margin-bottom:16px}
+.login-title{font-size:22px;font-weight:900;text-align:center;margin-bottom:6px;letter-spacing:-.4px}
+.login-sub{font-size:13px;color:var(--sub);text-align:center;margin-bottom:28px}
+.login-box input{width:100%;background:var(--surf2);border:1.5px solid var(--bd);border-radius:10px;padding:13px 16px;font-size:15px;font-family:inherit;color:var(--text);outline:none;margin-bottom:12px;transition:border-color .15s}
+.login-box input:focus{border-color:var(--br)}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--br),var(--br2));color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.login-btn:hover{opacity:.9}
+.login-err{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none}
+
+/* APP */
+.app{display:none;flex-direction:column;min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:var(--surf);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;align-items:center;gap:16px;height:58px;position:sticky;top:0;z-index:100}
+.topbar-logo{font-size:20px}
+.topbar-title{font-size:15px;font-weight:800;flex:1;letter-spacing:-.2px}
+.topbar-count{font-size:12px;color:var(--sub);background:var(--surf2);padding:4px 12px;border-radius:99px}
+.logout-btn{background:transparent;border:1px solid var(--muted);color:var(--sub);padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* SEARCH */
+.search-bar{padding:16px 24px;background:var(--surf);border-bottom:1px solid var(--bd)}
+.search-input{width:100%;background:var(--surf2);border:1.5px solid var(--bd);border-radius:11px;padding:11px 16px 11px 40px;font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:border-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23554f44' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center}
+.search-input:focus{border-color:var(--br)}
+
+/* TABLE */
+.table-wrap{flex:1;overflow-x:auto;padding:20px 24px}
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th{background:var(--surf);color:var(--sub);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;padding:10px 14px;text-align:left;border-bottom:1.5px solid var(--bd);white-space:nowrap;position:sticky;top:58px}
+.table td{padding:12px 14px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.table tr:hover td{background:var(--surf2)}
+.table tr:last-child td{border-bottom:none}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge-orange{background:rgba(200,112,10,.15);color:var(--br2)}
+.badge-green{background:rgba(23,102,56,.2);color:#4ade80}
+.badge-red{background:rgba(209,43,30,.15);color:#f87171}
+.badge-blue{background:rgba(30,100,200,.15);color:#60a5fa}
+.badge-gray{background:rgba(100,100,100,.15);color:#9ca3af}
+
+/* PDF BUTTONS */
+.pdf-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap}
+.pdf-btn-tam{background:linear-gradient(135deg,var(--br),var(--br2));color:#fff}
+.pdf-btn-tam:hover{opacity:.85}
+
+/* LOADING / EMPTY */
+.state{padding:60px 24px;text-align:center;color:var(--sub)}
+.state-ico{font-size:40px;margin-bottom:12px}
+.state p{font-size:14px}
+
+/* FOTO */
+.mini-foto{width:36px;height:48px;border-radius:6px;object-fit:cover;border:1px solid var(--bd);background:var(--surf2);display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;flex-shrink:0}
+.mini-foto img{width:100%;height:100%;object-fit:cover}
+
+.name-cell{display:flex;align-items:center;gap:10px}
+.name-info strong{display:block;font-size:13px;font-weight:700;color:var(--text)}
+.name-info span{font-size:11px;color:var(--sub)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">🔐</div>
+    <div class="login-title">Admin Paneli</div>
+    <div class="login-sub">Öğrenci Tanıma Formu</div>
+    <input type="password" id="sifreInput" placeholder="Şifre" onkeydown="if(event.key==='Enter')girisYap()">
+    <button class="login-btn" onclick="girisYap()">Giriş Yap</button>
+    <div class="login-err" id="loginErr">Hatalı şifre!</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="appWrap">
+  <div class="topbar">
+    <div class="topbar-logo">📋</div>
+    <div class="topbar-title">Öğrenci Tanıma — Admin</div>
+    <div class="topbar-count" id="topbarCount">0 öğrenci</div>
+    <button class="logout-btn" onclick="cikisYap()">Çıkış</button>
+  </div>
+  <div class="search-bar">
+    <input class="search-input" type="text" id="aramaInput" placeholder="Ad, soyad, tanı, karar ile arayın..." oninput="filtrele()">
+  </div>
+  <div class="table-wrap">
+    <div class="state" id="loadingState"><div class="state-ico">⏳</div><p>Yükleniyor...</p></div>
+    <div class="state hidden" id="emptyState"><div class="state-ico">📭</div><p>Kayıt bulunamadı</p></div>
+    <table class="table hidden" id="mainTable">
+      <thead>
+        <tr>
+          <th>Öğrenci</th>
+          <th>Görüşme</th>
+          <th>Sınıf</th>
+          <th>Tanı</th>
+          <th>Karar</th>
+          <th>Uzman</th>
+          <th>PDF</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const SUPA_URL = "https://zciraijmwxcwhryidlki.supabase.co";
+const SUPA_KEY = "sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
+const PDF_URL  = "https://ogrenci-form.netlify.app/pdf.html";
+const SIFRE    = "enabiz2026"; // ← ŞİFREYİ BURADAN DEĞİŞTİRİN
+
+let tumVeriler = [];
+let filtreliVeriler = [];
+
+// GİRİŞ
+function girisYap() {
+  const s = document.getElementById('sifreInput').value;
+  if (s === SIFRE) {
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('appWrap').style.display = 'flex';
+    sessionStorage.setItem('admin_auth', '1');
+    verileriYukle();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('sifreInput').value = '';
+    document.getElementById('sifreInput').focus();
+  }
+}
+
+function cikisYap() {
+  sessionStorage.removeItem('admin_auth');
+  document.getElementById('appWrap').style.display = 'none';
+  document.getElementById('loginWrap').style.display = 'flex';
+}
+
+// Oturum kontrolü
+if (sessionStorage.getItem('admin_auth') === '1') {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'flex';
+  verileriYukle();
+}
+
+// VERİ YÜKLE
+async function verileriYukle() {
+  try {
+    const res = await fetch(SUPA_URL + '/rest/v1/ogrenciler?order=created_at.desc&limit=500', {
+      headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
+    });
+    tumVeriler = await res.json();
+    filtreliVeriler = tumVeriler;
+    tabloyuGoster(filtreliVeriler);
+    document.getElementById('topbarCount').textContent = tumVeriler.length + ' öğrenci';
+  } catch(e) {
+    document.getElementById('loadingState').innerHTML = '<div class="state-ico">❌</div><p>Veri yüklenemedi</p>';
+  }
+}
+
+// FİLTRELE
+function filtrele() {
+  const q = document.getElementById('aramaInput').value.toLowerCase().trim();
+  if (!q) { filtreliVeriler = tumVeriler; }
+  else {
+    filtreliVeriler = tumVeriler.filter(r =>
+      (r.ad||'').toLowerCase().includes(q) ||
+      (r.soyad||'').toLowerCase().includes(q) ||
+      (r.tani||'').toLowerCase().includes(q) ||
+      (r.karar||'').toLowerCase().includes(q) ||
+      (r.uzman||'').toLowerCase().includes(q)
+    );
+  }
+  tabloyuGoster(filtreliVeriler);
+}
+
+// TABLO GÖSTER
+function tabloyuGoster(veriler) {
+  document.getElementById('loadingState').classList.add('hidden');
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+
+  if (!veriler.length) {
+    document.getElementById('emptyState').classList.remove('hidden');
+    document.getElementById('mainTable').classList.add('hidden');
+    return;
+  }
+
+  document.getElementById('emptyState').classList.add('hidden');
+  document.getElementById('mainTable').classList.remove('hidden');
+
+  veriler.forEach(function(r) {
+    const tr = document.createElement('tr');
+
+    // Fotoğraf + isim
+    const fotoHtml = r.foto_url
+      ? '<div class="mini-foto"><img src="' + r.foto_url + '" onerror="this.parentElement.textContent=\'👤\'"></div>'
+      : '<div class="mini-foto">👤</div>';
+
+    const dogum = r.dogum_tarihi ? tarihFormat(r.dogum_tarihi) : '';
+
+    tr.innerHTML = `
+      <td>
+        <div class="name-cell">
+          ${fotoHtml}
+          <div class="name-info">
+            <strong>${r.ad||''} ${r.soyad||''}</strong>
+            <span>${dogum}</span>
+          </div>
+        </div>
+      </td>
+      <td>${tarihFormat(r.gorusme_tarihi)||''}</td>
+      <td>${r.sinif ? '<span class="badge badge-blue">'+r.sinif+'</span>' : '—'}</td>
+      <td>${r.tani ? '<span class="badge '+taniBadge(r.tani)+'">'+r.tani+'</span>' : '—'}</td>
+      <td>${r.karar ? '<span class="badge '+kararBadge(r.karar)+'">'+r.karar+'</span>' : '—'}</td>
+      <td style="color:var(--sub);font-size:12px">${r.uzman||'—'}</td>
+      <td>
+        <button class="pdf-btn pdf-btn-tam" onclick="pdfAc(${r.id ? "'" + r.id + "'" : 'null'}, this)">
+          📄 Tam Form
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// PDF AÇ
+async function pdfAc(id, btn) {
+  if (!id) return;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '⏳ Yükleniyor...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(SUPA_URL + '/rest/v1/ogrenciler?id=eq.' + id, {
+      headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
+    });
+    const data = await res.json();
+    if (data && data[0]) {
+      const encoded = encodeURIComponent(JSON.stringify(data[0]));
+      window.open(PDF_URL + '?d=' + encoded + '&tip=TAM+FORM', '_blank');
+    }
+  } catch(e) {
+    alert('Hata: ' + e.message);
+  }
+
+  btn.innerHTML = originalText;
+  btn.disabled = false;
+}
+
+// YARDIMCI FONKSİYONLAR
+function tarihFormat(t) {
+  if (!t) return '';
+  const m = String(t).match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return m[3]+'.'+m[2]+'.'+m[1];
+  return t;
+}
+
+function taniBadge(t) {
+  if (!t) return 'badge-gray';
+  if (t.includes('Raporlu')) return 'badge-green';
+  if (t.includes('Aday')) return 'badge-orange';
+  return 'badge-gray';
+}
+
+function kararBadge(k) {
+  if (!k) return 'badge-gray';
+  if (k === 'KAYDEDİLDİ') return 'badge-green';
+  if (k === 'RED') return 'badge-red';
+  if (k.includes('Takibe')) return 'badge-blue';
+  return 'badge-gray';
+}
+</script>
+</body>
+</html>
