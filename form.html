@@ -966,32 +966,10 @@ function checkTels(){
 }
 
 /* ─ SUBMIT ─ */
-function submitForm(){
-  const btn=document.querySelector('.btn-submit');btn.textContent='Gönderiliyor…';btn.disabled=true;
-  const p={
-    uzman:document.getElementById('uzman').value,
-    gorusmeTarihi:document.getElementById('gorusmeTarihi').value,
-    ogrenciAd:document.getElementById('ogrenciAd').value,
-    ogrenciSoyad:document.getElementById('ogrenciSoyad').value,
-    okul:document.getElementById('okul').value,
-    sinif:D.sinif||'',dogumTarihi:getDob(),
-    gorusmeNot:document.getElementById('gorusmeNot').value+(document.getElementById('gorusmeNot2').value.trim()?'\n---\n'+document.getElementById('gorusmeNot2').value:''),
-    saglikDurum:getSaglikStr(),
-    ak_okuma:rVal('ak_okuma'),ak_anlama:rVal('ak_anlama'),ak_yazma:rVal('ak_yazma'),ak_mat:rVal('ak_mat'),ak_ifade:rVal('ak_ifade'),ak_kavram:rVal('ak_kavram'),
-    tani:D.tani||'',dilModul:rVal('dilModul'),aileDil:rVal('aileDil'),dilProb:getDilStr(),
-    ozelEgitim:rVal('ozelEgitim'),ozelEgitimAcik:document.getElementById('ozelEgitimAcik').value,
-    saglikAnne:rVal('saglikAnne'),saglikBaba:rVal('saglikBaba'),
-    egitimAnne:rVal('egitimAnne'),egitimBaba:rVal('egitimBaba'),
-    beraberlik:rVal('beraberlik'),adres:document.getElementById('adres').value,
-    anneAd:document.getElementById('anneAd').value,anneIletisim:document.getElementById('anneIletisim').value,
-    anneMeslek:document.getElementById('anneMeslek').value,anneAlt:document.getElementById('anneAlt').value,    babaAd:document.getElementById('babaAd').value,babaIletisim:document.getElementById('babaIletisim').value,
-    babaMeslek:document.getElementById('babaMeslek').value,babaAlt:document.getElementById('babaAlt').value,
-    tcNo:document.getElementById('tcNo').value,
-    rehab:rVal('rehab'),rehabMerkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:'',
-    rehabSure:D.rehabSure||'',aileAAA:rVal('aileAAA'),temelIhtiyac:rVal('temelIhtiyac'),
-    raporOlas:D.raporOlas||'',karar:rVal('karar'),
-  };
-  const url=WH+'?data='+encodeURIComponent(JSON.stringify(p));
+async function submitForm(){
+  const btn=document.querySelector('.btn-submit');
+  btn.textContent='Gönderiliyor…';btn.disabled=true;
+
   const done=()=>{
     document.getElementById('sec8').classList.add('hidden');
     document.getElementById('secSuccess').classList.remove('hidden');
@@ -1000,10 +978,90 @@ function submitForm(){
     window.scrollTo({top:0,behavior:'smooth'});
   };
 
-  const img=new Image();
-  img.onload=img.onerror=done;
-  img.src=WH+'?data='+encodeURIComponent(JSON.stringify(p));
-  setTimeout(()=>{if(document.getElementById('secSuccess').classList.contains('hidden'))done();},5000);
+  try{
+    const ad=document.getElementById('ogrenciAd').value;
+    const soyad=document.getElementById('ogrenciSoyad').value;
+    const tarih=document.getElementById('gorusmeTarihi').value;
+    const ogrenciTam=(ad+' '+soyad).trim();
+
+    // Fotoğraf yükle
+    let fotoUrl='',kimlikUrl='';
+    const fotoData=document.getElementById('fotoData').value;
+    const kimlikData=document.getElementById('kimlikData').value;
+    if(fotoData&&fotoData.length>100) fotoUrl=await uploadFoto(fotoData,ogrenciTam+'_foto_'+tarih+'.jpg');
+    if(kimlikData&&kimlikData.length>100) kimlikUrl=await uploadFoto(kimlikData,ogrenciTam+'_kimlik_'+tarih+'.jpg');
+
+    const p={
+      uzman:document.getElementById('uzman').value,
+      gorusme_tarihi:tarih,
+      ad:ad, soyad:soyad,
+      okul:document.getElementById('okul').value,
+      sinif:D.sinif||'',
+      dogum_tarihi:getDob(),
+      gorusme_not:document.getElementById('gorusmeNot').value+(document.getElementById('gorusmeNot2').value.trim()?'\n---\n'+document.getElementById('gorusmeNot2').value:''),
+      saglik_durum:getSaglikStr(),
+      ak_okuma:rVal('ak_okuma'),ak_anlama:rVal('ak_anlama'),ak_yazma:rVal('ak_yazma'),
+      ak_mat:rVal('ak_mat'),ak_ifade:rVal('ak_ifade'),ak_kavram:rVal('ak_kavram'),
+      tani:D.tani||'',dil_modul:rVal('dilModul'),aile_dil:rVal('aileDil'),dil_prob:getDilStr(),
+      ozel_egitim:rVal('ozelEgitim'),
+      ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
+      saglik_anne:rVal('saglikAnne'),saglik_baba:rVal('saglikBaba'),
+      egitim_anne:rVal('egitimAnne'),egitim_baba:rVal('egitimBaba'),
+      beraberlik:rVal('beraberlik'),
+      adres:document.getElementById('adres').value,
+      anne_ad:document.getElementById('anneAd').value,
+      anne_tel:document.getElementById('anneIletisim').value,
+      anne_meslek:document.getElementById('anneMeslek').value,
+      anne_alt:document.getElementById('anneAlt').value,
+      baba_ad:document.getElementById('babaAd').value,
+      baba_tel:document.getElementById('babaIletisim').value,
+      baba_meslek:document.getElementById('babaMeslek').value,
+      baba_alt:document.getElementById('babaAlt').value,
+      tc_no:document.getElementById('tcNo').value,
+      rehab:rVal('rehab'),
+      rehab_merkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:'',
+      rehab_sure:D.rehabSure||'',
+      aaa:rVal('aileAAA'),
+      temel_ihtiyac:rVal('temelIhtiyac'),
+      rapor_olasilik:D.raporOlas||'',
+      karar:rVal('karar'),
+      foto_url:fotoUrl,
+      kimlik_url:kimlikUrl
+    };
+
+    await fetch(SUPA_URL+'/rest/v1/ogrenciler',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SUPA_KEY,
+        'Authorization':'Bearer '+SUPA_KEY,
+        'Prefer':'return=minimal'
+      },
+      body:JSON.stringify(p)
+    });
+
+    done();
+  }catch(e){
+    console.error(e);
+    done();
+  }
+}
+
+async function uploadFoto(base64Data,dosyaAdi){
+  try{
+    const base64=base64Data.split(',')[1];
+    const binary=atob(base64);
+    const arr=new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i++) arr[i]=binary.charCodeAt(i);
+    const blob=new Blob([arr],{type:'image/jpeg'});
+    const res=await fetch(SUPA_URL+'/storage/v1/object/fotograflar/'+encodeURIComponent(dosyaAdi),{
+      method:'POST',
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'image/jpeg'},
+      body:blob
+    });
+    if(res.ok) return SUPA_URL+'/storage/v1/object/public/fotograflar/'+encodeURIComponent(dosyaAdi);
+    return '';
+  }catch(e){return '';}
 }
 </script>
 </body>
