@@ -71,14 +71,12 @@ tr:last-child td{border-bottom:none}
 </div>
 <div class="page" id="page">
   <div class="hdr">
-    <div class="tip" id="tipEl">TAM FORM</div>
     <div class="hdr-row">
       <div class="hdr-info">
-        <div class="hdr-tag">Öğrenci Tanıma Formu</div>
         <div class="hdr-name" id="elAd">—</div>
         <div class="meta" id="elMeta"></div>
       </div>
-      <div class="foto" id="elFoto">👤</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0"><div class="foto" id="elFoto">👤</div><div id="tipEl" style="background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:8px;font-weight:800;padding:2px 8px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase;text-align:center">TAM FORM</div></div>
     </div>
   </div>
   <div class="body" id="elBody"></div>
@@ -143,6 +141,7 @@ function render(d, tip) {
   if (g('okul')) meta += '<span>🏫 '+g('okul')+'</span>';
   if (g('gorusme_tarihi')) meta += '<span>📅 Görüşme: '+tf(g('gorusme_tarihi'))+'</span>';
   if (g('uzman')) meta += '<span>🧑‍💼 '+g('uzman')+'</span>';
+  if (g('tc_no')) meta += '<span>🪪 TC: '+g('tc_no')+'</span>';
   document.getElementById('elMeta').innerHTML = meta;
 
   // Fotoğraf
@@ -211,7 +210,14 @@ function render(d, tip) {
     html += '<div class="s"><div class="st">📝 Görüşme Notları</div><div class="not">'+g('gorusme_not')+'</div></div>';
   }
 
-  // 5. Aile
+  // 5. AAA önce
+  html += '<div class="s"><div class="st">⭐ AAA & Aile Değerlendirmesi</div>';
+  html += '<div class="g2" style="margin-bottom:6px">';
+  html += field('AAA', g('aaa'));
+  html += field('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik')+' / 5' : '');
+  html += '</div></div>';
+
+  // 5b. Aile
   html += '<div class="s"><div class="st">👨‍👩‍👧 Aile Bilgileri</div>';
   html += '<div class="ag" style="margin-bottom:7px">';
   html += '<div class="ac aca"><div class="act">👩 Anne</div>';
@@ -237,23 +243,20 @@ function render(d, tip) {
     html += '</div></div>';
   }
 
-  // 7. TC
-  if (g('tc_no')) {
-    html += '<div class="s"><div class="st">🪪 Kimlik</div><div class="g2">';
-    html += field('Öğrenci TC No', g('tc_no'));
-    html += '</div></div>';
-  }
-
   // 8. Karar
-  html += '<div class="s"><div class="st">⭐ Değerlendirme & Karar</div>';
-  html += '<div class="g2" style="margin-bottom:6px">';
-  html += field('AAA', g('aaa'));
-  html += field('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik')+' / 5' : '');
-  html += '</div>';
+  html += '<div class="s"><div class="st">✅ Karar</div>';
   var karar = g('karar') || '—';
   var kbCls = /kayded/i.test(karar)?'kbk':/^red$/i.test(karar.trim())?'kbr':/takip/i.test(karar)?'kbt':'kbd';
   html += '<div class="kb '+kbCls+'"><span class="ki">📋</span><span class="kt">'+karar+'</span></div>';
   html += '</div>';
+
+  // 9. Kimlik fotoğrafı (ikinci sayfa)
+  if (g('kimlik_url')) {
+    html += '<div style="page-break-before:always;padding:20px;text-align:center">';
+    html += '<div class="st" style="margin-bottom:12px">🪪 Kimlik Fotoğrafı</div>';
+    html += '<img src="'+g('kimlik_url')+'" style="max-width:100%;max-height:400px;border-radius:10px;border:1px solid #e2dbd0;box-shadow:0 2px 12px rgba(0,0,0,.1)">';
+    html += '</div>';
+  }
 
   document.getElementById('elBody').innerHTML = html;
 }
