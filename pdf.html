@@ -76,7 +76,7 @@ tr:last-child td{border-bottom:none}
         <div class="hdr-name" id="elAd">—</div>
         <div class="meta" id="elMeta"></div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0"><div class="foto" id="elFoto">👤</div><div id="tipEl" style="background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:8px;font-weight:800;padding:2px 8px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase;text-align:center">TAM FORM</div></div>
+      <div id="tipEl" style="background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase;align-self:flex-start">TAM FORM</div>
     </div>
   </div>
   <div class="body" id="elBody"></div>
@@ -236,11 +236,22 @@ function render(d, tip) {
   html += '<div class="kb '+kbCls+'"><span class="ki">📋</span><span class="kt">'+karar+'</span></div>';
   html += '</div>';
 
-  // 8. Kimlik fotoğrafı (ikinci sayfa)
-  if (g('kimlik_url')) {
-    html += '<div style="page-break-before:always;padding:20px;text-align:center">';
-    html += '<div class="st" style="margin-bottom:12px">🪪 Kimlik Fotoğrafı</div>';
-    html += '<img src="'+g('kimlik_url')+'" style="max-width:100%;max-height:500px;border-radius:10px;border:1px solid #e2dbd0;box-shadow:0 2px 12px rgba(0,0,0,.1)">';
+  // 8. İkinci sayfa: öğrenci fotoğrafı + kimlik
+  var hasFoto = g('foto_url') || g('kimlik_url');
+  if (hasFoto) {
+    html += '<div style="page-break-before:always;padding:24px;display:flex;gap:24px;justify-content:center;align-items:flex-start">';
+    if (g('foto_url')) {
+      html += '<div style="text-align:center">';
+      html += '<div class="st" style="margin-bottom:10px">📷 Öğrenci Fotoğrafı</div>';
+      html += '<img src="'+g('foto_url')+'" style="max-width:220px;max-height:300px;border-radius:10px;border:1px solid #e2dbd0;box-shadow:0 2px 12px rgba(0,0,0,.1)">';
+      html += '</div>';
+    }
+    if (g('kimlik_url')) {
+      html += '<div style="text-align:center">';
+      html += '<div class="st" style="margin-bottom:10px">🪪 Kimlik Fotoğrafı</div>';
+      html += '<img src="'+g('kimlik_url')+'" style="max-width:320px;max-height:300px;border-radius:10px;border:1px solid #e2dbd0;box-shadow:0 2px 12px rgba(0,0,0,.1)">';
+      html += '</div>';
+    }
     html += '</div>';
   }
 
