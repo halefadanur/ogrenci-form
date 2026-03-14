@@ -688,7 +688,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </div>
 
 <script>
-const WH="https://script.google.com/macros/s/AKfycbw88Q3fy2sfx0kQvRJfW6RkMtByO9MHOJ9evZuNEPjtG-I1yY7tmD9eKS9miC06Gb4Azg/exec";
+const SUPA_URL="https://zciraijmwxcwhryidlki.supabase.co";
+const SUPA_KEY="sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
 const D={sinif:null,tani:null,saglik:{},dilProb:{},rehabSure:null,raporOlas:null};
 
 /* ─ INIT ─ */
@@ -991,11 +992,6 @@ function submitForm(){
     raporOlas:D.raporOlas||'',karar:rVal('karar'),
   };
   const url=WH+'?data='+encodeURIComponent(JSON.stringify(p));
-  const fotoData=document.getElementById('fotoData').value;
-  const kimlikData=document.getElementById('kimlikData').value;
-  if(fotoData&&fotoData.length>100) p.fotoData=fotoData;
-  if(kimlikData&&kimlikData.length>100) p.kimlikData=kimlikData;
-
   const done=()=>{
     document.getElementById('sec8').classList.add('hidden');
     document.getElementById('secSuccess').classList.remove('hidden');
@@ -1007,7 +1003,7 @@ function submitForm(){
   const img=new Image();
   img.onload=img.onerror=done;
   img.src=WH+'?data='+encodeURIComponent(JSON.stringify(p));
-  setTimeout(()=>{if(document.getElementById('secSuccess').classList.contains('hidden'))done();},6000);
+  setTimeout(()=>{if(document.getElementById('secSuccess').classList.contains('hidden'))done();},5000);
 }
 </script>
 </body>
