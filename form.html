@@ -864,7 +864,7 @@ function goTo(n){
 
 /* ══ CROP ═════════════════════════════════════ */
 let cropTgt=null,cropImg=new Image();
-const OW=150,OH=200;
+const OW=300,OH=400;
 let cr={ox:0,oy:0,scale:1,drag:false,lx:0,ly:0};
 
 function handleFile(inp,tgt){
@@ -876,7 +876,10 @@ function handleFile(inp,tgt){
       cropImg=img;
       const s=Math.max(OW/img.naturalWidth,OH/img.naturalHeight);
       cr={ox:(OW-img.naturalWidth*s)/2,oy:(OH-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
-      document.getElementById('cropZoom').value=s;
+      const zEl=document.getElementById('cropZoom');
+      zEl.min=Math.max(0.05,s*0.3).toFixed(3);
+      zEl.max=(s*5).toFixed(3);
+      zEl.value=s;
       document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
       openCrop();
     };img.src=e.target.result;
@@ -888,7 +891,10 @@ function reCrop(tgt){
   img.onload=()=>{
     cropImg=img;const s=Math.max(OW/img.naturalWidth,OH/img.naturalHeight);
     cr={ox:(OW-img.naturalWidth*s)/2,oy:(OH-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
-    document.getElementById('cropZoom').value=s;document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
+    const zEl2=document.getElementById('cropZoom');
+    zEl2.min=Math.max(0.05,s*0.3).toFixed(3);
+    zEl2.max=(s*5).toFixed(3);
+    zEl2.value=s;document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
     openCrop();
   };img.src=src;
 }
@@ -927,7 +933,7 @@ function applyCrop(){
   const out=document.createElement('canvas');out.width=OW;out.height=OH;
   const ctx=out.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,OW,OH);
   ctx.drawImage(cropImg,cr.ox,cr.oy,cropImg.naturalWidth*cr.scale,cropImg.naturalHeight*cr.scale);
-  const url=out.toDataURL('image/jpeg',.3);
+  const url=out.toDataURL('image/jpeg',.7);
   document.getElementById(cropTgt+'Img').src=url;
   document.getElementById(cropTgt+'Data').value=url;
   document.getElementById(cropTgt+'Preview').classList.remove('hidden');
