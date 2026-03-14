@@ -57,7 +57,7 @@ tr:last-child td{border-bottom:none}
 .kbt{background:linear-gradient(135deg,#1e3a5f,#1d4ed8);color:#fff}
 .kbd{background:linear-gradient(135deg,#3d2b00,#c9720a);color:#fff}
 .not{background:#fffbf0;border:1.5px solid #fde68a;border-radius:7px;padding:8px 11px;font-size:11px;line-height:1.7;color:#3d2b00;white-space:pre-wrap}
-.ft{background:#f8f5f0;border-top:1px solid #e2dbd0;padding:8px 20px;display:flex;justify-content:space-between;font-size:9px;color:#a09a94}
+.ft{border-top:1px solid #e8e4de;padding:6px 20px;display:flex;justify-content:space-between;font-size:9px;color:#b0a898}
 @media print{.bar{display:none!important}body{background:#fff}.page{margin:0;box-shadow:none;width:100%}}
 </style>
 </head>
@@ -156,77 +156,20 @@ function render(d, tip) {
   // Body
   var html = '';
 
-  // 1. Tanı & Akademik
-  html += '<div class="s"><div class="st">🗂️ Tanı & Akademik Durum</div>';
-  html += '<div class="g2" style="margin-bottom:8px">';
-  html += field('Rapor / Tanı', g('tani'));
-  html += field('Temel İhtiyaç Alanı', g('temel_ihtiyac'));
-  html += '</div>';
-  
-  var aklar = [
-    ['Okuma','ak_okuma'],['Anlama','ak_anlama'],
-    ['Yazma','ak_yazma'],['Matematik','ak_mat'],
-    ['İfade','ak_ifade'],['Kavram','ak_kavram']
-  ];
-  var akHtml = '<table><thead><tr><th>Alan</th><th>Değerlendirme</th><th>Alan</th><th>Değerlendirme</th></tr></thead><tbody>';
-  for (var i=0; i<aklar.length; i+=2) {
-    var a1 = aklar[i], a2 = aklar[i+1];
-    var v1 = g(a1[1]), v2 = g(a2[1]);
-    var cls1 = v1==='Akranları düzeyinde'?'dg':v1==='Zayıf'?'dy':v1==='Çok zayıf'?'dr':'dn';
-    var cls2 = v2==='Akranları düzeyinde'?'dg':v2==='Zayıf'?'dy':v2==='Çok zayıf'?'dr':'dn';
-    akHtml += '<tr>';
-    akHtml += '<td style="font-weight:600">'+a1[0]+'</td>';
-    akHtml += '<td>'+(v1?'<span class="dot '+cls1+'"></span>'+v1:'—')+'</td>';
-    akHtml += '<td style="font-weight:600">'+a2[0]+'</td>';
-    akHtml += '<td>'+(v2?'<span class="dot '+cls2+'"></span>'+v2:'—')+'</td>';
-    akHtml += '</tr>';
-  }
-  akHtml += '</tbody></table>';
-  html += akHtml + '</div>';
-
-  // 2. Sağlık
-  if (g('saglik_durum')) {
-    html += '<div class="s"><div class="st">🩺 Sağlık & Davranış</div><div class="tags">';
-    g('saglik_durum').split(';').forEach(function(s) {
-      s = s.trim(); if (s) html += '<span class="tag tr">'+s+'</span>';
-    });
-    html += '</div></div>';
-  }
-
-  // 3. Dil
-  var dilVar = g('dil_prob') || g('dil_modul') || g('aile_dil');
-  if (dilVar) {
-    html += '<div class="s"><div class="st">🔤 Dil Gelişimi</div><div class="tags">';
-    if (g('dil_modul') && g('dil_modul') !== 'Yok') html += '<span class="tag tb">Modül: '+g('dil_modul')+'</span>';
-    if (g('aile_dil') === 'Evet') html += '<span class="tag to">Ailede dil problemi var</span>';
-    if (g('dil_prob')) g('dil_prob').split(';').forEach(function(s) {
-      s = s.trim(); if (s) html += '<span class="tag to">'+s+'</span>';
-    });
-    html += '</div></div>';
-  }
-
-  // 4. Not
-  if (g('gorusme_not')) {
-    html += '<div class="s"><div class="st">📝 Görüşme Notları</div><div class="not">'+g('gorusme_not')+'</div></div>';
-  }
-
-  // 5. AAA önce
-  html += '<div class="s"><div class="st">⭐ AAA & Aile Değerlendirmesi</div>';
+  // 1. ÜST BANT: AAA + Rapor olasılığı + Anne/Baba + Birlikte + Adres
+  html += '<div class="s">';
   html += '<div class="g2" style="margin-bottom:6px">';
   html += field('AAA', g('aaa'));
   html += field('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik')+' / 5' : '');
-  html += '</div></div>';
-
-  // 5b. Aile
-  html += '<div class="s"><div class="st">👨‍👩‍👧 Aile Bilgileri</div>';
-  html += '<div class="ag" style="margin-bottom:7px">';
+  html += '</div>';
+  html += '<div class="ag" style="margin-bottom:6px">';
   html += '<div class="ac aca"><div class="act">👩 Anne</div>';
-  if (g('saglik_anne') === 'Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;margin-bottom:6px;display:inline-block">⚠️ Vefat</div>';
+  if (g('saglik_anne') === 'Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;margin-bottom:5px;display:inline-block">⚠️ Vefat</div>';
   html += '<div class="ar"><span class="ak">Adı</span><span class="av">'+(g('anne_ad')||'—')+'</span></div>';
   html += '<div class="ar"><span class="ak">Tel</span><span class="av">'+(g('anne_tel')||'—')+'</span></div>';
   html += '</div>';
   html += '<div class="ac acb"><div class="act">👨 Baba</div>';
-  if (g('saglik_baba') === 'Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;margin-bottom:6px;display:inline-block">⚠️ Vefat</div>';
+  if (g('saglik_baba') === 'Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;margin-bottom:5px;display:inline-block">⚠️ Vefat</div>';
   html += '<div class="ar"><span class="ak">Adı</span><span class="av">'+(g('baba_ad')||'—')+'</span></div>';
   html += '<div class="ar"><span class="ak">Tel</span><span class="av">'+(g('baba_tel')||'—')+'</span></div>';
   html += '</div></div>';
@@ -235,26 +178,69 @@ function render(d, tip) {
   html += '<div class="f s2"><div class="fl">Adres</div><div class="fv">'+(g('adres')||'—')+'</div></div>';
   html += '</div></div>';
 
-  // 6. Rehab
-  if (g('rehab') === 'Evet') {
-    html += '<div class="s"><div class="st">🏥 Rehabilitasyon</div><div class="g3">';
-    html += field('Durum', 'Evet');
-    html += '<div class="f s2"><div class="fl">Merkez / Süre</div><div class="fv">'+[g('rehab_merkez'), g('rehab_sure') ? g('rehab_sure')+' yıl' : ''].filter(Boolean).join(' · ')+'</div></div>';
+  // 2. Tanı & Akademik
+  html += '<div class="s"><div class="st">🗂️ Tanı & Akademik Durum</div>';
+  html += '<div class="g2" style="margin-bottom:8px">';
+  html += field('Rapor / Tanı', g('tani'));
+  html += field('Temel İhtiyaç Alanı', g('temel_ihtiyac'));
+  html += '</div>';
+  var aklar = [
+    ['Okuma','ak_okuma'],['Anlama','ak_anlama'],
+    ['Yazma','ak_yazma'],['Matematik','ak_mat'],
+    ['İfade','ak_ifade'],['Kavram','ak_kavram']
+  ];
+  var akHtml = '<table><thead><tr><th>Alan</th><th>Değerlendirme</th><th>Alan</th><th>Değerlendirme</th></tr></thead><tbody>';
+  for (var i=0; i<aklar.length; i+=2) {
+    var a1=aklar[i],a2=aklar[i+1];
+    var v1=g(a1[1]),v2=g(a2[1]);
+    var c1=v1==='Akranları düzeyinde'?'dg':v1==='Zayıf'?'dy':v1==='Çok zayıf'?'dr':'dn';
+    var c2=v2==='Akranları düzeyinde'?'dg':v2==='Zayıf'?'dy':v2==='Çok zayıf'?'dr':'dn';
+    akHtml += '<tr><td style="font-weight:600">'+a1[0]+'</td><td>'+(v1?'<span class="dot '+c1+'"></span>'+v1:'—')+'</td><td style="font-weight:600">'+a2[0]+'</td><td>'+(v2?'<span class="dot '+c2+'"></span>'+v2:'—')+'</td></tr>';
+  }
+  akHtml += '</tbody></table>';
+  html += akHtml + '</div>';
+
+  // 3. Sağlık
+  if (g('saglik_durum')) {
+    html += '<div class="s"><div class="st">🩺 Sağlık & Davranış</div><div class="tags">';
+    g('saglik_durum').split(';').forEach(function(s){s=s.trim();if(s)html+='<span class="tag tr">'+s+'</span>';});
     html += '</div></div>';
   }
 
-  // 8. Karar
+  // 4. Dil
+  if (g('dil_prob')||g('dil_modul')||g('aile_dil')) {
+    html += '<div class="s"><div class="st">🔤 Dil Gelişimi</div><div class="tags">';
+    if (g('dil_modul')&&g('dil_modul')!=='Yok') html+='<span class="tag tb">Modül: '+g('dil_modul')+'</span>';
+    if (g('aile_dil')==='Evet') html+='<span class="tag to">Ailede dil problemi var</span>';
+    if (g('dil_prob')) g('dil_prob').split(';').forEach(function(s){s=s.trim();if(s)html+='<span class="tag to">'+s+'</span>';});
+    html += '</div></div>';
+  }
+
+  // 5. Not
+  if (g('gorusme_not')) {
+    html += '<div class="s"><div class="st">📝 Görüşme Notları</div><div class="not">'+g('gorusme_not')+'</div></div>';
+  }
+
+  // 6. Rehab
+  if (g('rehab')==='Evet') {
+    html += '<div class="s"><div class="st">🏥 Rehabilitasyon</div><div class="g3">';
+    html += field('Durum','Evet');
+    html += '<div class="f s2"><div class="fl">Merkez / Süre</div><div class="fv">'+[g('rehab_merkez'),g('rehab_sure')?g('rehab_sure')+' yıl':''].filter(Boolean).join(' · ')+'</div></div>';
+    html += '</div></div>';
+  }
+
+  // 7. Karar
   html += '<div class="s"><div class="st">✅ Karar</div>';
-  var karar = g('karar') || '—';
+  var karar = g('karar')||'—';
   var kbCls = /kayded/i.test(karar)?'kbk':/^red$/i.test(karar.trim())?'kbr':/takip/i.test(karar)?'kbt':'kbd';
   html += '<div class="kb '+kbCls+'"><span class="ki">📋</span><span class="kt">'+karar+'</span></div>';
   html += '</div>';
 
-  // 9. Kimlik fotoğrafı (ikinci sayfa)
+  // 8. Kimlik fotoğrafı (ikinci sayfa)
   if (g('kimlik_url')) {
     html += '<div style="page-break-before:always;padding:20px;text-align:center">';
     html += '<div class="st" style="margin-bottom:12px">🪪 Kimlik Fotoğrafı</div>';
-    html += '<img src="'+g('kimlik_url')+'" style="max-width:100%;max-height:400px;border-radius:10px;border:1px solid #e2dbd0;box-shadow:0 2px 12px rgba(0,0,0,.1)">';
+    html += '<img src="'+g('kimlik_url')+'" style="max-width:100%;max-height:500px;border-radius:10px;border:1px solid #e2dbd0;box-shadow:0 2px 12px rgba(0,0,0,.1)">';
     html += '</div>';
   }
 
