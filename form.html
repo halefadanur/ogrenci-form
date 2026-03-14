@@ -863,7 +863,7 @@ function goTo(n){
 
 /* ══ CROP ═════════════════════════════════════ */
 let cropTgt=null,cropImg=new Image();
-const OW=300,OH=400;
+const OW=150,OH=200;
 let cr={ox:0,oy:0,scale:1,drag:false,lx:0,ly:0};
 
 function handleFile(inp,tgt){
@@ -926,7 +926,7 @@ function applyCrop(){
   const out=document.createElement('canvas');out.width=OW;out.height=OH;
   const ctx=out.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,OW,OH);
   ctx.drawImage(cropImg,cr.ox,cr.oy,cropImg.naturalWidth*cr.scale,cropImg.naturalHeight*cr.scale);
-  const url=out.toDataURL('image/jpeg',.5);
+  const url=out.toDataURL('image/jpeg',.3);
   document.getElementById(cropTgt+'Img').src=url;
   document.getElementById(cropTgt+'Data').value=url;
   document.getElementById(cropTgt+'Preview').classList.remove('hidden');
@@ -991,13 +991,11 @@ function submitForm(){
     raporOlas:D.raporOlas||'',karar:rVal('karar'),
   };
   const url=WH+'?data='+encodeURIComponent(JSON.stringify(p));
-  // Fotoğrafları payload'a ekle
   const fotoData=document.getElementById('fotoData').value;
   const kimlikData=document.getElementById('kimlikData').value;
   if(fotoData&&fotoData.length>100) p.fotoData=fotoData;
   if(kimlikData&&kimlikData.length>100) p.kimlikData=kimlikData;
 
-  // fetch ile POST olarak gönder
   const done=()=>{
     document.getElementById('sec8').classList.add('hidden');
     document.getElementById('secSuccess').classList.remove('hidden');
@@ -1006,11 +1004,9 @@ function submitForm(){
     window.scrollTo({top:0,behavior:'smooth'});
   };
 
-  fetch(WH, {
-    method:'POST',
-    headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    body:'data='+encodeURIComponent(JSON.stringify(p))
-  }).then(done).catch(done);
+  const img=new Image();
+  img.onload=img.onerror=done;
+  img.src=WH+'?data='+encodeURIComponent(JSON.stringify(p));
   setTimeout(()=>{if(document.getElementById('secSuccess').classList.contains('hidden'))done();},6000);
 }
 </script>
