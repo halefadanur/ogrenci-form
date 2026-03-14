@@ -155,16 +155,25 @@ function render() {
   if (g('saglik_anne')==='Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:5px;display:inline-block">⚠️ Vefat</div>';
   html += '<div class="ar"><span class="ak">Adı</span><span class="av">'+(g('anne_ad')||'—')+'</span></div>';
   html += '<div class="ar"><span class="ak">Tel</span><span class="av">'+(g('anne_tel')||'—')+'</span></div>';
+  if(g('anne_alt')) html += '<div class="ar"><span class="ak">Not</span><span class="av">'+g('anne_alt')+'</span></div>';
   html += '</div>';
   html += '<div class="ac acb"><div class="act">👨 Baba</div>';
   if (g('saglik_baba')==='Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:5px;display:inline-block">⚠️ Vefat</div>';
   html += '<div class="ar"><span class="ak">Adı</span><span class="av">'+(g('baba_ad')||'—')+'</span></div>';
   html += '<div class="ar"><span class="ak">Tel</span><span class="av">'+(g('baba_tel')||'—')+'</span></div>';
+  if(g('baba_alt')) html += '<div class="ar"><span class="ak">Not</span><span class="av">'+g('baba_alt')+'</span></div>';
   html += '</div></div>';
   html += '<div class="g3">';
   html += f('Birlikte mi?', g('beraberlik'));
   html += '<div class="f s2"><div class="fl">Adres</div><div class="fv">'+(g('adres')||'—')+'</div></div>';
   html += '</div></div>';
+
+  // 1b. Özel eğitim
+  if(g('ozel_egitim')==='Evet'&&g('ozel_egitim_acik')){
+    html+='<div class="s"><div class="st">🎓 Ailede Özel Eğitim</div>';
+    html+=f('Açıklama',g('ozel_egitim_acik'));
+    html+='</div>';
+  }
 
   // 2. Tanı & Akademik
   html += '<div class="s"><div class="st">🗂️ Tanı & Akademik Durum</div>';
@@ -178,13 +187,22 @@ function render() {
     html += f('Temel İhtiyaç Alanı', ihtiyac);
   }
   html += '</div>';
+  // Sınıfa göre hangi alanlar değerlendirme dışı olduğunu belirle
+  var sinif = g('sinif');
+  var kucukSinif = sinif==='Anaokulu-Kreş' || sinif==='Okula Gitmeyen';
   var aklar=[['Okuma','ak_okuma'],['Anlama','ak_anlama'],['Yazma','ak_yazma'],['Matematik','ak_mat'],['İfade','ak_ifade'],['Kavram','ak_kavram']];
+  // Silik olan alanları filtrele
+  var aktifAklar = aklar.filter(function(a){
+    if(kucukSinif && ['ak_okuma','ak_anlama','ak_yazma','ak_mat'].includes(a[1])) return false;
+    if(!kucukSinif && a[1]==='ak_kavram') return false;
+    return true;
+  });
   var t='<table><thead><tr><th>Alan</th><th>Değerlendirme</th><th>Alan</th><th>Değerlendirme</th></tr></thead><tbody>';
-  for(var i=0;i<aklar.length;i+=2){
-    var a1=aklar[i],a2=aklar[i+1],v1=g(a1[1]),v2=g(a2[1]);
+  for(var i=0;i<aktifAklar.length;i+=2){
+    var a1=aktifAklar[i],a2=aktifAklar[i+1]||null,v1=g(a1[1]),v2=a2?g(a2[1]):'';
     var c1=v1==='Akranları düzeyinde'?'dg':v1==='Zayıf'?'dy':v1==='Çok zayıf'?'dr':'dn';
     var c2=v2==='Akranları düzeyinde'?'dg':v2==='Zayıf'?'dy':v2==='Çok zayıf'?'dr':'dn';
-    t+='<tr><td style="font-weight:600">'+a1[0]+'</td><td>'+(v1?'<span class="dot '+c1+'"></span>'+v1:'—')+'</td><td style="font-weight:600">'+a2[0]+'</td><td>'+(v2?'<span class="dot '+c2+'"></span>'+v2:'—')+'</td></tr>';
+    t+='<tr><td style="font-weight:600">'+a1[0]+'</td><td>'+(v1?'<span class="dot '+c1+'"></span>'+v1:'—')+'</td><td style="font-weight:600">'+(a2?a2[0]:'')+'</td><td>'+(v2?'<span class="dot '+c2+'"></span>'+v2:'')+'</td></tr>';
   }
   html += t+'</tbody></table></div>';
 
