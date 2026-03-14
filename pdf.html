@@ -226,21 +226,22 @@ body{font-family:'Inter',sans-serif;background:#f0ede8;color:#16130e;-webkit-pri
 // Veri kaynağı: window.__D__ veya URL parametresi
 var _params = new URLSearchParams(window.location.search);
 var _raw = _params.get('d');
-var d   = window.__D__ || (_raw ? JSON.parse(decodeURIComponent(_raw)) : null);
+var _data = window.__D__ || (_raw ? JSON.parse(decodeURIComponent(_raw)) : null);
 var tip = window.__TIP__ || _params.get('tip') || "TAM FORM";
+var d = _data;
 
 if (!d) {
   document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:sans-serif;color:#888"><h2>Veri bulunamadı</h2><p style="margin-top:8px">Bu sayfa Sheets menüsünden açılmalıdır.</p></div>';
 } else {
   document.getElementById('tipBadge').textContent = tip;
-  doldur(d);
+  doldur();
 }
 
-function v(key) {
-  // Hem orijinal key hem lowercase hem uppercase ilk harf dene
-  var val = d[key];
-  if (val === undefined || val === null || String(val).trim() === '') val = d[key.toLowerCase()];
-  if (val === undefined || val === null || String(val).trim() === '') val = d[key.charAt(0).toUpperCase() + key.slice(1)];
+function v(key, obj) {
+  var data = obj || d;
+  var val = data[key];
+  if (!val || String(val).trim() === '') val = data[key.toLowerCase()];
+  if (!val || String(val).trim() === '') val = data[key.charAt(0).toUpperCase() + key.slice(1)];
   return (val !== undefined && val !== null && String(val).trim() !== '') ? String(val).trim() : null;
 }
 
@@ -261,7 +262,8 @@ function tf(t) {
   return s;
 }
 
-function doldur(d) {
+function doldur() {
+  var d = _data;
   var ad    = v('ad')    || '';
   var soyad = v('soyad') || '';
   var tam   = (ad + ' ' + soyad).trim();
