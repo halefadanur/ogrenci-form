@@ -64,7 +64,7 @@ tr:last-child td{border-bottom:none}
 .foto-wrap{display:flex;gap:24px;justify-content:center;align-items:flex-start;margin-top:12px}
 .foto-box{text-align:center}
 .foto-box .foto-label{font-size:11px;font-weight:700;color:#6b6560;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
-@media print{.bar{display:none!important}body{background:#fff}.page{margin:0;box-shadow:none;width:100%}}
+@media print{.bar{display:none!important}body{background:#fff}.page{margin:0;box-shadow:none;width:100%;page-break-after:always}.page2{page-break-before:always;margin:0;box-shadow:none;width:100%}}
 </style>
 </head>
 <body>
@@ -123,7 +123,6 @@ function f(label, val) {
 }
 
 function render() {
-  document.getElementById('tipEl').textContent = TIP;
   var ad = (g('ad')+' '+g('soyad')).trim() || '—';
   document.getElementById('barTitle').textContent = ad + ' — ' + TIP;
   document.getElementById('elAd').textContent = ad;
@@ -173,7 +172,13 @@ function render() {
   html += '<div class="s"><div class="st">🗂️ Tanı & Akademik Durum</div>';
   html += '<div class="g2" style="margin-bottom:8px">';
   html += f('Rapor / Tanı', g('tani'));
-  html += f('Temel İhtiyaç Alanı', g('temel_ihtiyac'));
+  var ihtiyac = g('temel_ihtiyac');
+  var ihtiyacRenk = ihtiyac === 'Dil Gelişimi' ? '#1d4ed8;background:#eff6ff;border:1.5px solid #bfdbfe' : ihtiyac === 'Davranış ve Kavram Eğitimi' ? '#b45309;background:#fffbeb;border:1.5px solid #fde68a' : ihtiyac === 'Akademik Gelişim' ? '#166534;background:#f0fdf4;border:1.5px solid #bbf7d0' : '';
+  if (ihtiyacRenk) {
+    html += '<div class="f" style="'+ihtiyacRenk+'"><div class="fl" style="color:inherit;opacity:.7">Temel İhtiyaç Alanı</div><div class="fv" style="color:inherit;font-weight:800">'+ihtiyac+'</div></div>';
+  } else {
+    html += f('Temel İhtiyaç Alanı', ihtiyac);
+  }
   html += '</div>';
   var aklar=[['Okuma','ak_okuma'],['Anlama','ak_anlama'],['Yazma','ak_yazma'],['Matematik','ak_mat'],['İfade','ak_ifade'],['Kavram','ak_kavram']];
   var t='<table><thead><tr><th>Alan</th><th>Değerlendirme</th><th>Alan</th><th>Değerlendirme</th></tr></thead><tbody>';
