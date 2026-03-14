@@ -2,406 +2,260 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Öğrenci Tanıma Formu</title>
+<title>Öğrenci Tanıma</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f0ede8;color:#16130e;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.pbar{background:#1a1814;color:#fff;padding:11px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.pbar h3{font-size:13px;font-weight:700;opacity:.7;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pbtns{display:flex;gap:8px}
-.pb{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
-.pb-print{background:#c9720a;color:#fff}
-.pb-close{background:rgba(255,255,255,.1);color:#fff}
-.page{width:210mm;min-height:297mm;background:#fff;margin:20px auto;box-shadow:0 8px 40px rgba(0,0,0,.16);overflow:hidden}
-
-/* HEADER */
-.hdr{background:linear-gradient(135deg,#b05e18,#de8f28);padding:22px 26px 18px;color:#fff;position:relative;overflow:hidden}
-.hdr::before{content:'';position:absolute;right:-30px;bottom:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.06)}
-.hdr-in{display:flex;align-items:flex-start;gap:16px;position:relative;z-index:1}
-.hdr-txt{flex:1}
-.hdr-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;opacity:.65;margin-bottom:4px}
-.hdr-name{font-size:23px;font-weight:900;letter-spacing:-.4px;margin-bottom:5px;min-height:30px}
-.hdr-meta{display:flex;flex-wrap:wrap;gap:9px;font-size:11px;opacity:.82}
-.hdr-meta span{display:flex;align-items:center;gap:3px}
-.tip-badge{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.26);color:#fff;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase}
-.foto-k{width:84px;height:112px;border-radius:10px;overflow:hidden;border:2px solid rgba(255,255,255,.3);flex-shrink:0;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:32px}
-.foto-k img{width:100%;height:100%;object-fit:cover}
-
-/* BODY */
-.body{padding:18px 22px}
-.sec{margin-bottom:16px}
-.sec-t{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:#a09a94;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.sec-t::after{content:'';flex:1;height:1px;background:#ede8e0}
-
-/* FIELDS */
-.g{display:grid;gap:6px}
-.g2{grid-template-columns:1fr 1fr}
-.g3{grid-template-columns:1fr 1fr 1fr}
-.g4{grid-template-columns:1fr 1fr 1fr 1fr}
-.s2{grid-column:span 2}.s3{grid-column:span 3}
-.f{background:#f8f5f0;border-radius:8px;padding:7px 10px}
-.fl{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a09a94;margin-bottom:2px}
+body{font-family:'Inter',sans-serif;background:#f0ede8;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.bar{background:#1a1814;color:#fff;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99}
+.bar h3{font-size:13px;font-weight:700;opacity:.7}
+.bar button{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit;background:#c9720a;color:#fff;margin-left:8px}
+.page{width:210mm;min-height:297mm;background:#fff;margin:20px auto;box-shadow:0 4px 30px rgba(0,0,0,.15);overflow:hidden}
+.hdr{background:linear-gradient(135deg,#b05e18,#de8f28);padding:20px 24px;color:#fff;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;right:-30px;bottom:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hdr-row{display:flex;gap:14px;position:relative;z-index:1}
+.hdr-info{flex:1}
+.tip{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase}
+.hdr-name{font-size:22px;font-weight:900;letter-spacing:-.4px;margin-bottom:5px}
+.hdr-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.65;margin-bottom:4px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;font-size:11px;opacity:.82}
+.foto{width:80px;height:106px;border-radius:9px;overflow:hidden;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
+.foto img{width:100%;height:100%;object-fit:cover}
+.body{padding:16px 20px}
+.s{margin-bottom:14px}
+.st{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#a09a94;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.st::after{content:'';flex:1;height:1px;background:#ede8e0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.s2{grid-column:span 2}
+.f{background:#f8f5f0;border-radius:7px;padding:7px 10px}
+.fl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a09a94;margin-bottom:2px}
 .fv{font-size:12px;font-weight:600;color:#16130e;line-height:1.4}
-.fv.em{color:#c8c0b8;font-style:italic;font-weight:400}
-
-/* TAGS */
-.tags{display:flex;flex-wrap:wrap;gap:5px}
-.tag{border-radius:6px;padding:3px 9px;font-size:10.5px;font-weight:600;border:1.5px solid}
-.t-red{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
-.t-blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
-.t-orange{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
-.t-green{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
-.t-gray{background:#f9fafb;border-color:#e5e7eb;color:#374151}
-
-/* AKADEMİK */
-.akt{width:100%;border-collapse:collapse;font-size:11px}
-.akt th{background:#f0ede8;color:#6b6560;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.4px;padding:6px 8px;text-align:left;border-bottom:1.5px solid #e2dbd0}
-.akt td{padding:6px 8px;border-bottom:1px solid #f0ebe2;font-weight:500;font-size:11.5px}
-.akt tr:last-child td{border-bottom:none}
+.tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{padding:3px 8px;border-radius:5px;font-size:10px;font-weight:600;border:1px solid}
+.tr{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+.tb{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.to{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{background:#f0ede8;color:#6b6560;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.4px;padding:5px 8px;text-align:left;border-bottom:1.5px solid #e2dbd0}
+td{padding:5px 8px;border-bottom:1px solid #f0ebe2}
+tr:last-child td{border-bottom:none}
 .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle}
 .dg{background:#16a34a}.dy{background:#d97706}.dr{background:#dc2626}.dn{background:#9ca3af}
-
-/* AİLE */
-.ag{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ac{border-radius:9px;padding:10px 12px;border:1.5px solid}
-.ac-a{border-color:#f0c4c4;background:linear-gradient(148deg,#fffafa,#fff)}
-.ac-b{border-color:#c4d6f0;background:linear-gradient(148deg,#f7fbff,#fff)}
-.ac-t{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.ac-a .ac-t{color:#7a1616}.ac-b .ac-t{color:#163678}
-.ar{display:flex;gap:5px;margin-bottom:3px;font-size:11px;align-items:baseline}
-.ar:last-child{margin-bottom:0}
-.ak{color:#a09a94;font-weight:600;min-width:42px;font-size:9.5px;flex-shrink:0}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.ac{border-radius:8px;padding:9px 11px;border:1.5px solid}
+.aca{border-color:#f0c4c4;background:linear-gradient(148deg,#fffafa,#fff)}
+.acb{border-color:#c4d6f0;background:linear-gradient(148deg,#f7fbff,#fff)}
+.act{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.aca .act{color:#7a1616}.acb .act{color:#163678}
+.ar{display:flex;gap:5px;margin-bottom:2px;font-size:11px}
+.ak{color:#a09a94;font-weight:600;min-width:30px;font-size:9.5px;flex-shrink:0}
 .av{font-weight:600;color:#16130e}
-
-/* KARAR */
-.kb{border-radius:9px;padding:10px 14px;display:flex;align-items:center;gap:9px;margin-top:6px}
-.kb-k{background:linear-gradient(135deg,#0d4a27,#18733c);color:#fff}
-.kb-r{background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff}
-.kb-t{background:linear-gradient(135deg,#1e3a5f,#1d4ed8);color:#fff}
-.kb-d{background:linear-gradient(135deg,#3d2b00,#c9720a);color:#fff}
-.ki{font-size:18px}.kt{font-size:13px;font-weight:800}
-
-/* NOT */
-.not{background:#fffbf0;border:1.5px solid #fde68a;border-radius:8px;padding:9px 12px;font-size:11.5px;line-height:1.7;color:#3d2b00;white-space:pre-wrap;word-break:break-word}
-
-/* VEFAT */
-.vb{background:#fef2f2;border:1.5px solid #fecaca;border-radius:6px;padding:4px 9px;font-size:10.5px;font-weight:700;color:#b91c1c;margin-bottom:6px;display:inline-flex;align-items:center;gap:4px}
-
-/* FOOTER */
-.footer{background:#f8f5f0;border-top:1px solid #e2dbd0;padding:9px 22px;display:flex;justify-content:space-between;font-size:9px;color:#a09a94}
-
-@media print{
-  .pbar{display:none!important}
-  body{background:#fff}
-  .page{margin:0;box-shadow:none;width:100%;min-height:auto}
-}
+.kb{border-radius:8px;padding:9px 13px;display:flex;align-items:center;gap:8px;margin-top:5px}
+.kbk{background:linear-gradient(135deg,#0d4a27,#18733c);color:#fff}
+.kbr{background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff}
+.kbt{background:linear-gradient(135deg,#1e3a5f,#1d4ed8);color:#fff}
+.kbd{background:linear-gradient(135deg,#3d2b00,#c9720a);color:#fff}
+.not{background:#fffbf0;border:1.5px solid #fde68a;border-radius:7px;padding:8px 11px;font-size:11px;line-height:1.7;color:#3d2b00;white-space:pre-wrap}
+.ft{background:#f8f5f0;border-top:1px solid #e2dbd0;padding:8px 20px;display:flex;justify-content:space-between;font-size:9px;color:#a09a94}
+@media print{.bar{display:none!important}body{background:#fff}.page{margin:0;box-shadow:none;width:100%}}
 </style>
 </head>
 <body>
-<div class="pbar">
-  <h3 id="pbarTitle">Öğrenci Tanıma Formu</h3>
-  <div class="pbtns">
-    <button class="pb pb-print" onclick="window.print()">🖨️ Yazdır / PDF</button>
-    <button class="pb pb-close" onclick="window.close()">✕</button>
+<div class="bar">
+  <h3 id="barTitle">Öğrenci Tanıma Formu</h3>
+  <div>
+    <button onclick="window.print()">🖨️ Yazdır</button>
+    <button onclick="window.close()" style="background:rgba(255,255,255,.1)">✕</button>
   </div>
 </div>
-
-<div class="page">
+<div class="page" id="page">
   <div class="hdr">
-    <div class="tip-badge" id="tipBadge">TAM FORM</div>
-    <div class="hdr-in">
-      <div class="hdr-txt">
+    <div class="tip" id="tipEl">TAM FORM</div>
+    <div class="hdr-row">
+      <div class="hdr-info">
         <div class="hdr-tag">Öğrenci Tanıma Formu</div>
-        <div class="hdr-name" id="hAd"></div>
-        <div class="hdr-meta">
-          <span>🎓 <span id="hSinif">—</span></span>
-          <span>🎂 <span id="hDogum">—</span></span>
-          <span>🏫 <span id="hOkul">—</span></span>
-          <span>📅 <span id="hTarih">—</span></span>
-          <span>🧑‍💼 <span id="hUzman">—</span></span>
-        </div>
+        <div class="hdr-name" id="elAd">—</div>
+        <div class="meta" id="elMeta"></div>
       </div>
-      <div class="foto-k" id="fotoK">👤</div>
+      <div class="foto" id="elFoto">👤</div>
     </div>
   </div>
-
-  <div class="body">
-
-    <!-- 1. TANI & AKADEMİK -->
-    <div class="sec">
-      <div class="sec-t">🗂️ Tanı & Akademik Durum</div>
-      <div class="g g2" style="margin-bottom:8px">
-        <div class="f"><div class="fl">Rapor / Tanı</div><div class="fv" id="fTani">—</div></div>
-        <div class="f"><div class="fl">Temel İhtiyaç Alanı</div><div class="fv" id="fIhtiyac">—</div></div>
-      </div>
-      <table class="akt">
-        <thead><tr><th>Alan</th><th>Değerlendirme</th><th>Alan</th><th>Değerlendirme</th></tr></thead>
-        <tbody id="akBody"></tbody>
-      </table>
-    </div>
-
-    <!-- 2. SAĞLIK & DAVRANIŞ -->
-    <div class="sec" id="secSaglik">
-      <div class="sec-t">🩺 Sağlık & Davranış</div>
-      <div class="tags" id="saglikTags"></div>
-    </div>
-
-    <!-- 3. DİL GELİŞİMİ -->
-    <div class="sec" id="secDil">
-      <div class="sec-t">🔤 Dil Gelişimi</div>
-      <div class="tags" id="dilTags"></div>
-    </div>
-
-    <!-- 4. GÖRÜŞME NOTLARI -->
-    <div class="sec" id="secNot">
-      <div class="sec-t">📝 Görüşme Notları</div>
-      <div class="not" id="fNot"></div>
-    </div>
-
-    <!-- 5. AİLE BİLGİLERİ -->
-    <div class="sec">
-      <div class="sec-t">👨‍👩‍👧 Aile Bilgileri</div>
-      <div class="ag" style="margin-bottom:8px">
-        <div class="ac ac-a">
-          <div class="ac-t">👩 Anne</div>
-          <div id="anneVefat"></div>
-          <div class="ar"><span class="ak">Adı</span><span class="av" id="aAnneAd">—</span></div>
-          <div class="ar"><span class="ak">Tel</span><span class="av" id="aAnneTel">—</span></div>
-
-        </div>
-        <div class="ac ac-b">
-          <div class="ac-t">👨 Baba</div>
-          <div id="babaVefat"></div>
-          <div class="ar"><span class="ak">Adı</span><span class="av" id="aBabaAd">—</span></div>
-          <div class="ar"><span class="ak">Tel</span><span class="av" id="aBabaTel">—</span></div>
-
-        </div>
-      </div>
-      <div class="g g3">
-        <div class="f"><div class="fl">Birlikte mi?</div><div class="fv" id="fBer">—</div></div>
-        <div class="f s2"><div class="fl">Adres</div><div class="fv" id="fAdres">—</div></div>
-      </div>
-    </div>
-
-    <!-- 6. REHABİLİTASYON -->
-    <div class="sec" id="secRehab">
-      <div class="sec-t">🏥 Rehabilitasyon</div>
-      <div class="g g3">
-        <div class="f"><div class="fl">Durum</div><div class="fv" id="fRehab">—</div></div>
-        <div class="f s2"><div class="fl">Merkez / Süre</div><div class="fv" id="fRehabD">—</div></div>
-      </div>
-    </div>
-
-    <!-- 7. ÖĞRENME TC -->
-    <div class="sec" id="secTC">
-      <div class="sec-t">🪪 Kimlik</div>
-      <div class="g g2">
-        <div class="f"><div class="fl">Öğrenci TC No</div><div class="fv" id="fTC">—</div></div>
-      </div>
-    </div>
-
-    <!-- 8. DEĞERLENDİRME & KARAR -->
-    <div class="sec">
-      <div class="sec-t">⭐ Değerlendirme & Karar</div>
-      <div class="g g2" style="margin-bottom:7px">
-        <div class="f"><div class="fl">AAA</div><div class="fv" id="fAAA">—</div></div>
-        <div class="f"><div class="fl">Rapor Olasılığı</div><div class="fv" id="fROlas">—</div></div>
-      </div>
-      <div id="kararBanner" class="kb kb-d">
-        <span class="ki">📋</span><span class="kt" id="fKarar">—</span>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="footer">
-    <span id="footL">Öğrenci Tanıma Formu</span>
-    <span id="footR"></span>
-  </div>
+  <div class="body" id="elBody"></div>
+  <div class="ft"><span id="ftL"></span><span id="ftR"></span></div>
 </div>
 
 <script>
-// Veri kaynağı: window.__D__ veya URL parametresi
-var _params = new URLSearchParams(window.location.search);
-var _raw = _params.get('d');
-var _data = window.__D__ || (_raw ? JSON.parse(decodeURIComponent(_raw)) : null);
-var tip = window.__TIP__ || _params.get('tip') || "TAM FORM";
-var d = _data;
+// ── VERİYİ OKU ──────────────────────────────────────────────
+var D = null;
+var TIP = 'TAM FORM';
 
-if (!d) {
-  document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:sans-serif;color:#888"><h2>Veri bulunamadı</h2><p style="margin-top:8px">Bu sayfa Sheets menüsünden açılmalıdır.</p></div>';
+try {
+  // 1. window.__D__ (Apps Script injection)
+  if (window.__D__) { D = window.__D__; TIP = window.__TIP__ || TIP; }
+  // 2. URL parametresi
+  else {
+    var p = new URLSearchParams(window.location.search);
+    var raw = p.get('d');
+    var tipParam = p.get('tip');
+    if (raw) D = JSON.parse(decodeURIComponent(raw));
+    if (tipParam) TIP = decodeURIComponent(tipParam);
+  }
+} catch(e) { console.error('Veri okuma hatası:', e); }
+
+if (!D) {
+  document.body.innerHTML = '<div style="padding:80px;text-align:center;font-family:sans-serif;color:#888"><h2>Veri bulunamadı</h2><p style="margin-top:8px">Bu sayfa admin panelinden açılmalıdır.</p></div>';
 } else {
-  document.getElementById('tipBadge').textContent = tip;
-  doldur();
+  render(D, TIP);
 }
 
-function v(key, obj) {
-  var data = obj || d;
-  var val = data[key];
-  if (!val || String(val).trim() === '') val = data[key.toLowerCase()];
-  if (!val || String(val).trim() === '') val = data[key.charAt(0).toUpperCase() + key.slice(1)];
-  return (val !== undefined && val !== null && String(val).trim() !== '') ? String(val).trim() : null;
-}
-
-function set(id, key) {
-  var el = document.getElementById(id);
-  if (!el) return;
-  var val = v(key);
-  if (val) { el.textContent = val; }
-  else { el.textContent = '—'; el.classList.add('em'); }
+// ── RENDER ───────────────────────────────────────────────────
+function g(key) {
+  if (!D) return '';
+  var v = D[key];
+  if (v === undefined || v === null || String(v).trim() === '') return '';
+  return String(v).trim();
 }
 
 function tf(t) {
-  if (!t) return null;
-  var s = String(t);
-  var m = s.match(/(\d{4})-(\d{2})-(\d{2})/);
-  if (m) return m[3] + '.' + m[2] + '.' + m[1];
-  try { var dt = new Date(s); if (!isNaN(dt)) return dt.getDate()+'.'+(dt.getMonth()+1)+'.'+dt.getFullYear(); } catch(e) {}
-  return s;
+  if (!t) return '';
+  var m = String(t).match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return m[3]+'.'+m[2]+'.'+m[1];
+  return t;
 }
 
-function doldur() {
-  var d = _data;
-  var ad    = v('ad')    || '';
-  var soyad = v('soyad') || '';
-  var tam   = (ad + ' ' + soyad).trim();
+function field(label, val) {
+  if (!val) return '';
+  return '<div class="f"><div class="fl">'+label+'</div><div class="fv">'+val+'</div></div>';
+}
 
-  document.getElementById('pbarTitle').textContent = tam + ' — ' + tip;
-  document.getElementById('hAd').textContent       = tam || '—';
-  document.getElementById('hSinif').textContent    = v('sinif')          || '—';
-  document.getElementById('hDogum').textContent    = tf(v('dogum_tarihi'))|| '—';
-  document.getElementById('hOkul').textContent     = v('okul')           || '—';
-  document.getElementById('hTarih').textContent    = 'Görüşme: ' + (tf(v('gorusme_tarihi')) || '—');
-  document.getElementById('hUzman').textContent    = v('uzman')          || '—';
+function render(d, tip) {
+  document.getElementById('tipEl').textContent = tip;
+  
+  var ad = (g('ad') + ' ' + g('soyad')).trim() || '—';
+  document.getElementById('barTitle').textContent = ad + ' — ' + tip;
+  document.getElementById('elAd').textContent = ad;
 
-  // FOTOĞRAF
-  var fotoUrl = v('foto_url') || v('Fotoğraf (Drive)');
-  if (fotoUrl && fotoUrl.startsWith('http')) {
-    var fk = document.getElementById('fotoK');
-    fk.innerHTML = '<img src="' + fotoUrl + '" onerror="this.parentElement.textContent='👤'">';
+  // Meta
+  var meta = '';
+  if (g('sinif')) meta += '<span>🎓 '+g('sinif')+'</span>';
+  if (g('dogum_tarihi')) meta += '<span>🎂 '+tf(g('dogum_tarihi'))+'</span>';
+  if (g('okul')) meta += '<span>🏫 '+g('okul')+'</span>';
+  if (g('gorusme_tarihi')) meta += '<span>📅 Görüşme: '+tf(g('gorusme_tarihi'))+'</span>';
+  if (g('uzman')) meta += '<span>🧑‍💼 '+g('uzman')+'</span>';
+  document.getElementById('elMeta').innerHTML = meta;
+
+  // Fotoğraf
+  if (g('foto_url')) {
+    document.getElementById('elFoto').innerHTML = '<img src="'+g('foto_url')+'" onerror="this.parentElement.textContent=\'👤\'">';
   }
 
-  // TANI
-  set('fTani',   'Tanı');
-  set('fIhtiyac','Temel İhtiyaç');
+  // Footer
+  document.getElementById('ftL').textContent = ad + ' — Öğrenci Tanıma Formu';
+  document.getElementById('ftR').textContent = 'Görüşme: '+tf(g('gorusme_tarihi'))+' · '+g('uzman');
 
-  // AKADEMİK
+  // Body
+  var html = '';
+
+  // 1. Tanı & Akademik
+  html += '<div class="s"><div class="st">🗂️ Tanı & Akademik Durum</div>';
+  html += '<div class="g2" style="margin-bottom:8px">';
+  html += field('Rapor / Tanı', g('tani'));
+  html += field('Temel İhtiyaç Alanı', g('temel_ihtiyac'));
+  html += '</div>';
+  
   var aklar = [
-    {l:'Okuma',     k:'Okuma'},
-    {l:'Anlama',    k:'Anlama'},
-    {l:'Yazma',     k:'Yazma'},
-    {l:'Matematik', k:'Matematik'},
-    {l:'İfade',     k:'İfade'},
-    {l:'Kavram',    k:'Kavram'},
+    ['Okuma','ak_okuma'],['Anlama','ak_anlama'],
+    ['Yazma','ak_yazma'],['Matematik','ak_mat'],
+    ['İfade','ak_ifade'],['Kavram','ak_kavram']
   ];
-  var tbody = document.getElementById('akBody');
-  for (var i = 0; i < aklar.length; i += 2) {
-    var tr = tbody.insertRow();
-    [aklar[i], aklar[i+1]].forEach(function(a) {
-      if (!a) { tr.insertCell(); tr.insertCell(); return; }
-      var c1 = tr.insertCell();
-      c1.textContent = a.l;
-      c1.style.cssText = 'font-weight:600;color:#3d3830;padding:6px 8px';
-      var c2  = tr.insertCell();
-      c2.style.padding = '6px 8px';
-      var val = v(a.k);
-      if (val) {
-        var cls = val==='Akranları düzeyinde'?'dg':val==='Zayıf'?'dy':val==='Çok zayıf'?'dr':'dn';
-        c2.innerHTML = '<span class="dot '+cls+'"></span>' + val;
-      } else {
-        c2.innerHTML = '<span style="color:#c8c0b8;font-style:italic">—</span>';
-      }
+  var akHtml = '<table><thead><tr><th>Alan</th><th>Değerlendirme</th><th>Alan</th><th>Değerlendirme</th></tr></thead><tbody>';
+  for (var i=0; i<aklar.length; i+=2) {
+    var a1 = aklar[i], a2 = aklar[i+1];
+    var v1 = g(a1[1]), v2 = g(a2[1]);
+    var cls1 = v1==='Akranları düzeyinde'?'dg':v1==='Zayıf'?'dy':v1==='Çok zayıf'?'dr':'dn';
+    var cls2 = v2==='Akranları düzeyinde'?'dg':v2==='Zayıf'?'dy':v2==='Çok zayıf'?'dr':'dn';
+    akHtml += '<tr>';
+    akHtml += '<td style="font-weight:600">'+a1[0]+'</td>';
+    akHtml += '<td>'+(v1?'<span class="dot '+cls1+'"></span>'+v1:'—')+'</td>';
+    akHtml += '<td style="font-weight:600">'+a2[0]+'</td>';
+    akHtml += '<td>'+(v2?'<span class="dot '+cls2+'"></span>'+v2:'—')+'</td>';
+    akHtml += '</tr>';
+  }
+  akHtml += '</tbody></table>';
+  html += akHtml + '</div>';
+
+  // 2. Sağlık
+  if (g('saglik_durum')) {
+    html += '<div class="s"><div class="st">🩺 Sağlık & Davranış</div><div class="tags">';
+    g('saglik_durum').split(';').forEach(function(s) {
+      s = s.trim(); if (s) html += '<span class="tag tr">'+s+'</span>';
     });
+    html += '</div></div>';
   }
 
-  // SAĞLIK
-  var sag = v('saglik_durum');
-  if (sag) {
-    var sw = document.getElementById('saglikTags');
-    sag.split(';').forEach(function(s) {
-      s = s.trim(); if (!s) return;
-      var sp = document.createElement('span');
-      sp.className = 'tag t-red'; sp.textContent = s; sw.appendChild(sp);
+  // 3. Dil
+  var dilVar = g('dil_prob') || g('dil_modul') || g('aile_dil');
+  if (dilVar) {
+    html += '<div class="s"><div class="st">🔤 Dil Gelişimi</div><div class="tags">';
+    if (g('dil_modul') && g('dil_modul') !== 'Yok') html += '<span class="tag tb">Modül: '+g('dil_modul')+'</span>';
+    if (g('aile_dil') === 'Evet') html += '<span class="tag to">Ailede dil problemi var</span>';
+    if (g('dil_prob')) g('dil_prob').split(';').forEach(function(s) {
+      s = s.trim(); if (s) html += '<span class="tag to">'+s+'</span>';
     });
-    if (!sw.children.length) document.getElementById('secSaglik').style.display = 'none';
-  } else { document.getElementById('secSaglik').style.display = 'none'; }
-
-  // DİL
-  var dilP = v('dil_prob');
-  var dilM = v('dil_modul');
-  var ailD = v('aile_dil');
-  var dw   = document.getElementById('dilTags');
-  var hasDil = false;
-  if (dilM && dilM !== 'Yok' && dilM !== 'Hayır') {
-    var s=document.createElement('span');s.className='tag t-blue';s.textContent='Modül: '+dilM;dw.appendChild(s);hasDil=true;
-  }
-  if (ailD === 'Evet') {
-    var s=document.createElement('span');s.className='tag t-orange';s.textContent='Ailede dil problemi var';dw.appendChild(s);hasDil=true;
-  }
-  if (dilP) dilP.split(';').forEach(function(s) {
-    s=s.trim();if(!s)return;
-    var sp=document.createElement('span');sp.className='tag t-orange';sp.textContent=s;dw.appendChild(sp);hasDil=true;
-  });
-  if (!hasDil) document.getElementById('secDil').style.display = 'none';
-
-  // NOT
-  var not = v('gorusme_not');
-  if (not) document.getElementById('fNot').textContent = not;
-  else document.getElementById('secNot').style.display = 'none';
-
-  // AİLE VEFAT
-  if (v('saglik_anne') === 'Vefat')
-    document.getElementById('anneVefat').innerHTML = '<div class="vb">⚠️ Vefat</div>';
-  if (v('saglik_baba') === 'Vefat')
-    document.getElementById('babaVefat').innerHTML = '<div class="vb">⚠️ Vefat</div>';
-
-  set('aAnneAd',  'Anne Adı');
-  set('aAnneTel', 'Anne Tel');
-  set('aBabaAd',  'Baba Adı');
-  set('aBabaTel', 'Baba Tel');
-
-  // Ayrı yaşıyorsa belirt
-  var ber = v('beraberlik');
-  var berEl = document.getElementById('fBer');
-  if (ber) {
-    berEl.textContent = ber;
-    if (ber === 'Boşanmış/Ayrı') berEl.style.color = '#b91c1c';
+    html += '</div></div>';
   }
 
-  set('fAdres', 'Adres');
+  // 4. Not
+  if (g('gorusme_not')) {
+    html += '<div class="s"><div class="st">📝 Görüşme Notları</div><div class="not">'+g('gorusme_not')+'</div></div>';
+  }
 
-  // REHABİLİTASYON
-  var rehab = v('rehab');
-  if (rehab === 'Evet') {
-    document.getElementById('fRehab').textContent = 'Evet';
-    var m = v('rehab_merkez') || '';
-    var s = v('rehab_sure') ? v('rehab_sure') + ' yıl' : '';
-    document.getElementById('fRehabD').textContent = [m, s].filter(Boolean).join(' · ') || '—';
-  } else { document.getElementById('secRehab').style.display = 'none'; }
+  // 5. Aile
+  html += '<div class="s"><div class="st">👨‍👩‍👧 Aile Bilgileri</div>';
+  html += '<div class="ag" style="margin-bottom:7px">';
+  html += '<div class="ac aca"><div class="act">👩 Anne</div>';
+  if (g('saglik_anne') === 'Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;margin-bottom:6px;display:inline-block">⚠️ Vefat</div>';
+  html += '<div class="ar"><span class="ak">Adı</span><span class="av">'+(g('anne_ad')||'—')+'</span></div>';
+  html += '<div class="ar"><span class="ak">Tel</span><span class="av">'+(g('anne_tel')||'—')+'</span></div>';
+  html += '</div>';
+  html += '<div class="ac acb"><div class="act">👨 Baba</div>';
+  if (g('saglik_baba') === 'Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;margin-bottom:6px;display:inline-block">⚠️ Vefat</div>';
+  html += '<div class="ar"><span class="ak">Adı</span><span class="av">'+(g('baba_ad')||'—')+'</span></div>';
+  html += '<div class="ar"><span class="ak">Tel</span><span class="av">'+(g('baba_tel')||'—')+'</span></div>';
+  html += '</div></div>';
+  html += '<div class="g3">';
+  html += field('Birlikte mi?', g('beraberlik'));
+  html += '<div class="f s2"><div class="fl">Adres</div><div class="fv">'+(g('adres')||'—')+'</div></div>';
+  html += '</div></div>';
 
-  // TC
-  var tc = v('tc_no');
-  if (tc) document.getElementById('fTC').textContent = tc;
-  else document.getElementById('secTC').style.display = 'none';
+  // 6. Rehab
+  if (g('rehab') === 'Evet') {
+    html += '<div class="s"><div class="st">🏥 Rehabilitasyon</div><div class="g3">';
+    html += field('Durum', 'Evet');
+    html += '<div class="f s2"><div class="fl">Merkez / Süre</div><div class="fv">'+[g('rehab_merkez'), g('rehab_sure') ? g('rehab_sure')+' yıl' : ''].filter(Boolean).join(' · ')+'</div></div>';
+    html += '</div></div>';
+  }
 
-  // AAA & KARAR
-  set('fAAA', 'AAA');
-  var ro = v('rapor_olasilik');
-  document.getElementById('fROlas').textContent = ro ? ro + ' / 5' : '—';
+  // 7. TC
+  if (g('tc_no')) {
+    html += '<div class="s"><div class="st">🪪 Kimlik</div><div class="g2">';
+    html += field('Öğrenci TC No', g('tc_no'));
+    html += '</div></div>';
+  }
 
-  var karar = v('karar') || '—';
-  document.getElementById('fKarar').textContent = karar;
-  var kb = document.getElementById('kararBanner');
-  if (/kayded/i.test(karar))           kb.className = 'kb kb-k';
-  else if (/^red$/i.test(karar.trim())) kb.className = 'kb kb-r';
-  else if (/takip/i.test(karar))        kb.className = 'kb kb-t';
-  else                                   kb.className = 'kb kb-d';
+  // 8. Karar
+  html += '<div class="s"><div class="st">⭐ Değerlendirme & Karar</div>';
+  html += '<div class="g2" style="margin-bottom:6px">';
+  html += field('AAA', g('aaa'));
+  html += field('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik')+' / 5' : '');
+  html += '</div>';
+  var karar = g('karar') || '—';
+  var kbCls = /kayded/i.test(karar)?'kbk':/^red$/i.test(karar.trim())?'kbr':/takip/i.test(karar)?'kbt':'kbd';
+  html += '<div class="kb '+kbCls+'"><span class="ki">📋</span><span class="kt">'+karar+'</span></div>';
+  html += '</div>';
 
-  // FOOTER
-  document.getElementById('footL').textContent = tam + ' — Öğrenci Tanıma Formu';
-  document.getElementById('footR').textContent = 'Görüşme: ' + (tf(v('gorusme_tarihi')) || '—') + ' · ' + (v('uzman') || '—');
+  document.getElementById('elBody').innerHTML = html;
 }
 </script>
 </body>
