@@ -1,3 +1,8 @@
+bash
+
+cat /mnt/user-data/outputs/pdf.html
+Output
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -252,49 +257,6 @@ if (!raw) {
 }
 
 // Sheets sütun başlıkları → anahtar eşleştirme
-const K = {
-  ad:       ["Öğrencinin Adı:", "Ad", "ogrenciAd"],
-  soyad:    ["Öğrencinin Soyadı:", "Soyad", "ogrenciSoyad"],
-  uzman:    ["İlgili Halkla İlişkiler Uzmanı", "Uzman", "uzman"],
-  tarih:    ["Görüşme Tarihi", "gorusmeTarihi"],
-  okul:     ["Devam Ettiği Okul", "Okul", "okul"],
-  sinif:    ["Sınıfı", "Sınıf", "sinif"],
-  dogum:    ["Öğrencinin doğum tarihi:", "Doğum Tarihi", "dogumTarihi"],
-  not:      ["GÖRÜŞME NOTLARI", "Görüşme Notu", "gorusmeNot"],
-  saglik:   ["Sağlık Durumu", "saglikDurum"],
-  okuma:    ["Akademik/sosyal/davranışsal durumu nedir? [Okuma-Anlama]", "Okuma", "ak_okuma"],
-  anlama:   ["Anlama", "ak_anlama"],
-  yazma:    ["Akademik/sosyal/davranışsal durumu nedir? [Yazma]", "Yazma", "ak_yazma"],
-  mat:      ["Akademik/sosyal/davranışsal durumu nedir? [Matematik]", "Matematik", "ak_mat"],
-  ifade:    ["Akademik/sosyal/davranışsal durumu nedir? [İfade Becerisi]", "İfade", "ak_ifade"],
-  kavram:   ["Kavram", "ak_kavram"],
-  tani:     ["Rapor/tanı durumu?", "Tanı", "tani"],
-  dilProb:  ["Dil gelişimi ile ilgili problemi nasıl tanımlarsınız?", "Dil Problemi Detay", "dilProb"],
-  dilModul: ["Gelişimsel dil modülü var mı?", "Dil Modülü", "dilModul"],
-  aileDil:  ["Ailede başka dil konuşma problemi yaşayan var mı?", "Ailede Dil Problemi", "aileDil"],
-  ihtiyac:  ["Temel İhtiyaç", "temelIhtiyac"],
-  anneAd:   ["Anne Adı", "anneAd"],
-  anneTel:  ["Anne İletişim", "anneIletisim"],
-  anneMes:  ["Anne Mesleği", "anneMeslek"],
-  anneEg:   ["Anne eğitim durumu: [Anne]", "Anne Eğitim", "egitimAnne"],
-  anneSag:  ["Ebeveyn sağlık durumu: [Anne]", "Anne Sağlık", "saglikAnne"],
-  babaAd:   ["Baba Adı", "babaAd"],
-  babaTel:  ["Baba İletişim", "babaIletisim"],
-  babaMes:  ["Baba Mesleği", "babaMeslek"],
-  babaEg:   ["Anne eğitim durumu: [Baba]", "Baba Eğitim", "egitimBaba"],
-  babaSag:  ["Ebeveyn sağlık durumu: [Baba]", "Baba Sağlık", "saglikBaba"],
-  ber:      ["Anne baba birlikte mi yaşıyor?", "Birlikte mi", "beraberlik"],
-  adres:    ["Adres", "adres"],
-  tc:       ["Öğrenci TC Kimlik No", "tcNo"],
-  rehab:    ["Rehabilitasyon merkezine gitti mi/gidiyor mu?", "Rehabilitasyon", "rehab"],
-  rehabM:   ["Hangi rehabilitasyon merkezine gidiyor?", "Rehab Merkez", "rehabMerkez"],
-  rehabS:   ["Ne kadar süredir gitti/ gidiyor?", "Rehab Süre", "rehabSure"],
-  aaa:      ["AAA", "aileAAA"],
-  rOlas:    ["Rapor çıkma olasılığı nedir?", "Rapor Olasılığı", "raporOlas"],
-  karar:    ["KARAR", "Karar", "karar"],
-  foto:     ["Fotoğraf", "Fotoğraf (Drive)", "fotoData"],
-};
-
 function get(d, keys) {
   for (const k of keys) {
     if (d[k] !== undefined && d[k] !== null && String(d[k]).trim() !== '') return String(d[k]).trim();
@@ -320,6 +282,48 @@ function tarihFormat(t) {
 }
 
 function doldur(d) {
+  var K = {
+    ad:       ["Öğrencinin Adı:", "Ad", "ogrenciAd"],
+    soyad:    ["Öğrencinin Soyadı:", "Soyad", "ogrenciSoyad"],
+    uzman:    ["İlgili Halkla İlişkiler Uzmanı", "Uzman", "uzman"],
+    tarih:    ["Görüşme Tarihi", "gorusmeTarihi"],
+    okul:     ["Devam Ettiği Okul", "Okul", "okul"],
+    sinif:    ["Sınıfı", "Sınıf", "sinif"],
+    dogum:    ["Öğrencinin doğum tarihi:", "Doğum Tarihi", "dogumTarihi"],
+    not:      ["GÖRÜŞME NOTLARI", "Görüşme Notu", "gorusmeNot"],
+    saglik:   ["Sağlık Durumu", "saglikDurum"],
+    okuma:    ["Akademik/sosyal/davranışsal durumu nedir? [Okuma-Anlama]", "Okuma", "ak_okuma"],
+    anlama:   ["Anlama", "ak_anlama"],
+    yazma:    ["Akademik/sosyal/davranışsal durumu nedir? [Yazma]", "Yazma", "ak_yazma"],
+    mat:      ["Akademik/sosyal/davranışsal durumu nedir? [Matematik]", "Matematik", "ak_mat"],
+    ifade:    ["Akademik/sosyal/davranışsal durumu nedir? [İfade Becerisi]", "İfade", "ak_ifade"],
+    kavram:   ["Kavram", "ak_kavram"],
+    tani:     ["Rapor/tanı durumu?", "Tanı", "tani"],
+    dilProb:  ["Dil gelişimi ile ilgili problemi nasıl tanımlarsınız?", "Dil Problemi Detay", "dilProb"],
+    dilModul: ["Gelişimsel dil modülü var mı?", "Dil Modülü", "dilModul"],
+    aileDil:  ["Ailede başka dil konuşma problemi yaşayan var mı?", "Ailede Dil Problemi", "aileDil"],
+    ihtiyac:  ["Temel İhtiyaç", "temelIhtiyac"],
+    anneAd:   ["Anne Adı", "anneAd"],
+    anneTel:  ["Anne İletişim", "anneIletisim"],
+    anneMes:  ["Anne Mesleği", "anneMeslek"],
+    anneEg:   ["Anne eğitim durumu: [Anne]", "Anne Eğitim", "egitimAnne"],
+    anneSag:  ["Ebeveyn sağlık durumu: [Anne]", "Anne Sağlık", "saglikAnne"],
+    babaAd:   ["Baba Adı", "babaAd"],
+    babaTel:  ["Baba İletişim", "babaIletisim"],
+    babaMes:  ["Baba Mesleği", "babaMeslek"],
+    babaEg:   ["Anne eğitim durumu: [Baba]", "Baba Eğitim", "egitimBaba"],
+    babaSag:  ["Ebeveyn sağlık durumu: [Baba]", "Baba Sağlık", "saglikBaba"],
+    ber:      ["Anne baba birlikte mi yaşıyor?", "Birlikte mi", "beraberlik"],
+    adres:    ["Adres", "adres"],
+    tc:       ["Öğrenci TC Kimlik No", "tcNo"],
+    rehab:    ["Rehabilitasyon merkezine gitti mi/gidiyor mu?", "Rehabilitasyon", "rehab"],
+    rehabM:   ["Hangi rehabilitasyon merkezine gidiyor?", "Rehab Merkez", "rehabMerkez"],
+    rehabS:   ["Ne kadar süredir gitti/ gidiyor?", "Rehab Süre", "rehabSure"],
+    aaa:      ["AAA", "aileAAA"],
+    rOlas:    ["Rapor çıkma olasılığı nedir?", "Rapor Olasılığı", "raporOlas"],
+    karar:    ["KARAR", "Karar", "karar"],
+    foto:     ["Fotoğraf", "Fotoğraf (Drive)", "fotoData"],
+  };
   const ad    = get(d, K.ad)    || '';
   const soyad = get(d, K.soyad) || '';
   const tam   = (ad + ' ' + soyad).trim();
@@ -452,3 +456,4 @@ function doldur(d) {
 </script>
 </body>
 </html>
+Done
