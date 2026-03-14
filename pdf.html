@@ -2,7 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Öğrenci Tanıma</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Öğrenci Tanıma Formu</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -11,18 +12,19 @@ body{font-family:'Inter',sans-serif;background:#f0ede8;-webkit-print-color-adjus
 .bar h3{font-size:13px;font-weight:700;opacity:.7}
 .bar button{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit;background:#c9720a;color:#fff;margin-left:8px}
 .page{width:210mm;min-height:297mm;background:#fff;margin:20px auto;box-shadow:0 4px 30px rgba(0,0,0,.15);overflow:hidden}
-.hdr{background:linear-gradient(135deg,#b05e18,#de8f28);padding:20px 24px;color:#fff;position:relative;overflow:hidden}
-.hdr::before{content:'';position:absolute;right:-30px;bottom:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.06)}
-.hdr-row{display:flex;gap:14px;position:relative;z-index:1}
-.hdr-info{flex:1}
-.tip{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase}
-.hdr-name{font-size:22px;font-weight:900;letter-spacing:-.4px;margin-bottom:5px}
-.hdr-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.65;margin-bottom:4px}
-.meta{display:flex;flex-wrap:wrap;gap:8px;font-size:11px;opacity:.82}
-.foto{width:80px;height:106px;border-radius:9px;overflow:hidden;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
-.foto img{width:100%;height:100%;object-fit:cover}
+
+/* HEADER - koyu, sade */
+.hdr{background:linear-gradient(135deg,#3a1f08,#5a3010);padding:14px 20px 12px;color:#fff}
+.hdr-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.hdr-left{flex:1}
+.hdr-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.55;margin-bottom:3px}
+.hdr-name{font-size:22px;font-weight:900;letter-spacing:-.4px;margin-bottom:4px}
+.hdr-uzman{font-size:13px;font-weight:700;opacity:.8;margin-bottom:6px}
+.meta{display:flex;flex-wrap:wrap;gap:7px;font-size:10.5px;opacity:.78}
+.tip-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase;flex-shrink:0;align-self:flex-start}
+
 .body{padding:16px 20px}
-.s{margin-bottom:14px}
+.s{margin-bottom:13px}
 .st{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#a09a94;margin-bottom:7px;display:flex;align-items:center;gap:6px}
 .st::after{content:'';flex:1;height:1px;background:#ede8e0}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
@@ -58,6 +60,10 @@ tr:last-child td{border-bottom:none}
 .kbd{background:linear-gradient(135deg,#3d2b00,#c9720a);color:#fff}
 .not{background:#fffbf0;border:1.5px solid #fde68a;border-radius:7px;padding:8px 11px;font-size:11px;line-height:1.7;color:#3d2b00;white-space:pre-wrap}
 .ft{border-top:1px solid #e8e4de;padding:6px 20px;display:flex;justify-content:space-between;font-size:9px;color:#b0a898}
+.page2{page-break-before:always;padding:24px}
+.foto-wrap{display:flex;gap:24px;justify-content:center;align-items:flex-start;margin-top:12px}
+.foto-box{text-align:center}
+.foto-box img{border-radius:10px;border:1px solid #e2dbd0;box-shadow:0 2px 12px rgba(0,0,0,.1)}
 @media print{.bar{display:none!important}body{background:#fff}.page{margin:0;box-shadow:none;width:100%}}
 </style>
 </head>
@@ -69,14 +75,16 @@ tr:last-child td{border-bottom:none}
     <button onclick="window.close()" style="background:rgba(255,255,255,.1)">✕</button>
   </div>
 </div>
-<div class="page" id="page">
+<div class="page">
   <div class="hdr">
     <div class="hdr-row">
-      <div class="hdr-info">
+      <div class="hdr-left">
+        <div class="hdr-tag">Öğrenci Tanıma Formu</div>
         <div class="hdr-name" id="elAd">—</div>
+        <div class="hdr-uzman" id="elUzman"></div>
         <div class="meta" id="elMeta"></div>
       </div>
-      <div id="tipEl" style="background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:9px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase;align-self:flex-start">TAM FORM</div>
+      <div id="tipEl" class="tip-badge">TAM FORM</div>
     </div>
   </div>
   <div class="body" id="elBody"></div>
@@ -84,121 +92,94 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <script>
-// ── VERİYİ OKU ──────────────────────────────────────────────
-var D = null;
-var TIP = 'TAM FORM';
-
+var D = null, TIP = 'TAM FORM';
 try {
-  // 1. window.__D__ (Apps Script injection)
   if (window.__D__) { D = window.__D__; TIP = window.__TIP__ || TIP; }
-  // 2. URL parametresi
   else {
     var p = new URLSearchParams(window.location.search);
     var raw = p.get('d');
-    var tipParam = p.get('tip');
     if (raw) D = JSON.parse(decodeURIComponent(raw));
-    if (tipParam) TIP = decodeURIComponent(tipParam);
+    TIP = p.get('tip') ? decodeURIComponent(p.get('tip')) : TIP;
   }
-} catch(e) { console.error('Veri okuma hatası:', e); }
+} catch(e) { console.error(e); }
 
 if (!D) {
-  document.body.innerHTML = '<div style="padding:80px;text-align:center;font-family:sans-serif;color:#888"><h2>Veri bulunamadı</h2><p style="margin-top:8px">Bu sayfa admin panelinden açılmalıdır.</p></div>';
-} else {
-  render(D, TIP);
-}
+  document.body.innerHTML = '<div style="padding:80px;text-align:center;font-family:sans-serif;color:#888"><h2>Veri bulunamadı</h2></div>';
+} else { render(); }
 
-// ── RENDER ───────────────────────────────────────────────────
-function g(key) {
-  if (!D) return '';
-  var v = D[key];
-  if (v === undefined || v === null || String(v).trim() === '') return '';
-  return String(v).trim();
+function g(k) {
+  var v = D[k];
+  return (v !== undefined && v !== null && String(v).trim() !== '') ? String(v).trim() : '';
 }
 
 function tf(t) {
   if (!t) return '';
   var m = String(t).match(/(\d{4})-(\d{2})-(\d{2})/);
-  if (m) return m[3]+'.'+m[2]+'.'+m[1];
-  return t;
+  return m ? m[3]+'.'+m[2]+'.'+m[1] : t;
 }
 
-function field(label, val) {
-  if (!val) return '';
+function f(label, val) {
+  if (!val) return '<div class="f"><div class="fl">'+label+'</div><div class="fv" style="color:#c0b8ae;font-style:italic;font-weight:400">—</div></div>';
   return '<div class="f"><div class="fl">'+label+'</div><div class="fv">'+val+'</div></div>';
 }
 
-function render(d, tip) {
-  document.getElementById('tipEl').textContent = tip;
-  
-  var ad = (g('ad') + ' ' + g('soyad')).trim() || '—';
-  document.getElementById('barTitle').textContent = ad + ' — ' + tip;
+function render() {
+  document.getElementById('tipEl').textContent = TIP;
+  var ad = (g('ad')+' '+g('soyad')).trim() || '—';
+  document.getElementById('barTitle').textContent = ad + ' — ' + TIP;
   document.getElementById('elAd').textContent = ad;
+  document.getElementById('elUzman').textContent = g('uzman') ? '🧑‍💼 ' + g('uzman') : '';
 
-  // Meta
   var meta = '';
   if (g('sinif')) meta += '<span>🎓 '+g('sinif')+'</span>';
   if (g('dogum_tarihi')) meta += '<span>🎂 '+tf(g('dogum_tarihi'))+'</span>';
   if (g('okul')) meta += '<span>🏫 '+g('okul')+'</span>';
   if (g('gorusme_tarihi')) meta += '<span>📅 Görüşme: '+tf(g('gorusme_tarihi'))+'</span>';
-  if (g('uzman')) meta += '<span>🧑‍💼 '+g('uzman')+'</span>';
   if (g('tc_no')) meta += '<span>🪪 TC: '+g('tc_no')+'</span>';
   document.getElementById('elMeta').innerHTML = meta;
 
-  // Fotoğraf
-  if (g('foto_url')) {
-    document.getElementById('elFoto').innerHTML = '<img src="'+g('foto_url')+'" onerror="this.parentElement.textContent=\'👤\'">';
-  }
-
-  // Footer
   document.getElementById('ftL').textContent = ad + ' — Öğrenci Tanıma Formu';
   document.getElementById('ftR').textContent = 'Görüşme: '+tf(g('gorusme_tarihi'))+' · '+g('uzman');
 
-  // Body
   var html = '';
 
-  // 1. ÜST BANT: AAA + Rapor olasılığı + Anne/Baba + Birlikte + Adres
+  // 1. AAA + Rapor + Anne + Baba + Birlikte + Adres (üstte)
   html += '<div class="s">';
   html += '<div class="g2" style="margin-bottom:6px">';
-  html += field('AAA', g('aaa'));
-  html += field('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik')+' / 5' : '');
+  html += f('AAA', g('aaa'));
+  html += f('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik')+' / 5' : '');
   html += '</div>';
   html += '<div class="ag" style="margin-bottom:6px">';
   html += '<div class="ac aca"><div class="act">👩 Anne</div>';
-  if (g('saglik_anne') === 'Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;margin-bottom:5px;display:inline-block">⚠️ Vefat</div>';
+  if (g('saglik_anne')==='Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:5px;display:inline-block">⚠️ Vefat</div>';
   html += '<div class="ar"><span class="ak">Adı</span><span class="av">'+(g('anne_ad')||'—')+'</span></div>';
   html += '<div class="ar"><span class="ak">Tel</span><span class="av">'+(g('anne_tel')||'—')+'</span></div>';
   html += '</div>';
   html += '<div class="ac acb"><div class="act">👨 Baba</div>';
-  if (g('saglik_baba') === 'Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;margin-bottom:5px;display:inline-block">⚠️ Vefat</div>';
+  if (g('saglik_baba')==='Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:5px;display:inline-block">⚠️ Vefat</div>';
   html += '<div class="ar"><span class="ak">Adı</span><span class="av">'+(g('baba_ad')||'—')+'</span></div>';
   html += '<div class="ar"><span class="ak">Tel</span><span class="av">'+(g('baba_tel')||'—')+'</span></div>';
   html += '</div></div>';
   html += '<div class="g3">';
-  html += field('Birlikte mi?', g('beraberlik'));
+  html += f('Birlikte mi?', g('beraberlik'));
   html += '<div class="f s2"><div class="fl">Adres</div><div class="fv">'+(g('adres')||'—')+'</div></div>';
   html += '</div></div>';
 
   // 2. Tanı & Akademik
   html += '<div class="s"><div class="st">🗂️ Tanı & Akademik Durum</div>';
   html += '<div class="g2" style="margin-bottom:8px">';
-  html += field('Rapor / Tanı', g('tani'));
-  html += field('Temel İhtiyaç Alanı', g('temel_ihtiyac'));
+  html += f('Rapor / Tanı', g('tani'));
+  html += f('Temel İhtiyaç Alanı', g('temel_ihtiyac'));
   html += '</div>';
-  var aklar = [
-    ['Okuma','ak_okuma'],['Anlama','ak_anlama'],
-    ['Yazma','ak_yazma'],['Matematik','ak_mat'],
-    ['İfade','ak_ifade'],['Kavram','ak_kavram']
-  ];
-  var akHtml = '<table><thead><tr><th>Alan</th><th>Değerlendirme</th><th>Alan</th><th>Değerlendirme</th></tr></thead><tbody>';
-  for (var i=0; i<aklar.length; i+=2) {
-    var a1=aklar[i],a2=aklar[i+1];
-    var v1=g(a1[1]),v2=g(a2[1]);
+  var aklar=[['Okuma','ak_okuma'],['Anlama','ak_anlama'],['Yazma','ak_yazma'],['Matematik','ak_mat'],['İfade','ak_ifade'],['Kavram','ak_kavram']];
+  var t='<table><thead><tr><th>Alan</th><th>Değerlendirme</th><th>Alan</th><th>Değerlendirme</th></tr></thead><tbody>';
+  for(var i=0;i<aklar.length;i+=2){
+    var a1=aklar[i],a2=aklar[i+1],v1=g(a1[1]),v2=g(a2[1]);
     var c1=v1==='Akranları düzeyinde'?'dg':v1==='Zayıf'?'dy':v1==='Çok zayıf'?'dr':'dn';
     var c2=v2==='Akranları düzeyinde'?'dg':v2==='Zayıf'?'dy':v2==='Çok zayıf'?'dr':'dn';
-    akHtml += '<tr><td style="font-weight:600">'+a1[0]+'</td><td>'+(v1?'<span class="dot '+c1+'"></span>'+v1:'—')+'</td><td style="font-weight:600">'+a2[0]+'</td><td>'+(v2?'<span class="dot '+c2+'"></span>'+v2:'—')+'</td></tr>';
+    t+='<tr><td style="font-weight:600">'+a1[0]+'</td><td>'+(v1?'<span class="dot '+c1+'"></span>'+v1:'—')+'</td><td style="font-weight:600">'+a2[0]+'</td><td>'+(v2?'<span class="dot '+c2+'"></span>'+v2:'—')+'</td></tr>';
   }
-  akHtml += '</tbody></table>';
-  html += akHtml + '</div>';
+  html += t+'</tbody></table></div>';
 
   // 3. Sağlık
   if (g('saglik_durum')) {
@@ -224,35 +205,29 @@ function render(d, tip) {
   // 6. Rehab
   if (g('rehab')==='Evet') {
     html += '<div class="s"><div class="st">🏥 Rehabilitasyon</div><div class="g3">';
-    html += field('Durum','Evet');
+    html += f('Durum','Evet');
     html += '<div class="f s2"><div class="fl">Merkez / Süre</div><div class="fv">'+[g('rehab_merkez'),g('rehab_sure')?g('rehab_sure')+' yıl':''].filter(Boolean).join(' · ')+'</div></div>';
     html += '</div></div>';
   }
 
   // 7. Karar
-  html += '<div class="s"><div class="st">✅ Karar</div>';
-  var karar = g('karar')||'—';
-  var kbCls = /kayded/i.test(karar)?'kbk':/^red$/i.test(karar.trim())?'kbr':/takip/i.test(karar)?'kbt':'kbd';
-  html += '<div class="kb '+kbCls+'"><span class="ki">📋</span><span class="kt">'+karar+'</span></div>';
-  html += '</div>';
+  var karar=g('karar')||'—';
+  var kc=/kayded/i.test(karar)?'kbk':/^red$/i.test(karar.trim())?'kbr':/takip/i.test(karar)?'kbt':'kbd';
+  html += '<div class="s"><div class="st">✅ Karar</div><div class="kb '+kc+'"><span style="font-size:18px">📋</span><span style="font-size:13px;font-weight:800">'+karar+'</span></div></div>';
 
-  // 8. İkinci sayfa: öğrenci fotoğrafı + kimlik
+  // 8. İkinci sayfa: fotoğraflar
   var hasFoto = g('foto_url') || g('kimlik_url');
   if (hasFoto) {
-    html += '<div style="page-break-before:always;padding:24px;display:flex;gap:24px;justify-content:center;align-items:flex-start">';
+    html += '<div class="page2"><div class="st">📷 Fotoğraflar</div><div class="foto-wrap">';
     if (g('foto_url')) {
-      html += '<div style="text-align:center">';
-      html += '<div class="st" style="margin-bottom:10px">📷 Öğrenci Fotoğrafı</div>';
-      html += '<img src="'+g('foto_url')+'" style="max-width:220px;max-height:300px;border-radius:10px;border:1px solid #e2dbd0;box-shadow:0 2px 12px rgba(0,0,0,.1)">';
-      html += '</div>';
+      html += '<div class="foto-box"><div style="font-size:11px;font-weight:700;color:#6b6560;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Öğrenci</div>';
+      html += '<img src="'+g('foto_url')+'" style="width:200px;height:267px;object-fit:cover" onerror="this.style.display=\'none\'"></div>';
     }
     if (g('kimlik_url')) {
-      html += '<div style="text-align:center">';
-      html += '<div class="st" style="margin-bottom:10px">🪪 Kimlik Fotoğrafı</div>';
-      html += '<img src="'+g('kimlik_url')+'" style="max-width:320px;max-height:300px;border-radius:10px;border:1px solid #e2dbd0;box-shadow:0 2px 12px rgba(0,0,0,.1)">';
-      html += '</div>';
+      html += '<div class="foto-box"><div style="font-size:11px;font-weight:700;color:#6b6560;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Kimlik</div>';
+      html += '<img src="'+g('kimlik_url')+'" style="max-width:320px;max-height:267px;object-fit:contain" onerror="this.style.display=\'none\'"></div>';
     }
-    html += '</div>';
+    html += '</div></div>';
   }
 
   document.getElementById('elBody').innerHTML = html;
