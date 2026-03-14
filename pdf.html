@@ -5,104 +5,101 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Öğrenci Tanıma Formu</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:#f0ede8;color:#16130e;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
-/* ── PRINT BUTTON (ekranda görünür, baskıda kaybolur) ── */
-.print-bar{background:#1a1814;color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.print-bar h3{font-size:14px;font-weight:700;opacity:.8}
-.print-btns{display:flex;gap:10px}
-.pbtn{padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+.print-bar{background:#1a1814;color:#fff;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px}
+.print-bar h3{font-size:13px;font-weight:700;opacity:.75;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.print-btns{display:flex;gap:8px;flex-shrink:0}
+.pbtn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
 .pbtn-print{background:#c9720a;color:#fff}
 .pbtn-close{background:rgba(255,255,255,.12);color:#fff}
 
-/* ── A4 SAYFA ── */
-.page{width:210mm;min-height:297mm;background:#fff;margin:24px auto;box-shadow:0 8px 40px rgba(0,0,0,.18);position:relative;overflow:hidden}
+.page{width:210mm;min-height:297mm;background:#fff;margin:20px auto;box-shadow:0 8px 40px rgba(0,0,0,.18);overflow:hidden}
 
-/* ── HEADER ── */
-.pg-header{background:linear-gradient(135deg,#b05e18,#de8f28);padding:28px 32px 24px;color:#fff;position:relative;overflow:hidden}
-.pg-header::before{content:'';position:absolute;right:-40px;bottom:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.07)}
-.pg-header::after{content:'';position:absolute;right:80px;top:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.04)}
-.header-inner{display:flex;align-items:flex-start;gap:20px;position:relative;z-index:1}
-.header-text{flex:1}
-.header-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;opacity:.75;margin-bottom:6px}
-.header-name{font-size:26px;font-weight:900;letter-spacing:-.5px;margin-bottom:4px}
-.header-meta{font-size:12px;opacity:.8;display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
-.header-meta span{display:flex;align-items:center;gap:5px}
-.foto-box{width:90px;height:120px;border-radius:12px;overflow:hidden;border:3px solid rgba(255,255,255,.35);flex-shrink:0;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center}
-.foto-box img{width:100%;height:100%;object-fit:cover}
-.foto-box .no-foto{font-size:36px;opacity:.5}
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#b05e18,#de8f28);padding:24px 28px 20px;color:#fff;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;right:-40px;bottom:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hdr-row{display:flex;align-items:flex-start;gap:18px;position:relative;z-index:1}
+.hdr-text{flex:1}
+.hdr-tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;opacity:.7;margin-bottom:5px}
+.hdr-name{font-size:24px;font-weight:900;letter-spacing:-.4px;margin-bottom:6px;min-height:32px}
+.hdr-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:11.5px;opacity:.85}
+.hdr-meta span{display:flex;align-items:center;gap:4px}
+.foto-kutu{width:88px;height:116px;border-radius:11px;overflow:hidden;border:2.5px solid rgba(255,255,255,.32);flex-shrink:0;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:34px}
+.foto-kutu img{width:100%;height:100%;object-fit:cover}
+.form-tip{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:#fff;font-size:9.5px;font-weight:800;padding:3px 11px;border-radius:99px;letter-spacing:.6px;text-transform:uppercase;backdrop-filter:blur(4px)}
 
-/* ── BADGE ── */
-.form-badge{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:10px;font-weight:800;padding:4px 12px;border-radius:99px;letter-spacing:.5px;text-transform:uppercase;backdrop-filter:blur(4px)}
+/* BODY */
+.body{padding:20px 24px}
 
-/* ── BODY ── */
-.pg-body{padding:24px 28px}
+/* SECTION */
+.sec{margin-bottom:18px}
+.sec-t{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:#a09a94;margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.sec-t::after{content:'';flex:1;height:1px;background:#ede8e0}
 
-/* ── SECTION ── */
-.sec{margin-bottom:20px}
-.sec-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:#a09a94;margin-bottom:10px;display:flex;align-items:center;gap:7px}
-.sec-title::after{content:'';flex:1;height:1px;background:#ede8e0}
-
-/* ── GRID ── */
-.grid{display:grid;gap:8px}
+/* GRID */
+.g{display:grid;gap:7px}
 .g2{grid-template-columns:1fr 1fr}
 .g3{grid-template-columns:1fr 1fr 1fr}
 .g4{grid-template-columns:1fr 1fr 1fr 1fr}
-.field{background:#f8f5f0;border-radius:9px;padding:9px 12px}
-.field-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a09a94;margin-bottom:3px}
-.field-value{font-size:13px;font-weight:600;color:#16130e;line-height:1.4}
-.field-value.empty{color:#c0b8b0;font-weight:400;font-style:italic;font-size:12px}
+.span2{grid-column:span 2}
+.span3{grid-column:span 3}
 
-/* ── TAG PILLS ── */
-.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
-.tag{background:#fff;border:1.5px solid #e2dbd0;border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;color:#4a443c}
-.tag.red{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
-.tag.green{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
-.tag.blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
-.tag.orange{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
-.tag.purple{background:#faf5ff;border-color:#e9d5ff;color:#7c3aed}
+.f{background:#f8f5f0;border-radius:8px;padding:8px 11px}
+.fl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#a09a94;margin-bottom:2px}
+.fv{font-size:12.5px;font-weight:600;color:#16130e;line-height:1.45}
+.fv.em{color:#c0b8b0;font-style:italic;font-weight:400;font-size:11.5px}
 
-/* ── AKADEMİK TABLO ── */
-.ak-table{width:100%;border-collapse:collapse;font-size:11.5px}
-.ak-table th{background:#f0ede8;color:#6b6560;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:7px 10px;text-align:left;border-bottom:1.5px solid #e2dbd0}
-.ak-table td{padding:7px 10px;border-bottom:1px solid #f0ebe2;font-weight:500}
-.ak-table tr:last-child td{border-bottom:none}
-.ak-val{display:inline-flex;align-items:center;gap:5px}
-.ak-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.dot-green{background:#16a34a}.dot-yellow{background:#d97706}.dot-red{background:#dc2626}.dot-gray{background:#9ca3af}
+/* TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;border:1.5px solid}
+.tag-red{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+.tag-blue{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.tag-orange{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+.tag-green{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+.tag-gray{background:#f9fafb;border-color:#e5e7eb;color:#374151}
 
-/* ── AİLE KARTLARI ── */
-.aile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.aile-card{border-radius:10px;padding:12px 14px;border:1.5px solid}
-.aile-anne{border-color:#f0c4c4;background:linear-gradient(148deg,#fffafa,#fff)}
-.aile-baba{border-color:#c4d6f0;background:linear-gradient(148deg,#f7fbff,#fff)}
-.aile-card-title{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
-.aile-anne .aile-card-title{color:#7a1616}
-.aile-baba .aile-card-title{color:#163678}
-.aile-row{display:flex;gap:6px;margin-bottom:4px;font-size:11.5px}
-.aile-row:last-child{margin-bottom:0}
-.aile-key{color:#a09a94;font-weight:600;min-width:52px;font-size:10.5px}
-.aile-val{font-weight:600;color:#16130e}
+/* AKADEMİK */
+.ak-t{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:2px}
+.ak-t th{background:#f0ede8;color:#6b6560;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;padding:6px 9px;text-align:left;border-bottom:1.5px solid #e2dbd0}
+.ak-t td{padding:6px 9px;border-bottom:1px solid #f0ebe2;font-weight:500}
+.ak-t tr:last-child td{border-bottom:none}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.dg{background:#16a34a}.dy{background:#d97706}.dr{background:#dc2626}.dn{background:#9ca3af}
 
-/* ── KARAR BANNER ── */
-.karar-banner{border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-top:8px}
-.karar-kayit{background:linear-gradient(135deg,#0d4a27,#18733c);color:#fff}
-.karar-red{background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff}
-.karar-takip{background:linear-gradient(135deg,#1e3a5f,#1d4ed8);color:#fff}
-.karar-diger{background:linear-gradient(135deg,#3d2b00,#c9720a);color:#fff}
-.karar-ico{font-size:22px}
-.karar-text{font-size:14px;font-weight:800}
+/* AİLE */
+.aile-g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.aile-c{border-radius:10px;padding:11px 13px;border:1.5px solid}
+.aile-a{border-color:#f0c4c4;background:linear-gradient(148deg,#fffafa,#fff)}
+.aile-b{border-color:#c4d6f0;background:linear-gradient(148deg,#f7fbff,#fff)}
+.aile-ct{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
+.aile-a .aile-ct{color:#7a1616}
+.aile-b .aile-ct{color:#163678}
+.aile-r{display:flex;gap:6px;margin-bottom:3px;font-size:11.5px;align-items:baseline}
+.aile-r:last-child{margin-bottom:0}
+.aile-k{color:#a09a94;font-weight:600;min-width:44px;font-size:10px;flex-shrink:0}
+.aile-v{font-weight:600;color:#16130e}
 
-/* ── NOT KUTUSU ── */
-.not-box{background:#fffbf0;border:1.5px solid #fde68a;border-radius:9px;padding:11px 14px;font-size:12px;line-height:1.7;color:#3d2b00;white-space:pre-wrap;word-break:break-word}
+/* KARAR */
+.karar-b{border-radius:9px;padding:11px 15px;display:flex;align-items:center;gap:10px;margin-top:6px}
+.kb-k{background:linear-gradient(135deg,#0d4a27,#18733c);color:#fff}
+.kb-r{background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff}
+.kb-t{background:linear-gradient(135deg,#1e3a5f,#1d4ed8);color:#fff}
+.kb-d{background:linear-gradient(135deg,#3d2b00,#c9720a);color:#fff}
+.karar-ico{font-size:20px}
+.karar-txt{font-size:13.5px;font-weight:800}
 
-/* ── FOOTER ── */
-.pg-footer{background:#f8f5f0;border-top:1px solid #e2dbd0;padding:12px 28px;display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#a09a94}
+/* NOT */
+.not-b{background:#fffbf0;border:1.5px solid #fde68a;border-radius:8px;padding:10px 13px;font-size:11.5px;line-height:1.7;color:#3d2b00;white-space:pre-wrap;word-break:break-word}
 
-/* ── PRINT ── */
+/* VEFAT */
+.vefat-b{background:#fef2f2;border:1.5px solid #fecaca;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;color:#b91c1c;margin-bottom:7px;display:inline-flex;align-items:center;gap:5px}
+
+/* FOOTER */
+.footer{background:#f8f5f0;border-top:1px solid #e2dbd0;padding:10px 24px;display:flex;justify-content:space-between;font-size:9.5px;color:#a09a94}
+
 @media print{
   .print-bar{display:none!important}
   body{background:#fff}
@@ -112,327 +109,345 @@ body{font-family:'Inter',sans-serif;background:#f0ede8;color:#16130e;-webkit-pri
 </head>
 <body>
 
-<!-- PRINT BAR -->
 <div class="print-bar">
-  <h3 id="printBarTitle">Öğrenci Tanıma Formu</h3>
+  <h3 id="pbarTitle">Öğrenci Tanıma Formu</h3>
   <div class="print-btns">
     <button class="pbtn pbtn-print" onclick="window.print()">🖨️ Yazdır / PDF</button>
     <button class="pbtn pbtn-close" onclick="window.close()">✕ Kapat</button>
   </div>
 </div>
 
-<!-- SAYFA -->
-<div class="page" id="page">
-
-  <!-- HEADER -->
-  <div class="pg-header">
-    <div class="form-badge" id="formTip">TAM FORM</div>
-    <div class="header-inner">
-      <div class="header-text">
-        <div class="header-tag">Öğrenci Tanıma Formu</div>
-        <div class="header-name" id="hName">—</div>
-        <div class="header-meta">
+<div class="page">
+  <div class="hdr">
+    <div class="form-tip" id="formTip">TAM FORM</div>
+    <div class="hdr-row">
+      <div class="hdr-text">
+        <div class="hdr-tag">Öğrenci Tanıma Formu</div>
+        <div class="hdr-name" id="hAd"></div>
+        <div class="hdr-meta">
           <span>🎓 <span id="hSinif">—</span></span>
           <span>🎂 <span id="hDogum">—</span></span>
           <span>🏫 <span id="hOkul">—</span></span>
           <span>📅 <span id="hTarih">—</span></span>
+          <span>🧑‍💼 <span id="hUzman">—</span></span>
         </div>
       </div>
-      <div class="foto-box" id="fotoBox">
-        <span class="no-foto">👤</span>
-      </div>
+      <div class="foto-kutu" id="fotoKutu">👤</div>
     </div>
   </div>
 
-  <!-- BODY -->
-  <div class="pg-body">
+  <div class="body">
 
     <!-- TANI & AKADEMİK -->
     <div class="sec">
-      <div class="sec-title">🗂️ Tanı & Akademik Durum</div>
-      <div class="grid g2" style="margin-bottom:10px">
-        <div class="field">
-          <div class="field-label">Rapor / Tanı</div>
-          <div class="field-value" id="fTani">—</div>
-        </div>
-        <div class="field">
-          <div class="field-label">Temel İhtiyaç Alanı</div>
-          <div class="field-value" id="fIhtiyac">—</div>
-        </div>
+      <div class="sec-t">🗂️ Tanı & Akademik Durum</div>
+      <div class="g g2" style="margin-bottom:8px">
+        <div class="f"><div class="fl">Rapor / Tanı</div><div class="fv" id="fTani">—</div></div>
+        <div class="f"><div class="fl">Temel İhtiyaç Alanı</div><div class="fv" id="fIhtiyac">—</div></div>
       </div>
-      <table class="ak-table" id="akTable">
-        <thead>
-          <tr>
-            <th>Alan</th>
-            <th>Değerlendirme</th>
-            <th>Alan</th>
-            <th>Değerlendirme</th>
-          </tr>
-        </thead>
+      <table class="ak-t">
+        <thead><tr><th>Alan</th><th>Değerlendirme</th><th>Alan</th><th>Değerlendirme</th></tr></thead>
         <tbody id="akBody"></tbody>
       </table>
     </div>
 
-    <!-- SAĞLIK & DAVRANIŞ -->
+    <!-- SAĞLIK -->
     <div class="sec" id="secSaglik">
-      <div class="sec-title">🩺 Sağlık & Davranış</div>
-      <div id="saglikTags" class="tags"></div>
+      <div class="sec-t">🩺 Sağlık & Davranış</div>
+      <div class="tags" id="saglikTags"></div>
     </div>
 
-    <!-- DİL GELİŞİMİ -->
+    <!-- DİL -->
     <div class="sec" id="secDil">
-      <div class="sec-title">🔤 Dil Gelişimi</div>
-      <div id="dilTags" class="tags"></div>
-    </div>
-
-    <!-- REHABİLİTASYON -->
-    <div class="sec" id="secRehab">
-      <div class="sec-title">🏥 Rehabilitasyon</div>
-      <div class="grid g3">
-        <div class="field">
-          <div class="field-label">Durum</div>
-          <div class="field-value" id="fRehab">—</div>
-        </div>
-        <div class="field" style="grid-column:span 2">
-          <div class="field-label">Merkez / Süre</div>
-          <div class="field-value" id="fRehabDetay">—</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AİLE -->
-    <div class="sec">
-      <div class="sec-title">👨‍👩‍👧 Aile Bilgileri</div>
-      <div class="aile-grid" style="margin-bottom:10px">
-        <div class="aile-card aile-anne">
-          <div class="aile-card-title">👩 Anne</div>
-          <div class="aile-row"><span class="aile-key">Adı</span><span class="aile-val" id="aAnneAd">—</span></div>
-          <div class="aile-row"><span class="aile-key">Tel</span><span class="aile-val" id="aAnneTel">—</span></div>
-          <div class="aile-row"><span class="aile-key">Meslek</span><span class="aile-val" id="aAnneMeslek">—</span></div>
-          <div class="aile-row"><span class="aile-key">Sağlık</span><span class="aile-val" id="aAnneSaglik">—</span></div>
-          <div class="aile-row"><span class="aile-key">Eğitim</span><span class="aile-val" id="aAnneEgitim">—</span></div>
-        </div>
-        <div class="aile-card aile-baba">
-          <div class="aile-card-title">👨 Baba</div>
-          <div class="aile-row"><span class="aile-key">Adı</span><span class="aile-val" id="aBabaAd">—</span></div>
-          <div class="aile-row"><span class="aile-key">Tel</span><span class="aile-val" id="aBabaTel">—</span></div>
-          <div class="aile-row"><span class="aile-key">Meslek</span><span class="aile-val" id="aBabaMeslek">—</span></div>
-          <div class="aile-row"><span class="aile-key">Sağlık</span><span class="aile-val" id="aBabaSaglik">—</span></div>
-          <div class="aile-row"><span class="aile-key">Eğitim</span><span class="aile-val" id="aBabaEgitim">—</span></div>
-        </div>
-      </div>
-      <div class="grid g2">
-        <div class="field">
-          <div class="field-label">Birlikte mi Yaşıyor?</div>
-          <div class="field-value" id="fBeraberlik">—</div>
-        </div>
-        <div class="field">
-          <div class="field-label">Adres</div>
-          <div class="field-value" id="fAdres">—</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AAA & KARAR -->
-    <div class="sec">
-      <div class="sec-title">⭐ Değerlendirme & Karar</div>
-      <div class="grid g3" style="margin-bottom:10px">
-        <div class="field">
-          <div class="field-label">AAA</div>
-          <div class="field-value" id="fAAA">—</div>
-        </div>
-        <div class="field">
-          <div class="field-label">Rapor Olasılığı</div>
-          <div class="field-value" id="fRaporOlas">—</div>
-        </div>
-        <div class="field">
-          <div class="field-label">Uzman</div>
-          <div class="field-value" id="fUzman">—</div>
-        </div>
-      </div>
-      <div id="kararBanner" class="karar-banner karar-diger">
-        <span class="karar-ico">📋</span>
-        <span class="karar-text" id="fKarar">—</span>
-      </div>
+      <div class="sec-t">🔤 Dil Gelişimi</div>
+      <div class="tags" id="dilTags"></div>
     </div>
 
     <!-- GÖRÜŞME NOTU -->
     <div class="sec" id="secNot">
-      <div class="sec-title">📝 Görüşme Notları</div>
-      <div class="not-box" id="fNot"></div>
+      <div class="sec-t">📝 Görüşme Notları</div>
+      <div class="not-b" id="fNot"></div>
     </div>
 
-  </div><!-- pg-body -->
+    <!-- AİLE -->
+    <div class="sec">
+      <div class="sec-t">👨‍👩‍👧 Aile Bilgileri</div>
+      <div class="aile-g" style="margin-bottom:8px">
+        <div class="aile-c aile-a">
+          <div class="aile-ct">👩 Anne</div>
+          <div id="anneVefat"></div>
+          <div class="aile-r"><span class="aile-k">Adı</span><span class="aile-v" id="aAnneAd">—</span></div>
+          <div class="aile-r"><span class="aile-k">Tel</span><span class="aile-v" id="aAnneTel">—</span></div>
+          <div class="aile-r"><span class="aile-k">Meslek</span><span class="aile-v" id="aAnneMeslek">—</span></div>
+          <div class="aile-r"><span class="aile-k">Eğitim</span><span class="aile-v" id="aAnneEgitim">—</span></div>
+        </div>
+        <div class="aile-c aile-b">
+          <div class="aile-ct">👨 Baba</div>
+          <div id="babaVefat"></div>
+          <div class="aile-r"><span class="aile-k">Adı</span><span class="aile-v" id="aBabaAd">—</span></div>
+          <div class="aile-r"><span class="aile-k">Tel</span><span class="aile-v" id="aBabaTel">—</span></div>
+          <div class="aile-r"><span class="aile-k">Meslek</span><span class="aile-v" id="aBabaMeslek">—</span></div>
+          <div class="aile-r"><span class="aile-k">Eğitim</span><span class="aile-v" id="aBabaEgitim">—</span></div>
+        </div>
+      </div>
+      <div class="g g3">
+        <div class="f"><div class="fl">Birlikte mi Yaşıyor?</div><div class="fv" id="fBer">—</div></div>
+        <div class="f span2"><div class="fl">Adres</div><div class="fv" id="fAdres">—</div></div>
+      </div>
+    </div>
 
-  <!-- FOOTER -->
-  <div class="pg-footer">
-    <span id="footerLeft">Öğrenci Tanıma Formu</span>
-    <span id="footerRight"></span>
+    <!-- ÖĞRENCİ TC -->
+    <div class="sec" id="secTC">
+      <div class="sec-t">🪪 Kimlik</div>
+      <div class="g g2">
+        <div class="f"><div class="fl">Öğrenci TC Kimlik No</div><div class="fv" id="fTC">—</div></div>
+      </div>
+    </div>
+
+    <!-- REHABİLİTASYON -->
+    <div class="sec" id="secRehab">
+      <div class="sec-t">🏥 Rehabilitasyon</div>
+      <div class="g g3">
+        <div class="f"><div class="fl">Durum</div><div class="fv" id="fRehab">—</div></div>
+        <div class="f span2"><div class="fl">Merkez / Süre</div><div class="fv" id="fRehabD">—</div></div>
+      </div>
+    </div>
+
+    <!-- DEĞERLENDİRME & KARAR -->
+    <div class="sec">
+      <div class="sec-t">⭐ Değerlendirme & Karar</div>
+      <div class="g g2" style="margin-bottom:7px">
+        <div class="f"><div class="fl">AAA</div><div class="fv" id="fAAA">—</div></div>
+        <div class="f"><div class="fl">Rapor Olasılığı</div><div class="fv" id="fROlas">—</div></div>
+      </div>
+      <div id="kararBanner" class="karar-b kb-d">
+        <span class="karar-ico">📋</span>
+        <span class="karar-txt" id="fKarar">—</span>
+      </div>
+    </div>
+
+  </div><!-- body -->
+
+  <div class="footer">
+    <span id="footL">Öğrenci Tanıma Formu</span>
+    <span id="footR"></span>
   </div>
-
-</div><!-- page -->
+</div>
 
 <script>
-// URL parametrelerinden veriyi al
 const params = new URLSearchParams(window.location.search);
 const tip = params.get('tip') || 'TAM FORM';
 const raw = params.get('d');
 
 if (!raw) {
-  document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif"><h2>Veri bulunamadı</h2><p>Bu sayfa doğrudan açılamaz.</p></div>';
+  document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:sans-serif;color:#666"><h2 style="margin-bottom:8px">Veri bulunamadı</h2><p>Bu sayfa Sheets menüsünden açılmalıdır.</p></div>';
 } else {
-  const d = JSON.parse(decodeURIComponent(raw));
-  document.getElementById('formTip').textContent = tip;
-  document.getElementById('printBarTitle').textContent = (d['Ad']||'') + ' ' + (d['Soyad']||'') + ' — ' + tip;
-  doldur(d);
+  try {
+    const d = JSON.parse(decodeURIComponent(raw));
+    document.getElementById('formTip').textContent = tip;
+    doldur(d);
+  } catch(e) {
+    document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:sans-serif;color:#666"><h2>Veri okunamadı</h2><p>' + e.message + '</p></div>';
+  }
 }
 
-function val(v) { return v && String(v).trim() ? String(v).trim() : null; }
-function el(id) { return document.getElementById(id); }
-function set(id, v, fallback) { const e = el(id); if(e) e.textContent = val(v) || fallback || '—'; }
+// Sheets sütun başlıkları → anahtar eşleştirme
+const K = {
+  ad:       ["Öğrencinin Adı:", "Ad", "ogrenciAd"],
+  soyad:    ["Öğrencinin Soyadı:", "Soyad", "ogrenciSoyad"],
+  uzman:    ["İlgili Halkla İlişkiler Uzmanı", "Uzman", "uzman"],
+  tarih:    ["Görüşme Tarihi", "gorusmeTarihi"],
+  okul:     ["Devam Ettiği Okul", "Okul", "okul"],
+  sinif:    ["Sınıfı", "Sınıf", "sinif"],
+  dogum:    ["Öğrencinin doğum tarihi:", "Doğum Tarihi", "dogumTarihi"],
+  not:      ["GÖRÜŞME NOTLARI", "Görüşme Notu", "gorusmeNot"],
+  saglik:   ["Sağlık Durumu", "saglikDurum"],
+  okuma:    ["Akademik/sosyal/davranışsal durumu nedir? [Okuma-Anlama]", "Okuma", "ak_okuma"],
+  anlama:   ["Anlama", "ak_anlama"],
+  yazma:    ["Akademik/sosyal/davranışsal durumu nedir? [Yazma]", "Yazma", "ak_yazma"],
+  mat:      ["Akademik/sosyal/davranışsal durumu nedir? [Matematik]", "Matematik", "ak_mat"],
+  ifade:    ["Akademik/sosyal/davranışsal durumu nedir? [İfade Becerisi]", "İfade", "ak_ifade"],
+  kavram:   ["Kavram", "ak_kavram"],
+  tani:     ["Rapor/tanı durumu?", "Tanı", "tani"],
+  dilProb:  ["Dil gelişimi ile ilgili problemi nasıl tanımlarsınız?", "Dil Problemi Detay", "dilProb"],
+  dilModul: ["Gelişimsel dil modülü var mı?", "Dil Modülü", "dilModul"],
+  aileDil:  ["Ailede başka dil konuşma problemi yaşayan var mı?", "Ailede Dil Problemi", "aileDil"],
+  ihtiyac:  ["Temel İhtiyaç", "temelIhtiyac"],
+  anneAd:   ["Anne Adı", "anneAd"],
+  anneTel:  ["Anne İletişim", "anneIletisim"],
+  anneMes:  ["Anne Mesleği", "anneMeslek"],
+  anneEg:   ["Anne eğitim durumu: [Anne]", "Anne Eğitim", "egitimAnne"],
+  anneSag:  ["Ebeveyn sağlık durumu: [Anne]", "Anne Sağlık", "saglikAnne"],
+  babaAd:   ["Baba Adı", "babaAd"],
+  babaTel:  ["Baba İletişim", "babaIletisim"],
+  babaMes:  ["Baba Mesleği", "babaMeslek"],
+  babaEg:   ["Anne eğitim durumu: [Baba]", "Baba Eğitim", "egitimBaba"],
+  babaSag:  ["Ebeveyn sağlık durumu: [Baba]", "Baba Sağlık", "saglikBaba"],
+  ber:      ["Anne baba birlikte mi yaşıyor?", "Birlikte mi", "beraberlik"],
+  adres:    ["Adres", "adres"],
+  tc:       ["Öğrenci TC Kimlik No", "tcNo"],
+  rehab:    ["Rehabilitasyon merkezine gitti mi/gidiyor mu?", "Rehabilitasyon", "rehab"],
+  rehabM:   ["Hangi rehabilitasyon merkezine gidiyor?", "Rehab Merkez", "rehabMerkez"],
+  rehabS:   ["Ne kadar süredir gitti/ gidiyor?", "Rehab Süre", "rehabSure"],
+  aaa:      ["AAA", "aileAAA"],
+  rOlas:    ["Rapor çıkma olasılığı nedir?", "Rapor Olasılığı", "raporOlas"],
+  karar:    ["KARAR", "Karar", "karar"],
+  foto:     ["Fotoğraf", "Fotoğraf (Drive)", "fotoData"],
+};
+
+function get(d, keys) {
+  for (const k of keys) {
+    if (d[k] !== undefined && d[k] !== null && String(d[k]).trim() !== '') return String(d[k]).trim();
+  }
+  return null;
+}
+
+function set(id, v) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (v) { el.textContent = v; el.classList.remove('em'); }
+  else   { el.textContent = '—'; el.classList.add('em'); }
+}
+
+function tarihFormat(t) {
+  if (!t) return null;
+  const m = String(t).match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return m[3]+'.'+m[2]+'.'+m[1];
+  // Sheets Date objesi string: "Fri Dec 03 2021 00:00:00..."
+  const m2 = String(t).match(/(\d{4})\s+\d+:\d+/);
+  if (m2) { const d = new Date(t); return d.getDate()+'.'+(d.getMonth()+1)+'.'+d.getFullYear(); }
+  return t;
+}
 
 function doldur(d) {
-  // HEADER
-  set('hName', (d['Ad']||'') + ' ' + (d['Soyad']||''));
-  set('hSinif', d['Sınıf'] ? d['Sınıf'] + '. Sınıf' : d['Sınıf']);
-  set('hDogum', formatTarih(d['Doğum Tarihi']));
-  set('hOkul', d['Okul']);
-  set('hTarih', 'Görüşme: ' + formatTarih(d['Görüşme Tarihi']));
+  const ad    = get(d, K.ad)    || '';
+  const soyad = get(d, K.soyad) || '';
+  const tam   = (ad + ' ' + soyad).trim();
 
-  // Fotoğraf
-  const fotoUrl = val(d['Fotoğraf (Drive)']);
-  if (fotoUrl) {
-    const fotoBox = el('fotoBox');
-    fotoBox.innerHTML = '<img src="' + fotoUrl + '" alt="Fotoğraf" onerror="this.parentElement.innerHTML=\'<span class=no-foto>👤</span>\'">';
+  document.getElementById('pbarTitle').textContent = tam + ' — ' + tip;
+  document.getElementById('hAd').textContent = tam || '—';
+  set('hSinif', get(d, K.sinif));
+  set('hDogum', tarihFormat(get(d, K.dogum)));
+  set('hOkul',  get(d, K.okul));
+  document.getElementById('hTarih').textContent = 'Görüşme: ' + (tarihFormat(get(d, K.tarih)) || '—');
+  set('hUzman', get(d, K.uzman));
+
+  // FOTOĞRAF
+  const fotoUrl = get(d, K.foto);
+  if (fotoUrl && fotoUrl.startsWith('http')) {
+    const fk = document.getElementById('fotoKutu');
+    // Google Drive direct img url
+    let imgSrc = fotoUrl;
+    const driveMatch = fotoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (driveMatch) imgSrc = 'https://drive.google.com/uc?export=view&id=' + driveMatch[1];
+    fk.innerHTML = '<img src="'+imgSrc+'" onerror="this.parentElement.textContent=\'👤\'">';
   }
 
   // TANI
-  set('fTani', d['Tanı']);
-  set('fIhtiyac', d['Temel İhtiyaç']);
+  set('fTani',   get(d, K.tani));
+  set('fIhtiyac',get(d, K.ihtiyac));
 
-  // AKADEMİK TABLO
+  // AKADEMİK
   const akAlanlari = [
-    {label:'Okuma', key:'Okuma'},
-    {label:'Anlama', key:'Anlama'},
-    {label:'Yazma', key:'Yazma'},
-    {label:'Matematik', key:'Matematik'},
-    {label:'İfade', key:'İfade'},
-    {label:'Kavram', key:'Kavram'},
+    {label:'Okuma',    v: get(d,K.okuma)},
+    {label:'Anlama',   v: get(d,K.anlama)},
+    {label:'Yazma',    v: get(d,K.yazma)},
+    {label:'Matematik',v: get(d,K.mat)},
+    {label:'İfade',    v: get(d,K.ifade)},
+    {label:'Kavram',   v: get(d,K.kavram)},
   ];
-  const tbody = el('akBody');
-  for (let i = 0; i < akAlanlari.length; i += 2) {
+  const tbody = document.getElementById('akBody');
+  for (let i=0; i<akAlanlari.length; i+=2) {
     const tr = tbody.insertRow();
-    [akAlanlari[i], akAlanlari[i+1]].forEach(function(alan) {
-      if (!alan) { tr.insertCell(); tr.insertCell(); return; }
-      const tdLabel = tr.insertCell();
-      tdLabel.textContent = alan.label;
-      tdLabel.style.cssText = 'font-weight:600;font-size:12px;color:#3d3830';
-      const tdVal = tr.insertCell();
-      const v = val(d[alan.key]);
-      if (v) {
-        const dot = akDot(v);
-        tdVal.innerHTML = '<span class="ak-val"><span class="ak-dot ' + dot + '"></span>' + v + '</span>';
+    [akAlanlari[i], akAlanlari[i+1]].forEach(function(a) {
+      if (!a) {tr.insertCell();tr.insertCell();return;}
+      const c1=tr.insertCell(); c1.textContent=a.label; c1.style.cssText='font-weight:600;font-size:12px;color:#3d3830;padding:6px 9px';
+      const c2=tr.insertCell(); c2.style.cssText='padding:6px 9px';
+      if (a.v) {
+        const cls = a.v==='Akranları düzeyinde'?'dg':a.v==='Zayıf'?'dy':a.v==='Çok zayıf'?'dr':'dn';
+        c2.innerHTML='<span class="dot '+cls+'"></span><span style="font-size:12px;font-weight:500">'+a.v+'</span>';
       } else {
-        tdVal.innerHTML = '<span style="color:#c0b8b0;font-style:italic;font-size:11px">—</span>';
+        c2.innerHTML='<span style="color:#c0b8b0;font-style:italic;font-size:11px">—</span>';
       }
     });
   }
 
   // SAĞLIK
-  const saglik = val(d['Sağlık Durumu']);
+  const saglik = get(d, K.saglik);
   if (saglik) {
-    const tags = el('saglikTags');
-    saglik.split(';').forEach(function(s) {
-      s = s.trim(); if (!s) return;
-      const span = document.createElement('span');
-      span.className = 'tag red';
-      span.textContent = s;
-      tags.appendChild(span);
+    const wrap = document.getElementById('saglikTags');
+    saglik.split(/[;,]/).forEach(function(s){
+      s=s.trim(); if(!s||s==='0'||s.toLowerCase()==='hayır') return;
+      const sp=document.createElement('span'); sp.className='tag tag-red'; sp.textContent=s; wrap.appendChild(sp);
     });
-  } else {
-    el('secSaglik').style.display = 'none';
-  }
+    if (!wrap.children.length) document.getElementById('secSaglik').style.display='none';
+  } else { document.getElementById('secSaglik').style.display='none'; }
 
   // DİL
-  const dil = val(d['Dil Problemi Detay']);
-  const dilModul = val(d['Dil Modülü']);
-  const aileDil = val(d['Ailede Dil Problemi']);
-  if (dil || dilModul || aileDil) {
-    const tags = el('dilTags');
-    if (dilModul) { const s=document.createElement('span');s.className='tag blue';s.textContent='Modül: '+dilModul;tags.appendChild(s); }
-    if (aileDil)  { const s=document.createElement('span');s.className='tag purple';s.textContent='Ailede dil: '+aileDil;tags.appendChild(s); }
-    if (dil) dil.split(';').forEach(function(s) {
-      s=s.trim();if(!s)return;
-      const span=document.createElement('span');span.className='tag orange';span.textContent=s;tags.appendChild(span);
-    });
-  } else {
-    el('secDil').style.display = 'none';
-  }
-
-  // REHABİLİTASYON
-  const rehab = val(d['Rehabilitasyon']);
-  set('fRehab', rehab);
-  if (rehab === 'Evet') {
-    const merkez = val(d['Rehab Merkez']) || '';
-    const sure = val(d['Rehab Süre']) ? d['Rehab Süre'] + ' yıl' : '';
-    el('fRehabDetay').textContent = [merkez, sure].filter(Boolean).join(' · ') || '—';
-  } else {
-    el('secRehab').style.display = 'none';
-  }
-
-  // AİLE
-  set('aAnneAd', d['Anne Adı']);
-  set('aAnneTel', d['Anne Tel']);
-  set('aAnneMeslek', d['Anne Meslek']);
-  set('aAnneSaglik', d['Anne Sağlık']);
-  set('aAnneEgitim', d['Anne Eğitim']);
-  set('aBabaAd', d['Baba Adı']);
-  set('aBabaTel', d['Baba Tel']);
-  set('aBabaMeslek', d['Baba Meslek']);
-  set('aBabaSaglik', d['Baba Sağlık']);
-  set('aBabaEgitim', d['Baba Eğitim']);
-  set('fBeraberlik', d['Birlikte mi']);
-  set('fAdres', d['Adres']);
-
-  // AAA & KARAR
-  set('fAAA', d['AAA']);
-  const raporOlas = val(d['Rapor Olasılığı']);
-  el('fRaporOlas').textContent = raporOlas ? raporOlas + ' / 5' : '—';
-  set('fUzman', d['Uzman']);
-
-  const karar = val(d['Karar']) || '—';
-  el('fKarar').textContent = karar;
-  const kb = el('kararBanner');
-  if (/kayded/i.test(karar)) kb.className='karar-banner karar-kayit';
-  else if (/red/i.test(karar)) kb.className='karar-banner karar-red';
-  else if (/takip/i.test(karar)) kb.className='karar-banner karar-takip';
-  else kb.className='karar-banner karar-diger';
+  const dilP  = get(d, K.dilProb);
+  const dilM  = get(d, K.dilModul);
+  const ailD  = get(d, K.aileDil);
+  const dilWrap = document.getElementById('dilTags');
+  let hasDil = false;
+  if (dilM && dilM!=='Yok') { const s=document.createElement('span');s.className='tag tag-blue';s.textContent='Modül: '+dilM;dilWrap.appendChild(s);hasDil=true; }
+  if (ailD && ailD==='Evet') { const s=document.createElement('span');s.className='tag tag-orange';s.textContent='Ailede dil problemi var';dilWrap.appendChild(s);hasDil=true; }
+  if (dilP) dilP.split(/[;,]/).forEach(function(s){
+    s=s.trim();if(!s)return;
+    const sp=document.createElement('span');sp.className='tag tag-orange';sp.textContent=s;dilWrap.appendChild(sp);hasDil=true;
+  });
+  if (!hasDil) document.getElementById('secDil').style.display='none';
 
   // NOT
-  const not = val(d['Görüşme Notu']);
-  if (not) { el('fNot').textContent = not; }
-  else { el('secNot').style.display = 'none'; }
+  const not = get(d, K.not);
+  if (not) document.getElementById('fNot').textContent=not;
+  else document.getElementById('secNot').style.display='none';
+
+  // AİLE - VEFAT
+  const anneSag = get(d, K.anneSag);
+  const babaSag = get(d, K.babaSag);
+  if (anneSag==='Vefat') document.getElementById('anneVefat').innerHTML='<div class="vefat-b">⚠️ Vefat</div>';
+  if (babaSag==='Vefat')  document.getElementById('babaVefat').innerHTML='<div class="vefat-b">⚠️ Vefat</div>';
+
+  set('aAnneAd',    get(d, K.anneAd));
+  set('aAnneTel',   get(d, K.anneTel));
+  set('aAnneMeslek',get(d, K.anneMes));
+  set('aAnneEgitim',get(d, K.anneEg));
+  set('aBabaAd',    get(d, K.babaAd));
+  set('aBabaTel',   get(d, K.babaTel));
+  set('aBabaMeslek',get(d, K.babaMes));
+  set('aBabaEgitim',get(d, K.babaEg));
+  set('fBer',   get(d, K.ber));
+  set('fAdres', get(d, K.adres));
+
+  // TC
+  const tc = get(d, K.tc);
+  if (tc) set('fTC', tc);
+  else document.getElementById('secTC').style.display='none';
+
+  // REHABİLİTASYON
+  const rehab = get(d, K.rehab);
+  if (rehab==='Evet') {
+    set('fRehab', 'Evet');
+    const merkez = get(d, K.rehabM)||'';
+    const sure   = get(d, K.rehabS) ? get(d,K.rehabS)+' yıl' : '';
+    document.getElementById('fRehabD').textContent = [merkez,sure].filter(Boolean).join(' · ') || '—';
+  } else { document.getElementById('secRehab').style.display='none'; }
+
+  // AAA & KARAR
+  set('fAAA',  get(d, K.aaa));
+  const ro = get(d, K.rOlas);
+  document.getElementById('fROlas').textContent = ro ? ro+' / 5' : '—';
+  const karar = get(d, K.karar) || '—';
+  document.getElementById('fKarar').textContent = karar;
+  const kb = document.getElementById('kararBanner');
+  if (/kayded/i.test(karar)) kb.className='karar-b kb-k';
+  else if (/^red$/i.test(karar.trim())) kb.className='karar-b kb-r';
+  else if (/takip/i.test(karar)) kb.className='karar-b kb-t';
+  else kb.className='karar-b kb-d';
 
   // FOOTER
-  el('footerLeft').textContent = (d['Ad']||'') + ' ' + (d['Soyad']||'') + ' — Öğrenci Tanıma Formu';
-  el('footerRight').textContent = 'Görüşme: ' + formatTarih(d['Görüşme Tarihi']) + ' · ' + (d['Uzman']||'');
-}
-
-function akDot(v) {
-  if (!v) return 'dot-gray';
-  if (v === 'Akranları düzeyinde') return 'dot-green';
-  if (v === 'Zayıf') return 'dot-yellow';
-  if (v === 'Çok zayıf') return 'dot-red';
-  return 'dot-gray';
-}
-
-function formatTarih(t) {
-  if (!t) return null;
-  const s = String(t);
-  // yyyy-mm-dd → dd.mm.yyyy
-  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (m) return m[3] + '.' + m[2] + '.' + m[1];
-  return s;
+  document.getElementById('footL').textContent = tam + ' — Öğrenci Tanıma Formu';
+  document.getElementById('footR').textContent = 'Görüşme: '+(tarihFormat(get(d,K.tarih))||'—')+' · '+(get(d,K.uzman)||'—');
 }
 </script>
 </body>
