@@ -1029,7 +1029,11 @@ async function submitForm(){
       kimlik_url:kimlikUrl
     };
 
-    await fetch(SUPA_URL+'/rest/v1/ogrenciler',{
+    await fetch('/.netlify/functions/submit',{
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(p)
+});
       method:'POST',
       headers:{
         'Content-Type':'application/json',
