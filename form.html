@@ -742,7 +742,9 @@ function v8(){
   if(!document.querySelector('input[name="aileAAA"]:checked')){flashCard('cAAA');toast('⚠️ AAA aile değerlendirmesi zorunlu');return;}
   if(!document.querySelector('input[name="temelIhtiyac"]:checked')){flashCard('cIhtiyac');toast('⚠️ Temel ihtiyaç alanı zorunlu');return;}
   const raporluTani=D.tani&&D.tani.startsWith('Raporlu');
-  if(!raporluTani&&!D.raporOlas){flashCard('cRaporOlas');toast('⚠️ Rapor çıkma olasılığı zorunlu');return;}
+  const raporKarti=document.getElementById('cRaporOlas');
+  const raporGizli=raporKarti&&raporKarti.classList.contains('hidden');
+  if(!raporluTani&&!raporGizli&&!D.raporOlas){flashCard('cRaporOlas');toast('⚠️ Rapor çıkma olasılığı zorunlu');return;}
   submitForm();
 }
 
