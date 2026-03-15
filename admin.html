@@ -260,7 +260,7 @@ async function pdfAc(id, btn) {
     const data = await res.json();
     if (data && data[0]) {
       const encoded = encodeURIComponent(JSON.stringify(data[0]));
-      window.open(PDF_URL + '?d=' + encoded + '&tip=TAM+FORM', '_blank');
+      window.open(PDF_URL + '?v=' + Date.now() + '&d=' + encoded + '&tip=TAM+FORM', '_blank');
     }
   } catch(e) {
     alert('Hata: ' + e.message);
