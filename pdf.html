@@ -77,7 +77,7 @@ tr:last-child td{border-bottom:none}
 <div class="page">
   <div class="hdr">
     <div class="hdr-info">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:32px;object-fit:contain"><span class="hdr-tag">Öğrenci Tanıma Formu</span></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:32px;object-fit:contain"><div><div style="font-size:12px;font-weight:900;color:#16130e;letter-spacing:-.2px">EĞİTİMCİ DİL KONUŞMA MERKEZİ</div><span class="hdr-tag">Öğrenci Tanıma Formu</span></div></div>
       <div class="hdr-name" id="elAd">—</div>
       <div class="hdr-uzman" id="elUzman"></div>
       <div class="meta" id="elMeta"></div>
@@ -130,9 +130,11 @@ function render() {
   if (g('sinif')) meta += '<span>🎓 '+g('sinif')+'</span>';
   if (g('dogum_tarihi')) meta += '<span>🎂 '+tf(g('dogum_tarihi'))+'</span>';
   if (g('okul')) meta += '<span>🏫 '+g('okul')+'</span>';
-  if (g('gorusme_tarihi')) meta += '<span>📅 Görüşme: '+tf(g('gorusme_tarihi'))+'</span>';
   if (g('tc_no')) meta += '<span>🪪 TC: '+g('tc_no')+'</span>';
   document.getElementById('elMeta').innerHTML = meta;
+  // Uzman ve tarih alt satırda
+  var uzmanEl = document.getElementById('elUzman');
+  if (uzmanEl) uzmanEl.innerHTML = (g('uzman')?'🧑‍💼 '+g('uzman'):'') + (g('gorusme_tarihi')?' &nbsp;·&nbsp; 📅 '+tf(g('gorusme_tarihi')):'');
 
   // Öğrenci fotoğrafı header'da
   if (g('foto_url')) {
@@ -171,10 +173,10 @@ function render() {
   html += '<div class="f s2"><div class="fl">Adres</div><div class="fv">'+(g('adres')||'—')+'</div></div>';
   html += '</div></div>';
 
-  // 1b. Özel eğitim
-  if(g('ozel_egitim')==='Evet'&&g('ozel_egitim_acik')){
+  // 1b. Özel eğitim - sadece var ise göster
+  if(g('ozel_egitim')==='Evet'){
     html+='<div class="s"><div class="st">🎓 Ailede Özel Eğitim</div>';
-    html+=f('Açıklama',g('ozel_egitim_acik'));
+    if(g('ozel_egitim_acik')) html+=f('Açıklama',g('ozel_egitim_acik'));
     html+='</div>';
   }
 
