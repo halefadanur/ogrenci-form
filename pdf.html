@@ -142,6 +142,8 @@ function render() {
   document.getElementById('ftL').textContent = ad + ' — Öğrenci Tanıma Formu';
   document.getElementById('ftR').textContent = 'Görüşme: '+tf(g('gorusme_tarihi'))+' · '+g('uzman');
 
+  var taniVal = g('tani');
+  var isRaporlu = taniVal && taniVal.indexOf('Raporlu') === 0;
   var html = '';
 
   // 1. AAA + Rapor + Anne + Baba + Birlikte + Adres
