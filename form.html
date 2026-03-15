@@ -230,7 +230,7 @@ function pdfOnizle(){
 <div class="topbar">
   <div class="tb">
     <div class="tb-row">
-      <img src="https://halefadanur.github.io/ogrenci-form/logo_huzurum_png.png" style="height:32px;border-radius:6px;object-fit:contain">
+      <img src="https://halefadanur.github.io/ogrenci-form/logo.png" style="height:32px;border-radius:6px;object-fit:contain">
       <div class="tb-title">Öğrenci Tanıma</div>
       <div class="tb-pill" id="stepBadge">1 / 8</div>
       <button onclick="pdfOnizle()" style="background:#c8700a;border:none;color:#fff;font-size:12px;font-weight:800;padding:6px 13px;border-radius:8px;cursor:pointer;font-family:inherit;letter-spacing:.2px">📄 PDF</button>
@@ -1190,7 +1190,18 @@ async function submitForm(){
   }
 }
 
+function temizAd(str){
+  return str
+    .replace(/ğ/g,'g').replace(/Ğ/g,'G')
+    .replace(/ü/g,'u').replace(/Ü/g,'U')
+    .replace(/ş/g,'s').replace(/Ş/g,'S')
+    .replace(/ı/g,'i').replace(/İ/g,'I')
+    .replace(/ö/g,'o').replace(/Ö/g,'O')
+    .replace(/ç/g,'c').replace(/Ç/g,'C')
+    .replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_.\-]/g,'');
+}
 async function uploadFoto(base64Data, dosyaAdi){
+  dosyaAdi = temizAd(dosyaAdi);
   try{
     const base64=base64Data.split(',')[1];
     const binary=atob(base64);
