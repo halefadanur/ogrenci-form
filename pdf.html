@@ -20,7 +20,7 @@ body{font-family:'Inter',sans-serif;background:#f0ede8;-webkit-print-color-adjus
 .hdr-name{font-size:22px;font-weight:900;letter-spacing:-.4px;color:#16130e;margin-bottom:3px}
 .hdr-uzman{font-size:13px;font-weight:700;color:#5a4a3a;margin-bottom:6px}
 .meta{display:flex;flex-wrap:wrap;gap:7px;font-size:10.5px;color:#6b6560}
-.foto-hdr{width:72px;height:96px;border-radius:8px;overflow:hidden;border:1.5px solid #e2dbd0;background:#f8f5f0;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.foto-hdr{width:90px;height:120px;border-radius:8px;overflow:hidden;border:1.5px solid #e2dbd0;background:#f8f5f0;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
 .foto-hdr img{width:100%;height:100%;object-fit:cover}
 
 .body{padding:14px 28px}
@@ -75,14 +75,19 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 <div class="page">
-  <div class="hdr">
-    <div class="hdr-info">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:32px;object-fit:contain"><div><div style="font-size:12px;font-weight:900;color:#16130e;letter-spacing:-.2px">EĞİTİMCİ DİL KONUŞMA MERKEZİ</div><span class="hdr-tag">Öğrenci Tanıma Formu</span></div></div>
-      <div class="hdr-name" id="elAd">—</div>
-      <div class="hdr-uzman" id="elUzman"></div>
-      <div class="meta" id="elMeta"></div>
+  <div class="hdr" style="flex-direction:column;gap:10px">
+    <div style="display:flex;align-items:center;gap:8px;border-bottom:1px solid #ede8e0;padding-bottom:10px;width:100%">
+      <img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:32px;object-fit:contain">
+      <div><div style="font-size:12px;font-weight:900;color:#16130e;letter-spacing:-.2px">EĞİTİMCİ DİL KONUŞMA</div><span class="hdr-tag">Öğrenci Tanıma Formu</span></div>
     </div>
-    <div class="foto-hdr" id="elFoto">👤</div>
+    <div style="display:flex;align-items:flex-start;gap:16px;width:100%">
+      <div class="hdr-info" style="flex:1">
+        <div class="hdr-name" id="elAd">—</div>
+        <div class="hdr-uzman" id="elUzman"></div>
+        <div class="meta" id="elMeta"></div>
+      </div>
+      <div class="foto-hdr" id="elFoto">👤</div>
+    </div>
   </div>
   <div class="body" id="elBody"></div>
   <div class="ft"><span id="ftL"></span><span id="ftR"></span></div>
@@ -153,7 +158,7 @@ function render() {
   html += '<div class="s">';
   html += '<div class="g2" style="margin-bottom:6px">';
   if(g('aaa')) html += f('AAA', g('aaa'));
-  html += isRaporlu ? '' : f('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik')+' / 5' : '');
+  html += isRaporlu ? '' : f('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik') : '');
   html += '</div>';
   html += '<div class="ag" style="margin-bottom:6px">';
   html += '<div class="ac aca"><div class="act">👩 Anne</div>';
@@ -235,10 +240,12 @@ function render() {
 
   // 6. Rehab
   if (g('rehab')==='Evet') {
-    html += '<div class="s"><div class="st">🏥 Rehabilitasyon</div><div class="g3">';
-    html += f('Durum','Evet');
-    html += '<div class="f s2"><div class="fl">Merkez / Süre</div><div class="fv">'+[g('rehab_merkez'),g('rehab_sure')?g('rehab_sure')+' yıl':''].filter(Boolean).join(' · ')+'</div></div>';
-    html += '</div></div>';
+    var rehabParts = [g('rehab_merkez'), g('rehab_sure') ? g('rehab_sure')+' yıl' : ''].filter(Boolean);
+    if (rehabParts.length) {
+      html += '<div class="s"><div class="st">🏥 Rehabilitasyon</div><div class="g2">';
+      html += '<div class="f s2"><div class="fl">Merkez / Süre</div><div class="fv">'+rehabParts.join(' · ')+'</div></div>';
+      html += '</div></div>';
+    }
   }
 
   // 7. Karar - sadece çerçeve
