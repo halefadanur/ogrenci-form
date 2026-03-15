@@ -75,23 +75,23 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 <div class="page">
-  <div class="hdr" style="padding:14px 20px 12px;border-bottom:3px solid #c8700a;display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center">
+  <div style="padding:14px 20px 12px;border-bottom:3px solid #c8700a;display:flex;align-items:center;gap:0">
     <!-- Sol: Öğrenci bilgileri -->
-    <div>
+    <div style="flex:1;min-width:0">
       <div class="hdr-name" id="elAd">—</div>
       <div class="hdr-uzman" id="elUzman"></div>
       <div class="meta" id="elMeta"></div>
     </div>
-    <!-- Orta: Logo + Kurum -->
-    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 16px;border-left:1px solid #ede8e0;border-right:1px solid #ede8e0">
-      <img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:42px;object-fit:contain">
-      <div style="text-align:center">
-        <div style="font-size:13px;font-weight:900;color:#16130e;letter-spacing:-.2px">EĞİTİMCİ DİL KONUŞMA</div>
-        <div class="hdr-tag" style="margin:0">Öğrenci Tanıma Formu</div>
+    <!-- Orta: Logo + Kurum adı -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 20px;border-left:1px solid #e8e2da;border-right:1px solid #e8e2da;flex-shrink:0">
+      <img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:48px;object-fit:contain;display:block">
+      <div style="text-align:center;line-height:1.2">
+        <div style="font-size:12px;font-weight:900;color:#16130e;letter-spacing:-.1px">EĞİTİMCİ DİL KONUŞMA</div>
+        <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a09a94">Öğrenci Tanıma Formu</div>
       </div>
     </div>
     <!-- Sağ: Fotoğraf -->
-    <div class="foto-hdr" id="elFoto">👤</div>
+    <div style="width:90px;height:110px;border-radius:8px;overflow:hidden;border:1.5px solid #e2dbd0;background:#f8f5f0;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;margin-left:16px" id="elFoto">👤</div>
   </div>
   <div class="body" id="elBody"></div>
   <div class="ft"><span id="ftL"></span><span id="ftR"></span></div>
