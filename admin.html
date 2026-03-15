@@ -115,7 +115,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <th>Tanı</th>
           <th>Karar</th>
           <th>Uzman</th>
-          <th>PDF</th>
+          <th>İşlemler</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -231,14 +231,18 @@ function tabloyuGoster(veriler) {
       <td>${r.tani ? '<span class="badge '+taniBadge(r.tani)+'">'+r.tani+'</span>' : '—'}</td>
       <td>${r.karar ? '<span class="badge '+kararBadge(r.karar)+'">'+r.karar+'</span>' : '—'}</td>
       <td style="color:var(--sub);font-size:12px">${r.uzman||'—'}</td>
-      <td>
-        <button class="pdf-btn pdf-btn-tam" onclick="pdfAc(${r.id ? "'" + r.id + "'" : 'null'}, this)">
-          📄 Tam Form
-        </button>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="pdf-btn pdf-btn-tam" onclick="pdfAc('${r.id}', this)">📄 PDF</button>
+        <button class="pdf-btn" style="background:#2a2720;border:1px solid #3a3530;color:#c8c0b8" onclick="duzenle('${r.id}')">✏️ Düzenle</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
+}
+
+// DÜZENLE
+function duzenle(id) {
+  window.open('https://halefadanur.github.io/ogrenci-form/form.html?edit=' + id, '_blank');
 }
 
 // PDF AÇ
