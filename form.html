@@ -197,7 +197,7 @@ function pdfOnizle(){
     ak_mat:rVal('ak_mat'),ak_ifade:rVal('ak_ifade'),ak_kavram:rVal('ak_kavram'),
     tani:D.tani||'',dil_modul:rVal('dilModul'),aile_dil:rVal('aileDil'),dil_prob:getDilStr(),
     ozel_egitim:rVal('ozelEgitim'),ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
-    saglik_anne:rVal('saglikAnne')||'Vefat',saglik_baba:rVal('saglikBaba')||'Vefat',
+    saglik_anne:document.getElementById('anneVefatCb')?.checked?'Vefat':'Sağ',saglik_baba:document.getElementById('babaVefatCb')?.checked?'Vefat':'Sağ',
     egitim_anne:rVal('egitimAnne'),egitim_baba:rVal('egitimBaba'),
     beraberlik:rVal('beraberlik'),adres:document.getElementById('adres').value,
     anne_ad:document.getElementById('anneAd').value,anne_tel:document.getElementById('anneIletisim').value,
@@ -454,15 +454,15 @@ function pdfOnizle(){
   </div>
 
   <div class="card">
-    <div class="clabel">❤️ Ebeveyn Sağlık Durumu <span class="hint-text">· işaretlenmezse vefat sayılır</span></div>
+    <div class="clabel">❤️ Ebeveyn Sağlık Durumu <span class="hint-text">· işaretlenmezse sağ sayılır</span></div>
     <table class="gtable">
-      <thead><tr><th></th><th>Sağ</th></tr></thead>
+      <thead><tr><th></th><th>Vefat</th></tr></thead>
       <tbody>
         <tr><td>Anne</td>
-          <td><input type="radio" name="saglikAnne" value="Sağ" onchange="onVefat()" onclick="toggleRadio(this,onVefat)"></td>
+          <td><input type="checkbox" id="anneVefatCb" onchange="onVefat()"></td>
         </tr>
         <tr><td>Baba</td>
-          <td><input type="radio" name="saglikBaba" value="Sağ" onchange="onVefat()" onclick="toggleRadio(this,onVefat)"></td>
+          <td><input type="checkbox" id="babaVefatCb" onchange="onVefat()"></td>
         </tr>
       </tbody>
     </table>
@@ -817,7 +817,7 @@ function pdfOnizle(){
     ak_mat:rVal('ak_mat'),ak_ifade:rVal('ak_ifade'),ak_kavram:rVal('ak_kavram'),
     tani:D.tani||'',dil_modul:rVal('dilModul'),aile_dil:rVal('aileDil'),dil_prob:getDilStr(),
     ozel_egitim:rVal('ozelEgitim'),ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
-    saglik_anne:rVal('saglikAnne')||'Vefat',saglik_baba:rVal('saglikBaba')||'Vefat',
+    saglik_anne:document.getElementById('anneVefatCb')?.checked?'Vefat':'Sağ',saglik_baba:document.getElementById('babaVefatCb')?.checked?'Vefat':'Sağ',
     egitim_anne:rVal('egitimAnne'),egitim_baba:rVal('egitimBaba'),
     beraberlik:rVal('beraberlik'),adres:document.getElementById('adres').value,
     anne_ad:document.getElementById('anneAd').value,anne_tel:document.getElementById('anneIletisim').value,
@@ -934,11 +934,9 @@ function onTani(el){
 
 /* ─ VEFAT ─ */
 function onVefat(){
-  // İşaretlenmezse vefat say
-  const aChecked=document.querySelector('input[name="saglikAnne"]:checked');
-  const bChecked=document.querySelector('input[name="saglikBaba"]:checked');
-  const aV=!aChecked||aChecked.value==='Vefat';
-  const bV=!bChecked||bChecked.value==='Vefat';
+  // Checkbox işaretlenmişse vefat, işaretlenmemişse sağ
+  const aV=document.getElementById('anneVefatCb')?.checked||false;
+  const bV=document.getElementById('babaVefatCb')?.checked||false;
   // Eğitim satırları pasifleştir
   setRoff('egAnneRow',aV);setRoff('egBabaRow',bV);
   // Birliktelik pasifleştir
@@ -1146,7 +1144,7 @@ async function submitForm(){
       tani:D.tani||'',dil_modul:rVal('dilModul'),aile_dil:rVal('aileDil'),dil_prob:getDilStr(),
       ozel_egitim:rVal('ozelEgitim'),
       ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
-      saglik_anne:rVal('saglikAnne')||'Vefat',saglik_baba:rVal('saglikBaba')||'Vefat',
+      saglik_anne:document.getElementById('anneVefatCb')?.checked?'Vefat':'Sağ',saglik_baba:document.getElementById('babaVefatCb')?.checked?'Vefat':'Sağ',
       egitim_anne:rVal('egitimAnne'),egitim_baba:rVal('egitimBaba'),
       beraberlik:rVal('beraberlik'),
       adres:document.getElementById('adres').value,
