@@ -327,12 +327,16 @@ function formOlustur(){
 
   // 7. Karar
   const kararOpts = ['Başka Kurumda Kayıtlı, Kaydolacak','Başka Kurumda Kayıtlı, Düşünecek','KAYDEDİLDİ','Kaydedilecek','Özel Ders Alacak','RED','Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)','Aile Düşünecek','Aile Takip Edecek','Ayrıldı (Biz Ayırdık)','Ayrıldı (Memnun Değil)','Ayrıldı (Zorunlu Sebeplerle)','Başka Kuruma Gitti','ERİKLİ','Eski Kurumuna Devam','İlaç Tedavisi/Beklesin','Mezun Oldu','Rapor Çıkmadı','Rapor İhtiyacı Yok','Rapordan Vazgeçti','Rapor Yenilemedi (Kurum)','Rapor Yenilemedi (Veli)','İşlemde'];
+  const ihtiyacOpts = ['Dil Gelişimi','Akademik Gelişim','Davranış ve Dikkat Eğitimi','Kavram Eğitimi'];
+  const mevcutIhtiyaclar = g('temel_ihtiyac') ? g('temel_ihtiyac').split(';').map(s=>s.trim()).filter(Boolean) : [];
   html += acc('karar','⭐','Değerlendirme & Karar', `
     <div style="margin-top:12px">
     <div class="frow"><div class="flabel">AAA</div>
     <div class="rstack">${radio('aileAAA',['Aile ilgili','Aile bilinçli'],g('aaa'))}</div></div>
-    <div class="frow"><div class="flabel">Temel İhtiyaç</div>
-    <div class="rstack">${radio('temelIhtiyac',['Dil Gelişimi','Davranış ve Kavram Eğitimi','Akademik Gelişim'],g('temel_ihtiyac'))}</div></div>
+    <div class="frow"><div class="flabel">🎯 Temel İhtiyaç Alanı (birden çok seçilebilir)</div>
+    <div class="togs" id="ihtiyacTogs">
+      ${ihtiyacOpts.map(o=>`<div class="tog ${mevcutIhtiyaclar.includes(o)?'on':''}" data-ihtiyac="${o}" onclick="togIhtiyac(this)"><span class="tdot">${mevcutIhtiyaclar.includes(o)?'✓':''}</span>${o}</div>`).join('')}
+    </div></div>
     <div class="frow"><div class="flabel">Rapor Olasılığı</div>
     <div class="scrow">
       ${['1','2','3','4','5'].map(s=>`<div class="scbtn ${g('rapor_olasilik')===s?'on':''}" onclick="secRapor(this,'${s}')">${s}</div>`).join('')}
@@ -340,6 +344,49 @@ function formOlustur(){
     <div class="frow"><div class="flabel">Karar</div>
     <div class="rstack">${radio('karar',kararOpts,g('karar'))}</div></div>
     ${ta('gorusme_not2','Ek Görüşme Notu','')}
+    </div>
+  `);
+
+  // 8. Yönetici Notu
+  html += acc('yonetici_notu','🔒','Yönetici Notu', `
+    <div style="margin-top:12px">
+    ${ta('yonetici_notu','Yönetici Notu',g('yonetici_notu'))}
+    </div>
+  `);
+
+  // 9. Rehber Öğretmen Notu (admin + öğretmen - edit'te görünür, formda değil)
+  html += acc('rehber_notu','📚','Rehber Öğretmen Notu', `
+    <div style="margin-top:12px">
+    <div style="background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:9px;padding:9px 12px;font-size:12px;color:#0369a1;margin-bottom:10px">
+      📚 Rehber öğretmen farklı tarihlerde not ekleyebilir. Tarih ve imza ile yazılması önerilir.
+    </div>
+    ${ta('rehber_notu','Rehber Öğretmen Notu',g('rehber_notu'))}
+    </div>
+  `);
+
+  // 10. Fotoğraf & Kimlik
+  html += acc('foto','📷','Fotoğraf & Kimlik', `
+    <div style="margin-top:12px">
+    <div class="frow"><div class="flabel">📷 Öğrenci Fotoğrafı</div>
+      ${g('foto_url') ? `<div style="margin-bottom:8px"><img src="${g('foto_url')}" style="max-width:120px;max-height:160px;border-radius:8px;border:1.5px solid var(--bd);object-fit:cover" onerror="this.style.display='none'"></div>` : ''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:#fdfcfa;color:var(--sub)" onclick="document.getElementById('eKam').click()">📷 Kamera</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:#fdfcfa;color:var(--sub)" onclick="document.getElementById('eGal').click()">🖼️ Galeri</div>
+      </div>
+      <div id="fotoOnizleme" style="display:none;margin-bottom:8px"><img id="fotoOnizImg" style="max-width:120px;max-height:160px;border-radius:8px;border:1.5px solid var(--bd);object-fit:cover"></div>
+      <input type="file" id="eKam" accept="image/*" capture="environment" style="display:none" onchange="handleFoto(this)">
+      <input type="file" id="eGal" accept="image/*" style="display:none" onchange="handleFoto(this)">
+    </div>
+    <div class="frow"><div class="flabel">🪪 Kimlik Fotoğrafı</div>
+      ${g('kimlik_url') ? `<div style="margin-bottom:8px"><img src="${g('kimlik_url')}" style="max-width:200px;border-radius:8px;border:1.5px solid var(--bd)" onerror="this.style.display='none'"></div>` : ''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:#fdfcfa;color:var(--sub)" onclick="document.getElementById('eKKam').click()">📷 Kamera</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:#fdfcfa;color:var(--sub)" onclick="document.getElementById('eKGal').click()">🖼️ Galeri</div>
+      </div>
+      <div id="kimlikOnizleme" style="display:none;margin-top:8px"><img id="kimlikOnizImg" style="max-width:200px;border-radius:8px;border:1.5px solid var(--bd)"></div>
+      <input type="file" id="eKKam" accept="image/*" capture="environment" style="display:none" onchange="handleKimlik(this)">
+      <input type="file" id="eKGal" accept="image/*" style="display:none" onchange="handleKimlik(this)">
+    </div>
     </div>
   `);
 
@@ -375,10 +422,58 @@ function togSaglik(el){
   dot.textContent = el.classList.contains('on') ? '✓' : '';
 }
 
+function togIhtiyac(el){
+  el.classList.toggle('on');
+  const dot = el.querySelector('.tdot');
+  dot.textContent = el.classList.contains('on') ? '✓' : '';
+}
+
 function togDil(el){
   el.classList.toggle('on');
   const dot = el.querySelector('.tdot');
   dot.textContent = el.classList.contains('on') ? '✓' : '';
+}
+
+var _yeniFotoData = '';
+var _yeniKimlikData = '';
+
+function handleFoto(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    _yeniFotoData = e.target.result;
+    document.getElementById('fotoOnizImg').src = e.target.result;
+    document.getElementById('fotoOnizleme').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleKimlik(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    _yeniKimlikData = e.target.result;
+    document.getElementById('kimlikOnizImg').src = e.target.result;
+    document.getElementById('kimlikOnizleme').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function uploadFoto(base64Data, dosyaAdi){
+  try{
+    const base64 = base64Data.split(',')[1];
+    const byteChars = atob(base64);
+    const byteArr = new Uint8Array(byteChars.length);
+    for(let i=0;i<byteChars.length;i++) byteArr[i]=byteChars.charCodeAt(i);
+    const blob = new Blob([byteArr],{type:'image/jpeg'});
+    const res = await fetch(SUPA_URL+'/storage/v1/object/fotograflar/'+encodeURIComponent(dosyaAdi),{
+      method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'image/jpeg','x-upsert':'true'},body:blob
+    });
+    if(res.ok) return SUPA_URL+'/storage/v1/object/public/fotograflar/'+encodeURIComponent(dosyaAdi);
+    return '';
+  }catch(e){return '';}
 }
 
 function fv(id){ const el=document.getElementById('f_'+id); return el?el.value.trim():''; }
@@ -386,8 +481,23 @@ function rv(name){ const el=document.querySelector('input[name="'+name+'"]:check
 
 async function kaydet(){
   const sinif = document.querySelector('#sinifChips .chip.on')?.textContent || g('sinif');
-  const saglikArr = [...document.querySelectorAll('.acc .tog.on')].filter(t=>!t.dataset.dil).map(t=>t.textContent.trim());
+  const saglikArr = [...document.querySelectorAll('.acc .tog.on')].filter(t=>!t.dataset.dil && !t.dataset.ihtiyac).map(t=>t.textContent.trim());
   const dilArr = [...document.querySelectorAll('[data-dil].on')].map(t=>t.dataset.dil);
+  const ihtiyacArr = [...document.querySelectorAll('[data-ihtiyac].on')].map(t=>t.dataset.ihtiyac);
+
+  // Fotoğraf upload gerekiyorsa
+  let fotoUrl = g('foto_url');
+  let kimlikUrl = g('kimlik_url');
+  const ogrenciTam = (fv('ad')+' '+fv('soyad')).trim().replace(/\s+/g,'_');
+  const tarih = new Date().toISOString().slice(0,10);
+  if(_yeniFotoData) {
+    toast('⏳ Fotoğraf yükleniyor...');
+    fotoUrl = await uploadFoto(_yeniFotoData, ogrenciTam+'_foto_'+tarih+'.jpg') || fotoUrl;
+  }
+  if(_yeniKimlikData) {
+    toast('⏳ Kimlik yükleniyor...');
+    kimlikUrl = await uploadFoto(_yeniKimlikData, ogrenciTam+'_kimlik_'+tarih+'.jpg') || kimlikUrl;
+  }
 
   const p = {
     uzman: fv('uzman'),
@@ -430,9 +540,13 @@ async function kaydet(){
     rehab_merkez: fv('rehab_merkez'),
     rehab_sure: _rehabSure || g('rehab_sure'),
     aaa: rv('aileAAA'),
-    temel_ihtiyac: rv('temelIhtiyac'),
+    temel_ihtiyac: ihtiyacArr.join('; '),
     rapor_olasilik: _raporOlas || g('rapor_olasilik'),
     karar: rv('karar'),
+    rehber_notu: fv('rehber_notu'),
+    foto_url: fotoUrl,
+    kimlik_url: kimlikUrl,
+    yonetici_notu: fv('yonetici_notu'),
   };
 
   try {
