@@ -572,6 +572,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <textarea id="gorusmeNot2" placeholder="Ek not ekleyebilirsiniz..." oninput="capSentence(this)"></textarea>
   </div>
 
+  <!-- YÖNETİCİ NOTU -->
+  <div class="card" id="cYoneticiNotu">
+    <div class="clabel">🔒 Yönetici Notu</div>
+    <textarea id="yoneticiNotu" placeholder="Yönetici notu..." oninput="capSentence(this)"></textarea>
+  </div>
+
   <!-- Rapor Olasılığı — Raporlu tanılar için gizlenir -->
   <div class="card" id="cRaporOlas">
     <div class="clabel">📊 Rapor Çıkma Olasılığı <span class="rq">*</span> <span class="hint-text">· 1 düşük · 5 yüksek</span></div>
@@ -621,11 +627,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </div>
 
 
-  <!-- YÖNETİCİ NOTU - sadece admin=1 ile görünür -->
-  <div class="card" id="cYoneticiNotu">
-    <div class="clabel">🔒 Yönetici Notu <span style="font-size:10px;background:#fff7ed;border:1px solid #fed7aa;color:#92400e;padding:2px 7px;border-radius:5px;text-transform:none;letter-spacing:0;font-weight:600">Admin</span></div>
-    <textarea id="yoneticiNotu" placeholder="Yönetici notu..." oninput="capSentence(this)"></textarea>
-  </div>
   <!-- FOTOĞRAF -->
   <div class="card">
     <div class="clabel">📷 Fotoğraf</div>
