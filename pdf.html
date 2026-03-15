@@ -248,7 +248,7 @@ function render() {
   if (g('kimlik_url')) {
     html += '<div class="page2" style="break-before:page;page-break-before:always;padding:24px"><div class="st">🪪 Kimlik Fotoğrafı</div>';
     html += '<div class="foto-wrap"><div class="foto-box">';
-    html += '<img src="'+g('kimlik_url')+'" style="max-width:400px;max-height:500px;border-radius:10px;border:1px solid #e2dbd0;box-shadow:0 2px 12px rgba(0,0,0,.1)" onerror="this.style.display=\'none\'">';
+    html += '<img src="'+g('kimlik_url')+'" style="max-width:100%;max-height:600px" onerror="this.style.display=\'none\'">';
     html += '</div></div></div>';
   }
 
