@@ -75,22 +75,22 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 <div class="page">
-  <div class="hdr" style="padding:14px 20px 12px;border-bottom:3px solid #c8700a;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start">
+  <div class="hdr" style="padding:14px 20px 12px;border-bottom:3px solid #c8700a;display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center">
+    <!-- Sol: Öğrenci bilgileri -->
     <div>
-      <!-- Logo + Kurum -->
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:36px;object-fit:contain">
-        <div>
-          <div style="font-size:14px;font-weight:900;color:#16130e;letter-spacing:-.2px">EĞİTİMCİ DİL KONUŞMA</div>
-          <div class="hdr-tag" style="margin:0">Öğrenci Tanıma Formu</div>
-        </div>
-      </div>
-      <!-- Öğrenci bilgileri -->
       <div class="hdr-name" id="elAd">—</div>
       <div class="hdr-uzman" id="elUzman"></div>
       <div class="meta" id="elMeta"></div>
     </div>
-    <!-- Fotoğraf -->
+    <!-- Orta: Logo + Kurum -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 16px;border-left:1px solid #ede8e0;border-right:1px solid #ede8e0">
+      <img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:42px;object-fit:contain">
+      <div style="text-align:center">
+        <div style="font-size:13px;font-weight:900;color:#16130e;letter-spacing:-.2px">EĞİTİMCİ DİL KONUŞMA</div>
+        <div class="hdr-tag" style="margin:0">Öğrenci Tanıma Formu</div>
+      </div>
+    </div>
+    <!-- Sağ: Fotoğraf -->
     <div class="foto-hdr" id="elFoto">👤</div>
   </div>
   <div class="body" id="elBody"></div>
