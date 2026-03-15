@@ -23,7 +23,7 @@ body{font-family:'Inter',sans-serif;background:#f0ede8;-webkit-print-color-adjus
 .foto-hdr{width:72px;height:96px;border-radius:8px;overflow:hidden;border:1.5px solid #e2dbd0;background:#f8f5f0;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
 .foto-hdr img{width:100%;height:100%;object-fit:cover}
 
-.body{padding:14px 20px}
+.body{padding:14px 28px}
 .s{margin-bottom:13px}
 .st{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#a09a94;margin-bottom:7px;display:flex;align-items:center;gap:6px}
 .st::after{content:'';flex:1;height:1px;background:#ede8e0}
@@ -57,7 +57,7 @@ tr:last-child td{border-bottom:none}
 .kb{border-radius:8px;padding:9px 13px;display:flex;align-items:center;gap:8px;margin-top:5px;border:2px solid #c8700a;background:#fff}
 .kb span{font-size:13px;font-weight:800;color:#c8700a}
 .not{background:#fffbf0;border:1.5px solid #fde68a;border-radius:7px;padding:8px 11px;font-size:11px;line-height:1.7;color:#3d2b00;white-space:pre-wrap}
-.ft{border-top:1px solid #e8e4de;padding:6px 20px;display:flex;justify-content:space-between;font-size:9px;color:#b0a898}
+.ft{border-top:1px solid #e8e4de;padding:6px 28px;display:flex;justify-content:space-between;font-size:9px;color:#b0a898}
 /* İKİNCİ SAYFA */
 .page2{break-before:page;page-break-before:always;padding:24px;margin-top:0}
 .foto-wrap{display:flex;gap:24px;justify-content:center;align-items:flex-start;margin-top:12px}
@@ -148,7 +148,7 @@ function render() {
   html += '<div class="s">';
   html += '<div class="g2" style="margin-bottom:6px">';
   html += f('AAA', g('aaa'));
-  html += f('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik')+' / 5' : '');
+  html += isRaporlu ? '' : f('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik')+' / 5' : '');
   html += '</div>';
   html += '<div class="ag" style="margin-bottom:6px">';
   html += '<div class="ac aca"><div class="act">👩 Anne</div>';
@@ -164,7 +164,8 @@ function render() {
   if(g('baba_alt')) html += '<div class="ar"><span class="ak">Not</span><span class="av">'+g('baba_alt')+'</span></div>';
   html += '</div></div>';
   html += '<div class="g3">';
-  html += f('Birlikte mi?', g('beraberlik'));
+  var ber = g('beraberlik');
+  html += (ber && ber !== 'Evet') ? f('Birlikte mi?', ber) : '';
   html += '<div class="f s2"><div class="fl">Adres</div><div class="fv">'+(g('adres')||'—')+'</div></div>';
   html += '</div></div>';
 
