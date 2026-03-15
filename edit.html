@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Öğrenci Düzenle</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--br:#c8700a;--br2:#f0a020;--bg:#f0ede8;--surf:#fff;--bd:#e2dbd0;--ink:#16130e;--sub:#63584f;--red:#d12b1e;--green:#176638}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.topbar{background:#1a1814;color:#fff;padding:12px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.topbar h2{font-size:14px;font-weight:800;flex:1}
+.tbtn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+.tbtn-save{background:linear-gradient(135deg,#0d4a27,#18733c);color:#fff}
+.tbtn-back{background:rgba(255,255,255,.1);color:#fff}
+.app{max-width:680px;margin:0 auto;padding:16px 16px 80px}
+.loading{text-align:center;padding:60px;color:var(--sub);font-size:15px}
+
+/* ACCORDION */
+.acc{background:var(--surf);border:1px solid var(--bd);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.acc-head{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;user-select:none;transition:background .15s}
+.acc-head:hover{background:#faf8f5}
+.acc-ico{font-size:18px;flex-shrink:0}
+.acc-title{font-size:14px;font-weight:700;flex:1}
+.acc-arr{font-size:11px;color:var(--sub);transition:transform .2s}
+.acc.open .acc-arr{transform:rotate(180deg)}
+.acc-body{display:none;padding:0 16px 16px;border-top:1px solid var(--bd)}
+.acc.open .acc-body{display:block}
+
+/* FIELDS */
+.frow{margin-bottom:10px}
+.frow:last-child{margin-bottom:0}
+.flabel{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+input[type=text],input[type=date],textarea,select{
+  width:100%;border:1.5px solid var(--bd);border-radius:9px;padding:10px 13px;
+  font-size:14px;font-family:inherit;background:#fdfcfa;color:var(--ink);outline:none;
+  transition:border-color .14s;-webkit-appearance:none
+}
+input:focus,textarea:focus,select:focus{border-color:var(--br);background:#fff}
+textarea{resize:vertical;min-height:72px;line-height:1.6}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+
+/* RADIO */
+.rstack{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.ri{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1.5px solid var(--bd);border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;background:#fdfcfa;user-select:none;transition:all .13s}
+.ri:hover{border-color:var(--br);background:#fff7eb}
+.ri.on{border-color:var(--br);background:#fff7eb;color:var(--br)}
+.ri input[type=radio]{accent-color:var(--br);width:15px;height:15px;cursor:pointer}
+
+/* TOGGLE */
+.togs{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.tog{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1.5px solid var(--bd);border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--sub);transition:all .13s;background:#fdfcfa;user-select:none}
+.tog:hover{border-color:var(--br);background:#fff7eb}
+.tog.on{border-color:var(--br);background:#fff7eb;color:var(--ink)}
+.tdot{width:18px;height:18px;border-radius:50%;border:2px solid #d0c8be;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;transition:all .18s;color:transparent}
+.tog.on .tdot{border-color:var(--br);background:var(--br);color:#fff}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.chip{padding:7px 13px;border:1.5px solid var(--bd);border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;transition:all .13s;color:var(--sub);background:#fdfcfa}
+.chip.on{border-color:var(--br);background:var(--br);color:#fff}
+
+/* SCALE */
+.scrow{display:flex;gap:6px;margin-top:8px}
+.scbtn{flex:1;padding:11px 4px;border:1.5px solid var(--bd);border-radius:9px;cursor:pointer;font-size:15px;font-weight:800;transition:all .13s;color:#c0b8ae;background:#fdfcfa;text-align:center}
+.scbtn.on{border-color:var(--br);background:var(--br);color:#fff}
+
+/* TABLE */
+.gtable{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.gtable th{background:#f6f2ec;color:var(--sub);font-weight:700;font-size:10px;text-transform:uppercase;padding:7px 8px;text-align:center;border-bottom:1.5px solid var(--bd)}
+.gtable th:first-child{text-align:left}
+.gtable td{padding:8px;border-bottom:1px solid #f0ebe2;text-align:center}
+.gtable td:first-child{text-align:left;font-weight:600}
+.gtable tr:last-child td{border-bottom:none}
+.gtable input[type=radio]{accent-color:var(--br);width:15px;height:15px;cursor:pointer}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:#1a1610;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;transition:transform .3s,opacity .25s;opacity:0;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.hidden{display:none!important}
+.save-bar{position:fixed;bottom:0;left:0;right:0;background:#1a1814;padding:12px 18px;display:flex;justify-content:center;gap:10px;z-index:99}
+.save-bar button{padding:12px 32px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;border:none;font-family:inherit}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="tbtn tbtn-back" onclick="history.back()">← Geri</button>
+  <h2 id="topTitle">Öğrenci Düzenle</h2>
+</div>
+
+<div class="app">
+  <div class="loading" id="loadingDiv">⏳ Yükleniyor...</div>
+  <div id="formDiv" class="hidden"></div>
+</div>
+
+<div class="save-bar">
+  <button style="background:#2a2720;color:#9a9080;flex:1;max-width:160px" onclick="history.back()">İptal</button>
+  <button style="background:linear-gradient(135deg,#0d4a27,#18733c);color:#fff;flex:1;max-width:280px" onclick="kaydet()">✓ Kaydet</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_URL = "https://zciraijmwxcwhryidlki.supabase.co";
+const SUPA_KEY = "sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
+
+var kayitId = null;
+var D = {};
+
+// Toast
+var toastTimer;
+function toast(msg){
+  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// URL'den ID al
+const urlId = new URLSearchParams(window.location.search).get('id');
+if(!urlId){
+  document.getElementById('loadingDiv').textContent = '❌ ID bulunamadı';
+} else {
+  fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+urlId, {
+    headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+  }).then(r=>r.json()).then(function(data){
+    if(data&&data[0]){
+      D = data[0];
+      kayitId = data[0].id;
+      const ad = (D.ad||'') + ' ' + (D.soyad||'');
+      document.getElementById('topTitle').textContent = ad.trim() || 'Öğrenci Düzenle';
+      document.getElementById('loadingDiv').classList.add('hidden');
+      document.getElementById('formDiv').classList.remove('hidden');
+      formOlustur();
+    } else {
+      document.getElementById('loadingDiv').textContent = '❌ Kayıt bulunamadı';
+    }
+  }).catch(function(e){
+    document.getElementById('loadingDiv').textContent = '❌ Hata: '+e.message;
+  });
+}
+
+function acc(id, ico, title, content, openDefault){
+  return `<div class="acc ${openDefault?'open':''}" id="acc_${id}">
+    <div class="acc-head" onclick="toggleAcc('${id}')">
+      <span class="acc-ico">${ico}</span>
+      <span class="acc-title">${title}</span>
+      <span class="acc-arr">▼</span>
+    </div>
+    <div class="acc-body">${content}</div>
+  </div>`;
+}
+
+function toggleAcc(id){
+  document.getElementById('acc_'+id).classList.toggle('open');
+}
+
+function g(k){ return D[k]||''; }
+
+function inp(id, label, val, type){
+  type=type||'text';
+  return `<div class="frow"><div class="flabel">${label}</div><input type="${type}" id="f_${id}" value="${(val||'').replace(/"/g,'&quot;')}"></div>`;
+}
+
+function ta(id, label, val){
+  return `<div class="frow"><div class="flabel">${label}</div><textarea id="f_${id}">${val||''}</textarea></div>`;
+}
+
+function radio(name, opts, val){
+  return opts.map(o=>`<label class="ri ${val===o?'on':''}" onclick="setRi(this,'${name}','${o}')"><input type="radio" name="${name}" value="${o}" ${val===o?'checked':''}> ${o}</label>`).join('');
+}
+
+function setRi(el, name, val){
+  document.querySelectorAll('.ri[onclick*="\''+name+'\'"]').forEach(function(r){r.classList.remove('on');});
+  // Toggle: tıklanan zaten seçiliyse kaldır
+  const inp = el.querySelector('input');
+  if(inp.checked && el.classList.contains('on')){
+    inp.checked=false; el.classList.remove('on');
+  } else {
+    inp.checked=true; el.classList.add('on');
+  }
+}
+
+function gtable(rows, cols, name, val){
+  let html = `<table class="gtable"><thead><tr><th></th>${cols.map(c=>'<th>'+c+'</th>').join('')}</tr></thead><tbody>`;
+  rows.forEach(function(r){
+    html += `<tr><td>${r[0]}</td>`;
+    cols.forEach(function(c){
+      const v = r[0]+'_'+c;
+      html += `<td><input type="radio" name="${name}_${r[1]}" value="${c}" ${val===c?'checked':''}></td>`;
+    });
+    html += '</tr>';
+  });
+  return html+'</tbody></table>';
+}
+
+function formOlustur(){
+  var html = '';
+
+  // 1. Genel
+  html += acc('genel','👤','Genel Bilgiler', `
+    <div class="grid2" style="margin-top:12px">
+      ${inp('uzman','Uzman',g('uzman'))}
+      ${inp('gorusme_tarihi','Görüşme Tarihi',g('gorusme_tarihi'),'date')}
+    </div>
+    <div class="grid2">
+      ${inp('ad','Ad',g('ad'))}
+      ${inp('soyad','Soyad',g('soyad'))}
+    </div>
+    <div class="grid2">
+      ${inp('okul','Okul',g('okul'))}
+      ${inp('dogum_tarihi','Doğum Tarihi',g('dogum_tarihi'),'date')}
+    </div>
+    <div class="frow"><div class="flabel">Sınıf</div><div class="chips" id="sinifChips">
+      ${['Anaokulu-Kreş','Okula Gitmeyen','Açıktan/Mezun','1','2','3','4','5','6','7','8+'].map(s=>`<div class="chip ${g('sinif')===s?'on':''}" onclick="secSinif(this,'${s}')">${s}</div>`).join('')}
+    </div></div>
+  `, true);
+
+  // 2. Sağlık
+  const saglikList = ['Okuldan kaçma','Uygunsuz davranış','Epilepsi/nöbet','Sinir krizi','Ağlama krizleri','Kendine zarar','Çevresine zarar','Tuvalet alışkanlığı yok','Komut almıyor','DEHAP','Travma','Düzenli ilaç','Ciddi alerji','Fizyolojik farklılık','Zihinsel gelişim farklılığı','İletişim problemi'];
+  const saglikVal = g('saglik_durum').split(';').map(s=>s.trim()).filter(Boolean);
+  html += acc('saglik','🩺','Sağlık & Davranış', `
+    <div class="togs" style="margin-top:12px">
+      ${saglikList.map(s=>`<div class="tog ${saglikVal.includes(s)?'on':''}" onclick="togSaglik(this)"><span class="tdot">${saglikVal.includes(s)?'✓':''}</span>${s}</div>`).join('')}
+    </div>
+    ${ta('gorusme_not','Görüşme Notları',g('gorusme_not'))}
+  `);
+
+  // 3. Akademik
+  const akOpts = ['Değerlendirme dışı','Akranları düzeyinde','Zayıf','Çok zayıf'];
+  const akAlans = [['Okuma','ak_okuma'],['Anlama','ak_anlama'],['Yazma','ak_yazma'],['Matematik','ak_mat'],['İfade','ak_ifade'],['Kavram','ak_kavram']];
+  let akHtml = '<div style="margin-top:12px">';
+  akAlans.forEach(function(a){
+    akHtml += `<div class="frow"><div class="flabel">${a[0]}</div><select id="f_${a[1]}">
+      <option value="">—</option>
+      ${akOpts.map(o=>`<option value="${o}" ${g(a[1])===o?'selected':''}>${o}</option>`).join('')}
+    </select></div>`;
+  });
+  akHtml += `<div class="frow"><div class="flabel">Rapor / Tanı</div><select id="f_tani">
+    <option value="">—</option>
+    ${['Aday (Z/ÖÖ/Y)','Aday Dil','Aday Dil+','Raporlu Z','Raporlu ÖÖG','Raporlu Y','Raporlu Dil+','Raporlu Dil','Eksik Raporlu'].map(o=>`<option value="${o}" ${g('tani')===o?'selected':''}>${o}</option>`).join('')}
+  </select></div></div>`;
+  html += acc('akademik','🎓','Akademik & Tanı', akHtml);
+
+  // 4. Dil
+  html += acc('dil','🔤','Dil Gelişimi', `
+    <div style="margin-top:12px">
+    <div class="frow"><div class="flabel">Gelişimsel Dil Modülü</div>
+    <div class="rstack">${radio('dilModul',['Var','Yok','Bilinmiyor'],g('dil_modul'))}</div></div>
+    <div class="frow"><div class="flabel">Ailede Dil Problemi</div>
+    <div class="rstack">${radio('aileDil',['Evet','Hayır'],g('aile_dil'))}</div></div>
+    <div class="frow"><div class="flabel">Dil Problemi Detay</div>
+    <div class="togs" id="dilTogs">
+      ${[
+        ['İletişim-etkileşim başlatamıyor/sürdüremiyor','dil1'],
+        ['Sözsüz iletişim/jest-mimik yoluyla iletişim sağlıyor','dil2'],
+        ['Hiç sözel iletişimi yok','dil3'],
+        ['Az sayıda kelime söyleyebiliyor','dil4'],
+        ['Cümle kuramıyor','dil5'],
+        ['Sesleri yuvarlıyor','dil6'],
+        ['Kekeliyor','dil7']
+      ].map(function(d){
+        const on = g('dil_prob').includes(d[0]);
+        return `<div class="tog ${on?'on':''}" data-dil="${d[0]}" onclick="togDil(this)"><span class="tdot">${on?'✓':''}</span>${d[0]}</div>`;
+      }).join('')}
+    </div></div></div>
+  `);
+
+  // 5. Aile
+  html += acc('aile','👨‍👩‍👧','Aile Bilgileri', `
+    <div style="margin-top:12px">
+    <div class="frow"><div class="flabel">Ailede Özel Eğitim Alan</div>
+    <div class="rstack">${radio('ozelEgitim',['Evet','Hayır'],g('ozel_egitim'))}</div></div>
+    ${ta('ozel_egitim_acik','Açıklama',g('ozel_egitim_acik'))}
+    <div class="frow"><div class="flabel">Ebeveyn Sağlık (Sağ ise işaretle)</div>
+    <table class="gtable"><thead><tr><th></th><th>Sağ</th></tr></thead><tbody>
+      <tr><td>Anne</td><td><input type="radio" name="saglikAnne" value="Sağ" ${g('saglik_anne')==='Sağ'?'checked':''}></td></tr>
+      <tr><td>Baba</td><td><input type="radio" name="saglikBaba" value="Sağ" ${g('saglik_baba')==='Sağ'?'checked':''}></td></tr>
+    </tbody></table></div>
+    <div class="frow"><div class="flabel">Ebeveyn Eğitim</div>
+    <table class="gtable"><thead><tr><th></th><th>Okur-Yazar Değil</th><th>Okur-Yazar</th><th>Üniversite+</th></tr></thead><tbody>
+      <tr><td>Anne</td>
+        <td><input type="radio" name="egitimAnne" value="Okur-Yazar Değil" ${g('egitim_anne')==='Okur-Yazar Değil'?'checked':''}></td>
+        <td><input type="radio" name="egitimAnne" value="Okur-Yazar" ${g('egitim_anne')==='Okur-Yazar'?'checked':''}></td>
+        <td><input type="radio" name="egitimAnne" value="Üniversite+" ${g('egitim_anne')==='Üniversite+'?'checked':''}></td>
+      </tr>
+      <tr><td>Baba</td>
+        <td><input type="radio" name="egitimBaba" value="Okur-Yazar Değil" ${g('egitim_baba')==='Okur-Yazar Değil'?'checked':''}></td>
+        <td><input type="radio" name="egitimBaba" value="Okur-Yazar" ${g('egitim_baba')==='Okur-Yazar'?'checked':''}></td>
+        <td><input type="radio" name="egitimBaba" value="Üniversite+" ${g('egitim_baba')==='Üniversite+'?'checked':''}></td>
+      </tr>
+    </tbody></table></div>
+    <div class="frow"><div class="flabel">Birlikte mi?</div>
+    <div class="rstack">${radio('beraberlik',['Evet','Boşanmış/Ayrı'],g('beraberlik'))}</div></div>
+    ${ta('adres','Adres',g('adres'))}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+      <div>
+        <div style="font-size:11px;font-weight:800;color:#7a1616;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">👩 Anne</div>
+        ${inp('anne_ad','Adı',g('anne_ad'))}
+        ${inp('anne_tel','Tel',g('anne_tel'))}
+        ${inp('anne_meslek','Meslek',g('anne_meslek'))}
+        ${inp('anne_alt','Alternatif Not',g('anne_alt'))}
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:800;color:#163678;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">👨 Baba</div>
+        ${inp('baba_ad','Adı',g('baba_ad'))}
+        ${inp('baba_tel','Tel',g('baba_tel'))}
+        ${inp('baba_meslek','Meslek',g('baba_meslek'))}
+        ${inp('baba_alt','Alternatif Not',g('baba_alt'))}
+      </div>
+    </div>
+    ${inp('tc_no','Öğrenci TC No',g('tc_no'))}
+    </div>
+  `);
+
+  // 6. Rehabilitasyon
+  html += acc('rehab','🏥','Rehabilitasyon', `
+    <div style="margin-top:12px">
+    <div class="frow"><div class="flabel">Merkeze Gitti mi?</div>
+    <div class="rstack">${radio('rehab',['Evet','Hayır'],g('rehab'))}</div></div>
+    ${inp('rehab_merkez','Merkez Adı',g('rehab_merkez'))}
+    <div class="frow"><div class="flabel">Süre (yıl)</div>
+    <div class="scrow">
+      ${['0','1','2','3','4','5+'].map(s=>`<div class="scbtn ${g('rehab_sure')===s?'on':''}" onclick="secSure(this,'${s}')">${s}</div>`).join('')}
+    </div></div></div>
+  `);
+
+  // 7. Karar
+  const kararOpts = ['Başka Kurumda Kayıtlı, Kaydolacak','Başka Kurumda Kayıtlı, Düşünecek','KAYDEDİLDİ','Kaydedilecek','Özel Ders Alacak','RED','Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)','Aile Düşünecek','Aile Takip Edecek','Ayrıldı (Biz Ayırdık)','Ayrıldı (Memnun Değil)','Ayrıldı (Zorunlu Sebeplerle)','Başka Kuruma Gitti','ERİKLİ','Eski Kurumuna Devam','İlaç Tedavisi/Beklesin','Mezun Oldu','Rapor Çıkmadı','Rapor İhtiyacı Yok','Rapordan Vazgeçti','Rapor Yenilemedi (Kurum)','Rapor Yenilemedi (Veli)','İşlemde'];
+  html += acc('karar','⭐','Değerlendirme & Karar', `
+    <div style="margin-top:12px">
+    <div class="frow"><div class="flabel">AAA</div>
+    <div class="rstack">${radio('aileAAA',['Aile ilgili','Aile bilinçli'],g('aaa'))}</div></div>
+    <div class="frow"><div class="flabel">Temel İhtiyaç</div>
+    <div class="rstack">${radio('temelIhtiyac',['Dil Gelişimi','Davranış ve Kavram Eğitimi','Akademik Gelişim'],g('temel_ihtiyac'))}</div></div>
+    <div class="frow"><div class="flabel">Rapor Olasılığı</div>
+    <div class="scrow">
+      ${['1','2','3','4','5'].map(s=>`<div class="scbtn ${g('rapor_olasilik')===s?'on':''}" onclick="secRapor(this,'${s}')">${s}</div>`).join('')}
+    </div></div>
+    <div class="frow"><div class="flabel">Karar</div>
+    <div class="rstack">${radio('karar',kararOpts,g('karar'))}</div></div>
+    ${ta('gorusme_not2','Ek Görüşme Notu','')}
+    </div>
+  `);
+
+  document.getElementById('formDiv').innerHTML = html;
+
+  // Tüm bölümleri aç
+  document.querySelectorAll('.acc').forEach(function(a){a.classList.add('open');});
+}
+
+function secSinif(el, val){
+  document.querySelectorAll('#sinifChips .chip').forEach(function(c){c.classList.remove('on');});
+  el.classList.add('on');
+  D._sinif = val;
+}
+
+var _rehabSure = '';
+function secSure(el, val){
+  document.querySelectorAll('.acc #acc_rehab .scbtn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  _rehabSure = val;
+}
+
+var _raporOlas = '';
+function secRapor(el, val){
+  document.querySelectorAll('.acc #acc_karar .scbtn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+  _raporOlas = val;
+}
+
+function togSaglik(el){
+  el.classList.toggle('on');
+  const dot = el.querySelector('.tdot');
+  dot.textContent = el.classList.contains('on') ? '✓' : '';
+}
+
+function togDil(el){
+  el.classList.toggle('on');
+  const dot = el.querySelector('.tdot');
+  dot.textContent = el.classList.contains('on') ? '✓' : '';
+}
+
+function fv(id){ const el=document.getElementById('f_'+id); return el?el.value.trim():''; }
+function rv(name){ const el=document.querySelector('input[name="'+name+'"]:checked'); return el?el.value:''; }
+
+async function kaydet(){
+  const sinif = document.querySelector('#sinifChips .chip.on')?.textContent || g('sinif');
+  const saglikArr = [...document.querySelectorAll('.acc .tog.on')].filter(t=>!t.dataset.dil).map(t=>t.textContent.trim());
+  const dilArr = [...document.querySelectorAll('[data-dil].on')].map(t=>t.dataset.dil);
+
+  const p = {
+    uzman: fv('uzman'),
+    gorusme_tarihi: fv('gorusme_tarihi'),
+    ad: fv('ad'),
+    soyad: fv('soyad'),
+    okul: fv('okul'),
+    dogum_tarihi: fv('dogum_tarihi'),
+    sinif: sinif,
+    saglik_durum: saglikArr.join('; '),
+    gorusme_not: fv('gorusme_not') + (fv('gorusme_not2') ? '\n---\n'+fv('gorusme_not2') : ''),
+    ak_okuma: fv('ak_okuma'),
+    ak_anlama: fv('ak_anlama'),
+    ak_yazma: fv('ak_yazma'),
+    ak_mat: fv('ak_mat'),
+    ak_ifade: fv('ak_ifade'),
+    ak_kavram: fv('ak_kavram'),
+    tani: fv('tani'),
+    dil_modul: rv('dilModul'),
+    aile_dil: rv('aileDil'),
+    dil_prob: dilArr.join('; '),
+    ozel_egitim: rv('ozelEgitim'),
+    ozel_egitim_acik: fv('ozel_egitim_acik'),
+    saglik_anne: rv('saglikAnne') || 'Vefat',
+    saglik_baba: rv('saglikBaba') || 'Vefat',
+    egitim_anne: rv('egitimAnne'),
+    egitim_baba: rv('egitimBaba'),
+    beraberlik: rv('beraberlik'),
+    adres: fv('adres'),
+    anne_ad: fv('anne_ad'),
+    anne_tel: fv('anne_tel'),
+    anne_meslek: fv('anne_meslek'),
+    anne_alt: fv('anne_alt'),
+    baba_ad: fv('baba_ad'),
+    baba_tel: fv('baba_tel'),
+    baba_meslek: fv('baba_meslek'),
+    baba_alt: fv('baba_alt'),
+    tc_no: fv('tc_no'),
+    rehab: rv('rehab'),
+    rehab_merkez: fv('rehab_merkez'),
+    rehab_sure: _rehabSure || g('rehab_sure'),
+    aaa: rv('aileAAA'),
+    temel_ihtiyac: rv('temelIhtiyac'),
+    rapor_olasilik: _raporOlas || g('rapor_olasilik'),
+    karar: rv('karar'),
+  };
+
+  try {
+    const res = await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+kayitId, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPA_KEY,
+        'Authorization': 'Bearer '+SUPA_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(p)
+    });
+    if(res.ok){
+      toast('✅ Kaydedildi!');
+      setTimeout(function(){ history.back(); }, 1500);
+    } else {
+      const err = await res.text();
+      toast('❌ Hata: '+err);
+    }
+  } catch(e){
+    toast('❌ Hata: '+e.message);
+  }
+}
+</script>
+</body>
+</html>
