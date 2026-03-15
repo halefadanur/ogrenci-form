@@ -98,6 +98,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="topbar-logo">📋</div>
     <div class="topbar-title">Öğrenci Tanıma — Admin</div>
     <div class="topbar-count" id="topbarCount">0 öğrenci</div>
+    <button class="logout-btn" style="border-color:var(--br);color:var(--br2)" onclick="window.open('https://halefadanur.github.io/ogrenci-form/form.html','_blank')">+ Yeni Form</button>
     <button class="logout-btn" onclick="cikisYap()">Çıkış</button>
   </div>
   <div class="search-bar">
@@ -242,7 +243,7 @@ function tabloyuGoster(veriler) {
 
 // DÜZENLE
 function duzenle(id) {
-  window.open('https://halefadanur.github.io/ogrenci-form/edit.html?id=' + id, '_blank');
+  window.open('https://halefadanur.github.io/ogrenci-form/edit.html?id=' + id + '&admin=1', '_blank');
 }
 
 // PDF AÇ
