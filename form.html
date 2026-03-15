@@ -889,7 +889,6 @@ function v6(){
   goTo(7);
 }
 function v8(){
-  if(!document.querySelector('input[name="aileAAA"]:checked')){flashCard('cAAA');toast('⚠️ AAA aile değerlendirmesi zorunlu');return;}
   if(!document.querySelector('input[name="temelIhtiyac"]:checked')){flashCard('cIhtiyac');toast('⚠️ Temel ihtiyaç alanı zorunlu');return;}
   const raporluTani=D.tani&&D.tani.startsWith('Raporlu');
   const raporKarti=document.getElementById('cRaporOlas');
