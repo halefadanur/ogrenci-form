@@ -767,10 +767,24 @@ function capWords(el){
   try{el.setSelectionRange(pos,pos);}catch(e){}
 }
 function capSentence(el){
+  const pos=el.selectionStart;
   let v=el.value;
   if(!v)return;
-  v=v.charAt(0).toUpperCase()+v.slice(1);
-  el.value=v;
+  let result='';
+  let capitalize=true;
+  for(let i=0;i<v.length;i++){
+    const ch=v[i];
+    if(capitalize&&ch.trim()){
+      // Türkçe i -> İ
+      result+=(ch==='i'?'İ':ch.toUpperCase());
+      capitalize=false;
+    } else {
+      result+=ch;
+    }
+    if(ch==='.'||ch==='!'||ch==='?') capitalize=true;
+  }
+  el.value=result;
+  try{el.setSelectionRange(pos,pos);}catch(e){}
 }
 
 /* ─ PDF ÖNİZLE ─ */
