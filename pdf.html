@@ -12,9 +12,17 @@ body{font-family:'Inter',sans-serif;background:#f0ede8;-webkit-print-color-adjus
 .bar h3{font-size:13px;font-weight:700;opacity:.7}
 .bar button{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit;background:#c9720a;color:#fff;margin-left:8px}
 .page{width:210mm;min-height:297mm;background:#fff;margin:20px auto;box-shadow:0 4px 30px rgba(0,0,0,.15);overflow:hidden}
+
+/* HEADER - sadece çizgi, renkli alan yok */
+.hdr{padding:16px 20px 14px;border-bottom:3px solid #c8700a;display:flex;align-items:flex-start;gap:16px}
+.hdr-info{flex:1}
+.hdr-tag{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a09a94;margin-bottom:3px}
 .hdr-name{font-size:17px;font-weight:900;letter-spacing:-.3px;color:#16130e;margin-bottom:3px}
 .hdr-uzman{font-size:12px;font-weight:700;color:#5a4a3a;margin-bottom:6px}
 .meta{display:flex;flex-wrap:wrap;gap:7px;font-size:10px;color:#6b6560}
+.foto-hdr{width:90px;height:120px;border-radius:8px;overflow:hidden;border:1.5px solid #e2dbd0;background:#f8f5f0;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+.foto-hdr img{width:100%;height:100%;object-fit:cover}
+
 .body{padding:14px 28px}
 .s{margin-bottom:13px}
 .st{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#a09a94;margin-bottom:7px;display:flex;align-items:center;gap:6px}
@@ -45,13 +53,16 @@ tr:last-child td{border-bottom:none}
 .ar{display:flex;gap:5px;margin-bottom:2px;font-size:11px}
 .ak{color:#a09a94;font-weight:600;min-width:30px;font-size:9.5px;flex-shrink:0}
 .av{font-weight:600;color:#16130e}
+/* KARAR - sadece çerçeve, içi boş */
 .kb{border-radius:8px;padding:9px 13px;display:flex;align-items:center;gap:8px;margin-top:5px;border:2px solid #c8700a;background:#fff}
 .kb span{font-size:13px;font-weight:800;color:#c8700a}
 .not{background:#fffbf0;border:1.5px solid #fde68a;border-radius:7px;padding:8px 11px;font-size:11px;line-height:1.7;color:#3d2b00;white-space:pre-wrap}
 .ft{border-top:1px solid #e8e4de;padding:6px 28px;display:flex;justify-content:space-between;font-size:9px;color:#b0a898}
+/* İKİNCİ SAYFA */
 .page2{break-before:page;page-break-before:always;padding:24px;margin-top:0}
 .foto-wrap{display:flex;gap:24px;justify-content:center;align-items:flex-start;margin-top:12px}
 .foto-box{text-align:center}
+.foto-box .foto-label{font-size:11px;font-weight:700;color:#6b6560;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
 @media print{.bar{display:none!important}body{background:#fff}.page{margin:0;box-shadow:none;width:100%}.page2{page-break-before:always;margin:0;box-shadow:none;width:100%}}
 </style>
 </head>
@@ -65,11 +76,13 @@ tr:last-child td{border-bottom:none}
 </div>
 <div class="page">
   <div style="padding:14px 20px 12px;border-bottom:3px solid #c8700a;display:flex;align-items:center;gap:0">
+    <!-- Sol: Öğrenci bilgileri -->
     <div style="flex:1;min-width:0">
       <div class="hdr-name" id="elAd">—</div>
       <div class="hdr-uzman" id="elUzman"></div>
       <div class="meta" id="elMeta"></div>
     </div>
+    <!-- Orta: Logo + Kurum adı -->
     <div style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 20px;border-left:1px solid #e8e2da;border-right:1px solid #e8e2da;flex-shrink:0">
       <img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:48px;object-fit:contain;display:block">
       <div style="text-align:center;line-height:1.2">
@@ -77,6 +90,7 @@ tr:last-child td{border-bottom:none}
         <div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a09a94">Öğrenci Tanıma Formu</div>
       </div>
     </div>
+    <!-- Sağ: Fotoğraf -->
     <div style="width:90px;height:110px;border-radius:8px;overflow:hidden;border:1.5px solid #e2dbd0;background:#f8f5f0;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;margin-left:16px" id="elFoto">👤</div>
   </div>
   <div class="body" id="elBody"></div>
@@ -103,35 +117,48 @@ function g(k) {
   var v = D[k];
   return (v !== undefined && v !== null && String(v).trim() !== '') ? String(v).trim() : '';
 }
+
 function tf(t) {
   if (!t) return '';
   var m = String(t).match(/(\d{4})-(\d{2})-(\d{2})/);
   return m ? m[3]+'.'+m[2]+'.'+m[1] : t;
 }
+
 function f(label, val) {
   var v = val || '';
   return '<div class="f"><div class="fl">'+label+'</div><div class="fv">'+(v||'<span style="color:#c0b8ae;font-style:italic;font-weight:400">—</span>')+'</div></div>';
 }
+
 function render() {
   var ad = (g('ad')+' '+g('soyad')).trim() || '—';
   document.getElementById('barTitle').textContent = ad + ' — ' + TIP;
   document.getElementById('elAd').textContent = ad;
+  if (g('uzman')) document.getElementById('elUzman').textContent = '🧑‍💼 ' + g('uzman');
+
+  // Uzman ve tarih - üst satır
   var uzmanEl = document.getElementById('elUzman');
   if (uzmanEl) uzmanEl.innerHTML = (g('uzman')?'🧑‍💼 '+g('uzman'):'') + (g('gorusme_tarihi')?' &nbsp;·&nbsp; 📅 '+tf(g('gorusme_tarihi')):'');
+  // Öğrenci bilgileri - alt satır
   var meta = '';
   if (g('sinif')) meta += '<span>🎓 '+g('sinif')+'</span>';
   if (g('dogum_tarihi')) meta += '<span>🎂 '+tf(g('dogum_tarihi'))+'</span>';
   if (g('okul')) meta += '<span>🏫 '+g('okul')+'</span>';
   if (g('tc_no')) meta += '<span>🪪 TC: '+g('tc_no')+'</span>';
   document.getElementById('elMeta').innerHTML = meta;
+
+  // Öğrenci fotoğrafı header'da
   if (g('foto_url')) {
-    document.getElementById('elFoto').innerHTML = '<img src="'+g('foto_url')+'" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent=\'👤\'">';
+    document.getElementById('elFoto').innerHTML = '<img src="'+g('foto_url')+'" onerror="this.parentElement.textContent=\'👤\'">';
   }
+
   document.getElementById('ftL').textContent = ad + ' — Öğrenci Tanıma Formu';
   document.getElementById('ftR').textContent = 'Görüşme: '+tf(g('gorusme_tarihi'))+' · '+g('uzman');
+
   var taniVal = g('tani');
   var isRaporlu = taniVal && taniVal.indexOf('Raporlu') === 0;
   var html = '';
+
+  // 1. AAA + Rapor + Anne + Baba + Birlikte + Adres
   html += '<div class="s">';
   html += '<div class="g2" style="margin-bottom:6px">';
   if(g('aaa')) html += f('AAA', g('aaa'));
@@ -155,19 +182,31 @@ function render() {
   html += (ber && ber !== 'Evet') ? f('Birlikte mi?', ber) : '';
   html += '<div class="f s2"><div class="fl">Adres</div><div class="fv">'+(g('adres')||'—')+'</div></div>';
   html += '</div></div>';
+
+  // 1b. Özel eğitim - sadece var ise göster
   if(g('ozel_egitim')==='Evet'){
     html+='<div class="s"><div class="st">🎓 Ailede Özel Eğitim</div>';
     if(g('ozel_egitim_acik')) html+=f('Açıklama',g('ozel_egitim_acik'));
     html+='</div>';
   }
+
+  // 2. Tanı & Akademik
   html += '<div class="s"><div class="st">🗂️ Tanı & Akademik Durum</div>';
   html += '<div class="g2" style="margin-bottom:8px">';
   html += f('Rapor / Tanı', g('tani'));
-  html += f('Temel İhtiyaç Alanı', g('temel_ihtiyac'));
+  var ihtiyac = g('temel_ihtiyac');
+  var ihtiyacRenk = ihtiyac === 'Dil Gelişimi' ? '#1d4ed8;background:#eff6ff;border:1.5px solid #bfdbfe' : ihtiyac === 'Davranış ve Kavram Eğitimi' ? '#b45309;background:#fffbeb;border:1.5px solid #fde68a' : ihtiyac === 'Akademik Gelişim' ? '#166534;background:#f0fdf4;border:1.5px solid #bbf7d0' : '';
+  if (ihtiyacRenk) {
+    html += '<div class="f" style="'+ihtiyacRenk+'"><div class="fl" style="color:inherit;opacity:.7">Temel İhtiyaç Alanı</div><div class="fv" style="color:inherit;font-weight:800">'+ihtiyac+'</div></div>';
+  } else {
+    html += f('Temel İhtiyaç Alanı', ihtiyac);
+  }
   html += '</div>';
+  // Sınıfa göre hangi alanlar değerlendirme dışı olduğunu belirle
   var sinif = g('sinif');
   var kucukSinif = sinif==='Anaokulu-Kreş' || sinif==='Okula Gitmeyen';
   var aklar=[['Okuma','ak_okuma'],['Anlama','ak_anlama'],['Yazma','ak_yazma'],['Matematik','ak_mat'],['İfade','ak_ifade'],['Kavram','ak_kavram']];
+  // Silik olan alanları filtrele
   var aktifAklar = aklar.filter(function(a){
     if(kucukSinif && ['ak_okuma','ak_anlama','ak_yazma','ak_mat'].includes(a[1])) return false;
     if(!kucukSinif && a[1]==='ak_kavram') return false;
@@ -181,11 +220,15 @@ function render() {
     t+='<tr><td style="font-weight:600">'+a1[0]+'</td><td>'+(v1?'<span class="dot '+c1+'"></span>'+v1:'—')+'</td><td style="font-weight:600">'+(a2?a2[0]:'')+'</td><td>'+(v2?'<span class="dot '+c2+'"></span>'+v2:'')+'</td></tr>';
   }
   html += t+'</tbody></table></div>';
+
+  // 3. Sağlık
   if (g('saglik_durum')) {
     html += '<div class="s"><div class="st">🩺 Sağlık & Davranış</div><div class="tags">';
     g('saglik_durum').split(';').forEach(function(s){s=s.trim();if(s)html+='<span class="tag tr">'+s+'</span>';});
     html += '</div></div>';
   }
+
+  // 4. Dil
   if (g('dil_prob')||g('dil_modul')||g('aile_dil')) {
     html += '<div class="s"><div class="st">🔤 Dil Gelişimi</div><div class="tags">';
     if (g('dil_modul')&&g('dil_modul')!=='Yok') html+='<span class="tag tb">Modül: '+g('dil_modul')+'</span>';
@@ -193,9 +236,13 @@ function render() {
     if (g('dil_prob')) g('dil_prob').split(';').forEach(function(s){s=s.trim();if(s)html+='<span class="tag to">'+s+'</span>';});
     html += '</div></div>';
   }
+
+  // 5. Not
   if (g('gorusme_not')) {
     html += '<div class="s"><div class="st">📝 Görüşme Notları</div><div class="not">'+g('gorusme_not')+'</div></div>';
   }
+
+  // 6. Rehab
   if (g('rehab')==='Evet') {
     var rehabParts = [g('rehab_merkez'), g('rehab_sure') ? g('rehab_sure')+' yıl' : ''].filter(Boolean);
     if (rehabParts.length) {
@@ -204,16 +251,21 @@ function render() {
       html += '</div></div>';
     }
   }
+
+  // 7. Karar - sadece çerçeve
   var karar = g('karar') || '—';
   html += '<div class="s"><div class="st">✅ Karar</div>';
   html += '<div class="kb"><span>📋 '+karar+'</span></div>';
   html += '</div>';
+
+  // 8. İKİNCİ SAYFA - sadece kimlik fotoğrafı
   if (g('kimlik_url')) {
     html += '<div class="page2" style="break-before:page;page-break-before:always;padding:24px"><div class="st">🪪 Kimlik Fotoğrafı</div>';
     html += '<div class="foto-wrap"><div class="foto-box">';
     html += '<img src="'+g('kimlik_url')+'" style="max-width:100%;max-height:600px" onerror="this.style.display=\'none\'">';
     html += '</div></div></div>';
   }
+
   document.getElementById('elBody').innerHTML = html;
 }
 </script>
