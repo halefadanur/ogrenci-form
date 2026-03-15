@@ -620,6 +620,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
+
+  <!-- YÖNETİCİ NOTU - sadece admin=1 ile görünür -->
+  <div class="card" id="cYoneticiNotu">
+    <div class="clabel">🔒 Yönetici Notu <span style="font-size:10px;background:#fff7ed;border:1px solid #fed7aa;color:#92400e;padding:2px 7px;border-radius:5px;text-transform:none;letter-spacing:0;font-weight:600">Admin</span></div>
+    <textarea id="yoneticiNotu" placeholder="Yönetici notu..." oninput="capSentence(this)"></textarea>
+  </div>
   <!-- FOTOĞRAF -->
   <div class="card">
     <div class="clabel">📷 Fotoğraf</div>
@@ -693,6 +699,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 const SUPA_URL="https://zciraijmwxcwhryidlki.supabase.co";
 const SUPA_KEY="sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
 const D={sinif:null,tani:null,saglik:{},dilProb:{},rehabSure:null,raporOlas:null};
+
+
 
 /* ─ INIT ─ */
 (function(){
@@ -1108,7 +1116,8 @@ async function submitForm(){
       rapor_olasilik:D.raporOlas||'',
       karar:rVal('karar'),
       foto_url:fotoUrl,
-      kimlik_url:kimlikUrl
+      kimlik_url:kimlikUrl,
+      yonetici_notu: document.getElementById('yoneticiNotu')?.value||''
     };
 
     const editId=document.getElementById('editId')?.value||'';
