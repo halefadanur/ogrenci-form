@@ -558,10 +558,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <div class="card" id="cIhtiyac">
     <div class="clabel">🎯 Temel İhtiyaç Alanı <span class="rq">*</span></div>
-    <div class="rstack">
-      <label class="ri"><input type="radio" name="temelIhtiyac" value="Dil Gelişimi"> Temel ihtiyacı Dil Gelişimi</label>
-      <label class="ri"><input type="radio" name="temelIhtiyac" value="Davranış ve Kavram Eğitimi"> Temel ihtiyacı Davranış ve Kavram Eğitimi</label>
-      <label class="ri"><input type="radio" name="temelIhtiyac" value="Akademik Gelişim"> Temel ihtiyacı Akademik Gelişim</label>
+    <div class="togs">
+      <div class="tog" onclick="togIhtiyac(this,'Dil Gelişimi')"><span class="tdot"></span>Dil Gelişimi</div>
+      <div class="tog" onclick="togIhtiyac(this,'Akademik Gelişim')"><span class="tdot"></span>Akademik Gelişim</div>
+      <div class="tog" onclick="togIhtiyac(this,'Davranış ve Dikkat Eğitimi')"><span class="tdot"></span>Davranış ve Dikkat Eğitimi</div>
+      <div class="tog" onclick="togIhtiyac(this,'Kavram Eğitimi')"><span class="tdot"></span>Kavram Eğitimi</div>
     </div>
   </div>
 
@@ -799,7 +800,7 @@ function v6(){
   goTo(7);
 }
 function v8(){
-  if(!document.querySelector('input[name="temelIhtiyac"]:checked')){flashCard('cIhtiyac');toast('⚠️ Temel ihtiyaç alanı zorunlu');return;}
+  if(!document.querySelectorAll('.tog[data-ihtiyac].on').length){flashCard('cIhtiyac');toast('⚠️ Temel ihtiyaç alanı zorunlu');return;}
   const raporluTani=D.tani&&D.tani.startsWith('Raporlu');
   const raporKarti=document.getElementById('cRaporOlas');
   const raporGizli=raporKarti&&raporKarti.classList.contains('hidden');
@@ -812,6 +813,8 @@ function v8(){
 
 /* ─ SAĞLIK ─ */
 function togSaglik(el,k){el.classList.toggle('on');D.saglik[k]=el.classList.contains('on');el.querySelector('.tdot').textContent=D.saglik[k]?'✓':'';}
+function togIhtiyac(el,val){el.dataset.ihtiyac=val;el.classList.toggle('on');el.querySelector('.tdot').textContent=el.classList.contains('on')?'✓':'';}
+
 function getSaglikStr(){
   const L={okuldanKacma:'Okuldan kaçma',uygunsuzDavranis:'Uygunsuz davranış',epilepsi:'Epilepsi/nöbet',sinirKrizi:'Sinir krizi',aglamaKrizi:'Ağlama krizleri',kendiZarar:'Kendine zarar',cevreZarar:'Çevresine zarar',tuvalet:'Tuvalet alışkanlığı yok',komutAlmiyor:'Komut almıyor',dehap:'DEHAP',travma:'Travma',ilac:'Düzenli ilaç',alerji:'Ciddi alerji',fizyolojik:'Fizyolojik farklılık',zihinsel:'Zihinsel gelişim farklılığı',iletisim:'İletişim problemi'};
   return Object.entries(L).filter(([k])=>D.saglik[k]).map(([,v])=>v).join('; ')||'';
@@ -1101,7 +1104,7 @@ async function submitForm(){
       rehab_merkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:'',
       rehab_sure:D.rehabSure||'',
       aaa:rVal('aileAAA'),
-      temel_ihtiyac:rVal('temelIhtiyac'),
+      temel_ihtiyac:[...document.querySelectorAll('.tog[data-ihtiyac].on')].map(t=>t.dataset.ihtiyac).join('; '),
       rapor_olasilik:D.raporOlas||'',
       karar:rVal('karar'),
       foto_url:fotoUrl,
