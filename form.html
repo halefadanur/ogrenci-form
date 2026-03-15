@@ -181,6 +181,22 @@ function capFirst(el){
   const v=el.value;
   if(v.length>0) el.value=v.charAt(0).toUpperCase()+v.slice(1);
 }
+function toggleRadio(el,callback){
+  if(el._wasChecked){el.checked=false;el._wasChecked=false;if(callback)callback();}
+  else{document.querySelectorAll('input[name="'+el.name+'"]').forEach(function(r){r._wasChecked=false;});el._wasChecked=true;if(callback)callback();}
+}
+function capWords(el){
+  // Her kelimenin ilk harfi büyük
+  el.value=el.value.replace(/\w/g,function(c){return c.toUpperCase();});
+}
+function capSentence(el){
+  // Cümle düzeni: . ! ? ve satır başından sonra büyük harf
+  const v=el.value;
+  el.value=v.replace(/(^|[.!?]\s+|[
+])([a-züğişçö])/gi,function(m,p1,p2){return p1+p2.toUpperCase();});
+  // İlk karakter büyük
+  if(el.value.length>0) el.value=el.value.charAt(0).toUpperCase()+el.value.slice(1);
+}
 
 /* ─ TOAST ─ */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);background:#1a1610;color:#fff;padding:11px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:9998;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .28s;opacity:0;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
@@ -292,7 +308,7 @@ function capFirst(el){
   </div>
   <div class="card">
     <div class="clabel">📝 Görüşme Notları</div>
-    <textarea id="gorusmeNot" placeholder="Görüşmede edinilen izlenimler..."></textarea>
+    <textarea id="gorusmeNot" placeholder="Görüşmede edinilen izlenimler..." oninput="capSentence(this)"></textarea>
   </div>
   <div class="navb">
     <button class="btn btn-back" onclick="goTo(1)">← Geri</button>
@@ -417,7 +433,7 @@ function capFirst(el){
   </div>
   <div id="ozelAcikCard" class="card hidden">
     <div class="clabel">✏️ Açıklama</div>
-    <textarea id="ozelEgitimAcik" placeholder="Açıklayınız..."></textarea>
+    <textarea id="ozelEgitimAcik" placeholder="Açıklayınız..." oninput="capSentence(this)"></textarea>
   </div>
 
   <div class="card">
@@ -426,10 +442,10 @@ function capFirst(el){
       <thead><tr><th></th><th>Sağ</th></tr></thead>
       <tbody>
         <tr><td>Anne</td>
-          <td><input type="radio" name="saglikAnne" value="Sağ" onchange="onVefat()"></td>
+          <td><input type="radio" name="saglikAnne" value="Sağ" onchange="onVefat()" onclick="toggleRadio(this,onVefat)"></td>
         </tr>
         <tr><td>Baba</td>
-          <td><input type="radio" name="saglikBaba" value="Sağ" onchange="onVefat()"></td>
+          <td><input type="radio" name="saglikBaba" value="Sağ" onchange="onVefat()" onclick="toggleRadio(this,onVefat)"></td>
         </tr>
       </tbody>
     </table>
@@ -464,7 +480,7 @@ function capFirst(el){
 
   <div class="card" id="cAdres">
     <div class="clabel">📍 Adres <span class="rq">*</span></div>
-    <textarea id="adres" placeholder="Açık adres..." oninput="capFirst(this)"></textarea>
+    <textarea id="adres" placeholder="Açık adres..." oninput="capWords(this)"></textarea>
   </div>
 
   <!-- ANNE -->
@@ -524,7 +540,7 @@ function capFirst(el){
   <div id="rehabDetail" class="hidden">
     <div class="card">
       <div class="clabel">🏷️ Merkez Adı</div>
-      <textarea id="rehabMerkez" placeholder="Rehabilitasyon merkezi adı..."></textarea>
+      <textarea id="rehabMerkez" placeholder="Rehabilitasyon merkezi adı..." oninput="capFirst(this)"></textarea>
     </div>
     <div class="card">
       <div class="clabel">⏳ Ne Kadar Süredir? (yıl)</div>
@@ -554,8 +570,8 @@ function capFirst(el){
   <div class="card" id="cAAA">
     <div class="clabel">⭐ AAA — Aile Değerlendirmesi <span class="rq">*</span></div>
     <div class="rstack">
-      <label class="ri"><input type="radio" name="aileAAA" value="Aile ilgili"> Aile ilgili</label>
-      <label class="ri"><input type="radio" name="aileAAA" value="Aile bilinçli"> Aile bilinçli</label>
+      <label class="ri"><input type="radio" name="aileAAA" value="Aile ilgili" onclick="toggleRadio(this)"> Aile ilgili</label>
+      <label class="ri"><input type="radio" name="aileAAA" value="Aile bilinçli" onclick="toggleRadio(this)"> Aile bilinçli</label>
     </div>
   </div>
 
@@ -571,7 +587,7 @@ function capFirst(el){
   <div class="card">
     <div class="clabel">📝 Görüşme Notları</div>
     <div id="notOnizleme" style="display:none;background:#f8f5f0;border:1.5px solid #e5dfd6;border-radius:10px;padding:11px 13px;font-size:13.5px;line-height:1.65;color:#4a443c;margin-bottom:10px;white-space:pre-wrap;word-break:break-word"></div>
-    <textarea id="gorusmeNot2" placeholder="Ek not ekleyebilirsiniz..."></textarea>
+    <textarea id="gorusmeNot2" placeholder="Ek not ekleyebilirsiniz..." oninput="capSentence(this)"></textarea>
   </div>
 
   <!-- Rapor Olasılığı — Raporlu tanılar için gizlenir -->
@@ -654,10 +670,11 @@ function capFirst(el){
 
   <div class="navb">
     <button class="btn btn-back" onclick="goTo(7)">← Geri</button>
-    <button class="btn btn-submit btn-next" onclick="v8()">✓ Gönder</button>
+    <button class="btn btn-submit btn-next" id="submitBtn" onclick="v8()">✓ Gönder</button>
   </div>
 </div>
 
+<input type="hidden" id="editId">
 <!-- SUCCESS -->
 <div id="secSuccess" class="hidden">
   <div class="sucwrap">
@@ -704,7 +721,133 @@ const D={sinif:null,tani:null,saglik:{},dilProb:{},rehabSure:null,raporOlas:null
   const yEl=document.getElementById('dobYil'),cy=now.getFullYear();
   for(let y=cy;y>=cy-25;y--){const o=document.createElement('option');o.value=y;o.textContent=y;yEl.appendChild(o);}
   updAkademik();
+
+  // Düzenleme modu: URL'de ?edit=ID varsa Supabase'den veri çek
+  const editParam=new URLSearchParams(window.location.search).get('edit');
+  if(editParam){
+    document.getElementById('editId').value=editParam;
+    document.getElementById('submitBtn').textContent='✓ Güncelle';
+    fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+editParam,{
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
+    }).then(r=>r.json()).then(function(data){
+      if(data&&data[0]) formDoldur(data[0]);
+    }).catch(console.error);
+  }
 })();
+
+function formDoldur(d){
+  // Temel bilgiler
+  if(d.uzman) document.getElementById('uzman').value=d.uzman;
+  if(d.gorusme_tarihi) document.getElementById('gorusmeTarihi').value=d.gorusme_tarihi;
+  if(d.ad) document.getElementById('ogrenciAd').value=d.ad;
+  if(d.soyad) document.getElementById('ogrenciSoyad').value=d.soyad;
+  if(d.okul) document.getElementById('okul').value=d.okul;
+  if(d.tc_no) document.getElementById('tcNo').value=d.tc_no;
+  // Sınıf
+  if(d.sinif){
+    document.querySelectorAll('.chip').forEach(function(c){
+      if(c.textContent.trim()===d.sinif){c.click();}
+    });
+  }
+  // Doğum tarihi
+  if(d.dogum_tarihi){
+    const parts=d.dogum_tarihi.match(/(\d{4})-(\d{2})-(\d{2})/);
+    if(parts){
+      document.getElementById('dobYil').value=parts[1];
+      document.getElementById('dobAy').value=parts[2];
+      document.getElementById('dobGun').value=parts[3];
+    }
+  }
+  // Notlar
+  if(d.gorusme_not) document.getElementById('gorusmeNot').value=d.gorusme_not;
+  // Adres
+  if(d.adres) document.getElementById('adres').value=d.adres;
+  // Anne
+  if(d.anne_ad) document.getElementById('anneAd').value=d.anne_ad;
+  if(d.anne_tel) document.getElementById('anneIletisim').value=d.anne_tel;
+  if(d.anne_meslek) document.getElementById('anneMeslek').value=d.anne_meslek;
+  if(d.anne_alt) document.getElementById('anneAlt').value=d.anne_alt;
+  // Baba
+  if(d.baba_ad) document.getElementById('babaAd').value=d.baba_ad;
+  if(d.baba_tel) document.getElementById('babaIletisim').value=d.baba_tel;
+  if(d.baba_meslek) document.getElementById('babaMeslek').value=d.baba_meslek;
+  if(d.baba_alt) document.getElementById('babaAlt').value=d.baba_alt;
+  // Radyo butonlar
+  function setRadio(name,val){
+    if(!val)return;
+    const r=document.querySelector('input[name="'+name+'"][value="'+val+'"]');
+    if(r){r.checked=true;r._wasChecked=true;r.dispatchEvent(new Event('change'));}
+  }
+  setRadio('saglikAnne',d.saglik_anne);
+  setRadio('saglikBaba',d.saglik_baba);
+  setRadio('egitimAnne',d.egitim_anne);
+  setRadio('egitimBaba',d.egitim_baba);
+  setRadio('beraberlik',d.beraberlik);
+  setRadio('ozelEgitim',d.ozel_egitim);
+  setRadio('aileDil',d.aile_dil);
+  setRadio('dilModul',d.dil_modul);
+  setRadio('rehab',d.rehab);
+  setRadio('aileAAA',d.aaa);
+  setRadio('temelIhtiyac',d.temel_ihtiyac);
+  setRadio('karar',d.karar);
+  // Tanı
+  if(d.tani){
+    const r=document.querySelector('input[name="tani"][value="'+d.tani+'"]');
+    if(r){r.checked=true;r._wasChecked=true;onTani(r);}
+  }
+  // Sağlık durumu (toggle)
+  if(d.saglik_durum){
+    d.saglik_durum.split(';').forEach(function(s){
+      s=s.trim();
+      document.querySelectorAll('.tog').forEach(function(t){
+        if(t.textContent.trim().includes(s.trim())&&t.querySelector('.tdot')){
+          if(!t.classList.contains('on')) t.click();
+        }
+      });
+    });
+  }
+  // Dil problemi
+  if(d.dil_prob){
+    const dilMap={
+      'İletişim-etkileşim başlatamıyor/sürdüremiyor':'dil1',
+      'Sözsüz iletişim/jest-mimik yoluyla iletişim sağlıyor':'dil2',
+      'Hiç sözel iletişimi yok':'dil3',
+      'Az sayıda kelime söyleyebiliyor':'dil4',
+      'Cümle kuramıyor':'dil5',
+      'Sesleri yuvarlıyor':'dil6',
+      'Kekeliyor':'dil7'
+    };
+    d.dil_prob.split(';').forEach(function(s){
+      s=s.trim();
+      Object.entries(dilMap).forEach(function(kv){
+        if(kv[0]===s){
+          const el=document.querySelector('[data-dil="'+kv[1]+'"]');
+          if(el&&!el.classList.contains('on')) el.click();
+        }
+      });
+    });
+  }
+  // Rapor olasılığı
+  if(d.rapor_olasilik){
+    const btn=document.querySelector('.scbtn[onclick*="raporOlas"]');
+    document.querySelectorAll('.scbtn').forEach(function(b){
+      if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("raporOlas,'"+d.rapor_olasilik+"'")){
+        b.click();
+      }
+    });
+  }
+  // Rehab süre
+  if(d.rehab_sure){
+    document.querySelectorAll('.scbtn').forEach(function(b){
+      if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("rehabSure,'"+d.rehab_sure+"'")){
+        b.click();
+      }
+    });
+  }
+  if(d.rehab_merkez) setTimeout(function(){const el=document.getElementById('rehabMerkez');if(el)el.value=d.rehab_merkez;},100);
+  if(d.ozel_egitim_acik) setTimeout(function(){const el=document.getElementById('ozelEgitimAcik');if(el)el.value=d.ozel_egitim_acik;},100);
+  onVefat();
+}
 
 function getDob(){
   const g=document.getElementById('dobGun').value,a=document.getElementById('dobAy').value,y=document.getElementById('dobYil').value;
@@ -715,6 +858,22 @@ function getDob(){
 function capFirst(el){
   const v=el.value;
   if(v.length>0) el.value=v.charAt(0).toUpperCase()+v.slice(1);
+}
+function toggleRadio(el,callback){
+  if(el._wasChecked){el.checked=false;el._wasChecked=false;if(callback)callback();}
+  else{document.querySelectorAll('input[name="'+el.name+'"]').forEach(function(r){r._wasChecked=false;});el._wasChecked=true;if(callback)callback();}
+}
+function capWords(el){
+  // Her kelimenin ilk harfi büyük
+  el.value=el.value.replace(/\w/g,function(c){return c.toUpperCase();});
+}
+function capSentence(el){
+  // Cümle düzeni: . ! ? ve satır başından sonra büyük harf
+  const v=el.value;
+  el.value=v.replace(/(^|[.!?]\s+|[
+])([a-züğişçö])/gi,function(m,p1,p2){return p1+p2.toUpperCase();});
+  // İlk karakter büyük
+  if(el.value.length>0) el.value=el.value.charAt(0).toUpperCase()+el.value.slice(1);
 }
 
 /* ─ TOAST ─ */
@@ -761,6 +920,9 @@ function v8(){
   const raporKarti=document.getElementById('cRaporOlas');
   const raporGizli=raporKarti&&raporKarti.classList.contains('hidden');
   if(!raporluTani&&!raporGizli&&!D.raporOlas){flashCard('cRaporOlas');toast('⚠️ Rapor çıkma olasılığı zorunlu');return;}
+  const tcNo=document.getElementById('tcNo').value.trim();
+  if(!tcNo||tcNo.length!==11){const el=document.getElementById('tcNo');el.style.borderColor='var(--red)';el.style.boxShadow='0 0 0 3px rgba(209,43,30,.1)';toast('⚠️ TC kimlik no zorunlu (11 hane)');return;}
+  if(!document.querySelector('input[name="karar"]:checked')){toast('⚠️ Karar seçimi zorunlu');return;}
   submitForm();
 }
 
@@ -816,8 +978,11 @@ function onTani(el){
 
 /* ─ VEFAT ─ */
 function onVefat(){
-  const aV=document.querySelector('input[name="saglikAnne"]:checked')?.value==='Vefat';
-  const bV=document.querySelector('input[name="saglikBaba"]:checked')?.value==='Vefat';
+  // İşaretlenmezse vefat say
+  const aChecked=document.querySelector('input[name="saglikAnne"]:checked');
+  const bChecked=document.querySelector('input[name="saglikBaba"]:checked');
+  const aV=!aChecked||aChecked.value==='Vefat';
+  const bV=!bChecked||bChecked.value==='Vefat';
   // Eğitim satırları pasifleştir
   setRoff('egAnneRow',aV);setRoff('egBabaRow',bV);
   // Birliktelik pasifleştir
@@ -1049,8 +1214,9 @@ async function submitForm(){
       kimlik_url:kimlikUrl
     };
 
-    await fetch(SUPA_URL+'/rest/v1/ogrenciler',{
-      method:'POST',
+    const editId=document.getElementById('editId')?.value||'';
+    await fetch(SUPA_URL+'/rest/v1/ogrenciler'+(editId?'?id=eq.'+editId:''),{
+      method:editId?'PATCH':'POST',
       headers:{
         'Content-Type':'application/json',
         'apikey':SUPA_KEY,
