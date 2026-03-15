@@ -768,23 +768,32 @@ function capWords(el){
 }
 function capSentence(el){
   const pos=el.selectionStart;
-  let v=el.value;
-  if(!v)return;
-  let result='';
-  let capitalize=true;
-  for(let i=0;i<v.length;i++){
-    const ch=v[i];
-    if(capitalize&&ch.trim()){
-      // Türkçe i -> İ
-      result+=(ch==='i'?'İ':ch.toUpperCase());
-      capitalize=false;
-    } else {
-      result+=ch;
+  const v=el.value;
+  if(!v||pos===0)return;
+  // Sadece cursor öncesindeki son karaktere bak
+  // Eğer bir önceki karakter noktalama + boşluk ise, cursor pozisyonundaki harfi büyüt
+  const before=v.substring(0,pos);
+  // Noktalama işaretinden sonra boşluk geldi ve yeni harf yazıldı mı?
+  const match=before.match(/[.!?]\s+([a-züğışçö])$/i);
+  if(match){
+    const ch=match[1];
+    const big=ch==='i'?'İ':ch.toUpperCase();
+    if(ch!==big){
+      const newVal=v.substring(0,pos-1)+big+v.substring(pos);
+      el.value=newVal;
+      try{el.setSelectionRange(pos,pos);}catch(e){}
     }
-    if(ch==='.'||ch==='!'||ch==='?') capitalize=true;
+    return;
   }
-  el.value=result;
-  try{el.setSelectionRange(pos,pos);}catch(e){}
+  // İlk harf mi?
+  if(before.match(/^([a-züğışçö])$/i)){
+    const ch=before[0];
+    const big=ch==='i'?'İ':ch.toUpperCase();
+    if(ch!==big){
+      el.value=big+v.substring(1);
+      try{el.setSelectionRange(1,1);}catch(e){}
+    }
+  }
 }
 
 /* ─ PDF ÖNİZLE ─ */
