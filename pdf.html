@@ -149,7 +149,7 @@ function render() {
   // 1. AAA + Rapor + Anne + Baba + Birlikte + Adres
   html += '<div class="s">';
   html += '<div class="g2" style="margin-bottom:6px">';
-  html += f('AAA', g('aaa'));
+  if(g('aaa')) html += f('AAA', g('aaa'));
   html += isRaporlu ? '' : f('Rapor Olasılığı', g('rapor_olasilik') ? g('rapor_olasilik')+' / 5' : '');
   html += '</div>';
   html += '<div class="ag" style="margin-bottom:6px">';
