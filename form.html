@@ -741,17 +741,7 @@ const D={sinif:null,tani:null,saglik:{},dilProb:{},rehabSure:null,raporOlas:null
   for(let y=cy;y>=cy-25;y--){const o=document.createElement('option');o.value=y;o.textContent=y;yEl.appendChild(o);}
   updAkademik();
 
-  // Düzenleme modu: URL'de ?edit=ID varsa Supabase'den veri çek
-  const editParam=new URLSearchParams(window.location.search).get('edit');
-  if(editParam){
-    document.getElementById('editId').value=editParam;
-    document.getElementById('submitBtn').textContent='✓ Güncelle';
-    fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+editParam,{
-      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY}
-    }).then(r=>r.json()).then(function(data){
-      if(data&&data[0]) formDoldur(data[0]);
-    }).catch(console.error);
-  }
+  // Edit modu edit.html'de - form.html sadece yeni kayıt
 })();
 
 function formDoldur(d){
