@@ -126,15 +126,16 @@ function render() {
   document.getElementById('elAd').textContent = ad;
   if (g('uzman')) document.getElementById('elUzman').textContent = '🧑‍💼 ' + g('uzman');
 
+  // Uzman ve tarih - üst satır
+  var uzmanEl = document.getElementById('elUzman');
+  if (uzmanEl) uzmanEl.innerHTML = (g('uzman')?'🧑‍💼 '+g('uzman'):'') + (g('gorusme_tarihi')?' &nbsp;·&nbsp; 📅 '+tf(g('gorusme_tarihi')):'');
+  // Öğrenci bilgileri - alt satır
   var meta = '';
   if (g('sinif')) meta += '<span>🎓 '+g('sinif')+'</span>';
   if (g('dogum_tarihi')) meta += '<span>🎂 '+tf(g('dogum_tarihi'))+'</span>';
   if (g('okul')) meta += '<span>🏫 '+g('okul')+'</span>';
   if (g('tc_no')) meta += '<span>🪪 TC: '+g('tc_no')+'</span>';
   document.getElementById('elMeta').innerHTML = meta;
-  // Uzman ve tarih alt satırda
-  var uzmanEl = document.getElementById('elUzman');
-  if (uzmanEl) uzmanEl.innerHTML = (g('uzman')?'🧑‍💼 '+g('uzman'):'') + (g('gorusme_tarihi')?' &nbsp;·&nbsp; 📅 '+tf(g('gorusme_tarihi')):'');
 
   // Öğrenci fotoğrafı header'da
   if (g('foto_url')) {
