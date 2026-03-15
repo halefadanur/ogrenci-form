@@ -246,7 +246,7 @@ function pdfOnizle(){
 
   <div class="card">
     <div class="clabel">🧑‍💼 Uzman</div>
-    <input type="text" id="uzman" value="Serpil" placeholder="Ad Soyad" oninput="capFirst(this)">
+    <input type="text" id="uzman" value="Serpil" placeholder="Ad Soyad" oninput="capWords(this)">
   </div>
   <div class="card">
     <div class="clabel">📅 Görüşme Tarihi</div>
@@ -255,13 +255,13 @@ function pdfOnizle(){
   <div class="card" id="cAd">
     <div class="clabel">🎒 Öğrenci Adı Soyadı <span class="rq">*</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-      <input type="text" id="ogrenciAd" placeholder="Ad" oninput="capFirst(this)">
-      <input type="text" id="ogrenciSoyad" placeholder="Soyad" oninput="capFirst(this)">
+      <input type="text" id="ogrenciAd" placeholder="Ad" oninput="capWords(this)">
+      <input type="text" id="ogrenciSoyad" placeholder="Soyad" oninput="capWords(this)">
     </div>
   </div>
   <div class="card">
     <div class="clabel">🏫 Okul</div>
-    <input type="text" id="okul" placeholder="Devam ettiği okul" oninput="capFirst(this)">
+    <input type="text" id="okul" placeholder="Devam ettiği okul" oninput="capWords(this)">
   </div>
   <div class="card" id="cSinif">
     <div class="clabel">📚 Sınıf <span class="rq">*</span></div>
@@ -506,9 +506,9 @@ function pdfOnizle(){
     <div id="anneVefatBanner" class="hidden">
       <div class="vbanner">⚠️ Anne vefat — Alternatif bilgi giriniz</div>
     </div>
-    <div class="fl"><div class="ftitle">Adı</div><input type="text" id="anneAd" placeholder="Anne adı" oninput="capFirst(this)"></div>
+    <div class="fl"><div class="ftitle">Adı</div><input type="text" id="anneAd" placeholder="Anne adı" oninput="capWords(this)"></div>
     <div class="fl"><div class="ftitle">İletişim</div><input type="text" id="anneIletisim" placeholder="05xxxxxxxxx" maxlength="11" inputmode="numeric" oninput="formatTel(this)" onblur="validateTel(this)"></div>
-    <div class="fl"><div class="ftitle">Mesleği</div><input type="text" id="anneMeslek" value="Ev Hanımı" oninput="capFirst(this)"></div>
+    <div class="fl"><div class="ftitle">Mesleği</div><input type="text" id="anneMeslek" value="Ev Hanımı" oninput="capWords(this)"></div>
     <div class="fl" id="anneAltWrap" style="display:none">
       <div class="ftitle">Alternatif Veli / Not</div>
       <input type="text" id="anneAlt" placeholder="Veli, vasi vb. alternatif bilgi">
@@ -521,9 +521,9 @@ function pdfOnizle(){
     <div id="babaVefatBanner" class="hidden">
       <div class="vbanner">⚠️ Baba vefat — Alternatif bilgi giriniz</div>
     </div>
-    <div class="fl"><div class="ftitle">Adı</div><input type="text" id="babaAd" placeholder="Baba adı" oninput="capFirst(this)"></div>
+    <div class="fl"><div class="ftitle">Adı</div><input type="text" id="babaAd" placeholder="Baba adı" oninput="capWords(this)"></div>
     <div class="fl"><div class="ftitle">İletişim</div><input type="text" id="babaIletisim" placeholder="05xxxxxxxxx" maxlength="11" inputmode="numeric" oninput="formatTel(this)" onblur="validateTel(this)"></div>
-    <div class="fl"><div class="ftitle">Mesleği</div><input type="text" id="babaMeslek" value="İşçi" oninput="capFirst(this)"></div>
+    <div class="fl"><div class="ftitle">Mesleği</div><input type="text" id="babaMeslek" value="İşçi" oninput="capWords(this)"></div>
     <div class="fl" id="babaAltWrap" style="display:none">
       <div class="ftitle">Alternatif Veli / Not</div>
       <input type="text" id="babaAlt" placeholder="Veli, vasi vb. alternatif bilgi">
@@ -557,7 +557,7 @@ function pdfOnizle(){
   <div id="rehabDetail" class="hidden">
     <div class="card">
       <div class="clabel">🏷️ Merkez Adı</div>
-      <textarea id="rehabMerkez" placeholder="Rehabilitasyon merkezi adı..." oninput="capFirst(this)"></textarea>
+      <textarea id="rehabMerkez" placeholder="Rehabilitasyon merkezi adı..." oninput="capWords(this)"></textarea>
     </div>
     <div class="card">
       <div class="clabel">⏳ Ne Kadar Süredir? (yıl)</div>
@@ -757,7 +757,14 @@ function toggleRadio(el,callback){
   else{document.querySelectorAll('input[name="'+el.name+'"]').forEach(function(r){r._wasChecked=false;});el._wasChecked=true;if(callback)callback();}
 }
 function capWords(el){
-  el.value=el.value.split(' ').map(function(w){return w?w[0].toUpperCase()+w.slice(1):w;}).join(' ');
+  const pos=el.selectionStart;
+  el.value=el.value.split(' ').map(function(w){
+    if(!w)return w;
+    // Türkçe i -> İ özel durumu
+    if(w[0]==='i')return 'İ'+w.slice(1);
+    return w[0].toUpperCase()+w.slice(1);
+  }).join(' ');
+  try{el.setSelectionRange(pos,pos);}catch(e){}
 }
 function capSentence(el){
   let v=el.value;
