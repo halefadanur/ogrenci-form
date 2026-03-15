@@ -179,43 +179,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .sucwrap h2{font-size:25px;font-weight:900;letter-spacing:-.4px;margin-bottom:7px}
 .sucwrap p{color:var(--sub);font-size:15px;margin-bottom:26px}
 
-/* ─ PDF ÖNİZLE ─ */
-function pdfOnizle(){
-  const ad=document.getElementById('ogrenciAd').value.trim();
-  const soyad=document.getElementById('ogrenciSoyad').value.trim();
-  if(!ad&&!soyad){toast('Önce öğrenci adını girin');return;}
-  const not1=document.getElementById('gorusmeNot').value;
-  const not2El=document.getElementById('gorusmeNot2');
-  const not2=not2El?not2El.value.trim():'';
-  const p={
-    ad:ad, soyad:soyad,
-    uzman:document.getElementById('uzman').value,
-    gorusme_tarihi:document.getElementById('gorusmeTarihi').value,
-    okul:document.getElementById('okul').value,
-    sinif:D.sinif||'',
-    dogum_tarihi:getDob(),
-    gorusme_not:not2?(not1+'\n---\n'+not2):not1,
-    saglik_durum:getSaglikStr(),
-    ak_okuma:rVal('ak_okuma'),ak_anlama:rVal('ak_anlama'),ak_yazma:rVal('ak_yazma'),
-    ak_mat:rVal('ak_mat'),ak_ifade:rVal('ak_ifade'),ak_kavram:rVal('ak_kavram'),
-    tani:D.tani||'',dil_modul:rVal('dilModul'),aile_dil:rVal('aileDil'),dil_prob:getDilStr(),
-    ozel_egitim:document.getElementById('ozelEgitimTog')?.classList.contains('on')?'Evet':'',ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
-    saglik_anne:document.getElementById('anneVefatCb')?.checked?'Vefat':'Sağ',saglik_baba:document.getElementById('babaVefatCb')?.checked?'Vefat':'Sağ',
-    egitim_anne:rVal('egitimAnne'),egitim_baba:rVal('egitimBaba'),
-    beraberlik:rVal('beraberlik'),adres:document.getElementById('adres').value,
-    anne_ad:document.getElementById('anneAd').value,anne_tel:document.getElementById('anneIletisim').value,
-    anne_meslek:document.getElementById('anneMeslek').value,anne_alt:document.getElementById('anneAlt').value,
-    baba_ad:document.getElementById('babaAd').value,baba_tel:document.getElementById('babaIletisim').value,
-    baba_meslek:document.getElementById('babaMeslek').value,baba_alt:document.getElementById('babaAlt').value,
-    tc_no:document.getElementById('tcNo').value,
-    rehab:document.getElementById('rehabTog')?.classList.contains('on')?'Evet':'',
-    rehab_merkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:'',
-    rehab_sure:D.rehabSure||'',aaa:rVal('aileAAA'),temel_ihtiyac:rVal('temelIhtiyac'),
-    rapor_olasilik:D.raporOlas||'',karar:rVal('karar')
-  };
-  const url='https://halefadanur.github.io/ogrenci-form/pdf.html?d='+encodeURIComponent(JSON.stringify(p));
-  window.open(url,'_blank');
-}
+
 /* ─ TOAST ─ */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);background:#1a1610;color:#fff;padding:11px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:9998;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .28s;opacity:0;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
@@ -233,7 +197,6 @@ function pdfOnizle(){
       <img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:32px;border-radius:6px;object-fit:contain">
       <div class="tb-title">Öğrenci Tanıma</div>
       <div class="tb-pill" id="stepBadge">1 / 8</div>
-      <button onclick="pdfOnizle()" style="background:#c8700a;border:none;color:#fff;font-size:12px;font-weight:800;padding:6px 13px;border-radius:8px;cursor:pointer;font-family:inherit;letter-spacing:.2px">📄 PDF</button>
       <a href="https://halefadanur.github.io/ogrenci-form/admin.html" target="_blank" style="background:#2a3f58;color:#fff;font-size:12px;font-weight:800;padding:6px 13px;border-radius:8px;text-decoration:none;letter-spacing:.2px">⚙️ Admin</a>
     </div>
     <div class="prog"><div class="prog-f" id="pFill" style="width:12.5%"></div></div>
@@ -797,43 +760,7 @@ function capSentence(el){
   }
 }
 
-/* ─ PDF ÖNİZLE ─ */
-function pdfOnizle(){
-  const ad=document.getElementById('ogrenciAd').value.trim();
-  const soyad=document.getElementById('ogrenciSoyad').value.trim();
-  if(!ad&&!soyad){toast('Önce öğrenci adını girin');return;}
-  const not1=document.getElementById('gorusmeNot').value;
-  const not2El=document.getElementById('gorusmeNot2');
-  const not2=not2El?not2El.value.trim():'';
-  const p={
-    ad:ad, soyad:soyad,
-    uzman:document.getElementById('uzman').value,
-    gorusme_tarihi:document.getElementById('gorusmeTarihi').value,
-    okul:document.getElementById('okul').value,
-    sinif:D.sinif||'',
-    dogum_tarihi:getDob(),
-    gorusme_not:not2?(not1+'\n---\n'+not2):not1,
-    saglik_durum:getSaglikStr(),
-    ak_okuma:rVal('ak_okuma'),ak_anlama:rVal('ak_anlama'),ak_yazma:rVal('ak_yazma'),
-    ak_mat:rVal('ak_mat'),ak_ifade:rVal('ak_ifade'),ak_kavram:rVal('ak_kavram'),
-    tani:D.tani||'',dil_modul:rVal('dilModul'),aile_dil:rVal('aileDil'),dil_prob:getDilStr(),
-    ozel_egitim:document.getElementById('ozelEgitimTog')?.classList.contains('on')?'Evet':'',ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
-    saglik_anne:document.getElementById('anneVefatCb')?.checked?'Vefat':'Sağ',saglik_baba:document.getElementById('babaVefatCb')?.checked?'Vefat':'Sağ',
-    egitim_anne:rVal('egitimAnne'),egitim_baba:rVal('egitimBaba'),
-    beraberlik:rVal('beraberlik'),adres:document.getElementById('adres').value,
-    anne_ad:document.getElementById('anneAd').value,anne_tel:document.getElementById('anneIletisim').value,
-    anne_meslek:document.getElementById('anneMeslek').value,anne_alt:document.getElementById('anneAlt').value,
-    baba_ad:document.getElementById('babaAd').value,baba_tel:document.getElementById('babaIletisim').value,
-    baba_meslek:document.getElementById('babaMeslek').value,baba_alt:document.getElementById('babaAlt').value,
-    tc_no:document.getElementById('tcNo').value,
-    rehab:document.getElementById('rehabTog')?.classList.contains('on')?'Evet':'',
-    rehab_merkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:'',
-    rehab_sure:D.rehabSure||'',aaa:rVal('aileAAA'),temel_ihtiyac:rVal('temelIhtiyac'),
-    rapor_olasilik:D.raporOlas||'',karar:rVal('karar')
-  };
-  const url='https://halefadanur.github.io/ogrenci-form/pdf.html?d='+encodeURIComponent(JSON.stringify(p));
-  window.open(url,'_blank');
-}
+
 /* ─ TOAST ─ */
 let toastTimer;
 function toast(msg){
