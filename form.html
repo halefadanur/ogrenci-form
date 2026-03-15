@@ -199,7 +199,7 @@ function pdfOnizle(){
     ak_okuma:rVal('ak_okuma'),ak_anlama:rVal('ak_anlama'),ak_yazma:rVal('ak_yazma'),
     ak_mat:rVal('ak_mat'),ak_ifade:rVal('ak_ifade'),ak_kavram:rVal('ak_kavram'),
     tani:D.tani||'',dil_modul:rVal('dilModul'),aile_dil:rVal('aileDil'),dil_prob:getDilStr(),
-    ozel_egitim:rVal('ozelEgitim'),ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
+    ozel_egitim:document.getElementById('ozelEgitimTog')?.classList.contains('on')?'Evet':'',ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
     saglik_anne:document.getElementById('anneVefatCb')?.checked?'Vefat':'Sağ',saglik_baba:document.getElementById('babaVefatCb')?.checked?'Vefat':'Sağ',
     egitim_anne:rVal('egitimAnne'),egitim_baba:rVal('egitimBaba'),
     beraberlik:rVal('beraberlik'),adres:document.getElementById('adres').value,
@@ -208,7 +208,7 @@ function pdfOnizle(){
     baba_ad:document.getElementById('babaAd').value,baba_tel:document.getElementById('babaIletisim').value,
     baba_meslek:document.getElementById('babaMeslek').value,baba_alt:document.getElementById('babaAlt').value,
     tc_no:document.getElementById('tcNo').value,
-    rehab:rVal('rehab'),
+    rehab:document.getElementById('rehabTog')?.classList.contains('on')?'Evet':'',
     rehab_merkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:'',
     rehab_sure:D.rehabSure||'',aaa:rVal('aileAAA'),temel_ihtiyac:rVal('temelIhtiyac'),
     rapor_olasilik:D.raporOlas||'',karar:rVal('karar')
@@ -446,9 +446,8 @@ function pdfOnizle(){
 
   <div class="card">
     <div class="clabel">🎓 Ailede Özel Eğitim Alan</div>
-    <div class="rstack">
-      <label class="ri"><input type="radio" name="ozelEgitim" value="Evet" onchange="togOzel('Evet')"> Evet</label>
-      <label class="ri"><input type="radio" name="ozelEgitim" value="Hayır" onchange="togOzel('Hayır')"> Hayır</label>
+    <div class="togs">
+      <div class="tog" id="ozelEgitimTog" onclick="togOzelYeni(this)"><span class="tdot"></span>Var</div>
     </div>
   </div>
   <div id="ozelAcikCard" class="card hidden">
@@ -552,9 +551,8 @@ function pdfOnizle(){
   </div>
   <div class="card">
     <div class="clabel">🏥 Rehabilitasyon Merkezi</div>
-    <div class="rstack">
-      <label class="ri"><input type="radio" name="rehab" value="Evet" onchange="togRehab('Evet')"> Evet</label>
-      <label class="ri"><input type="radio" name="rehab" value="Hayır" onchange="togRehab('Hayır')"> Hayır</label>
+    <div class="togs">
+      <div class="tog" id="rehabTog" onclick="togRehabYeni(this)"><span class="tdot"></span>Gitti / Gidiyor</div>
     </div>
   </div>
   <div id="rehabDetail" class="hidden">
@@ -819,7 +817,7 @@ function pdfOnizle(){
     ak_okuma:rVal('ak_okuma'),ak_anlama:rVal('ak_anlama'),ak_yazma:rVal('ak_yazma'),
     ak_mat:rVal('ak_mat'),ak_ifade:rVal('ak_ifade'),ak_kavram:rVal('ak_kavram'),
     tani:D.tani||'',dil_modul:rVal('dilModul'),aile_dil:rVal('aileDil'),dil_prob:getDilStr(),
-    ozel_egitim:rVal('ozelEgitim'),ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
+    ozel_egitim:document.getElementById('ozelEgitimTog')?.classList.contains('on')?'Evet':'',ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
     saglik_anne:document.getElementById('anneVefatCb')?.checked?'Vefat':'Sağ',saglik_baba:document.getElementById('babaVefatCb')?.checked?'Vefat':'Sağ',
     egitim_anne:rVal('egitimAnne'),egitim_baba:rVal('egitimBaba'),
     beraberlik:rVal('beraberlik'),adres:document.getElementById('adres').value,
@@ -828,7 +826,7 @@ function pdfOnizle(){
     baba_ad:document.getElementById('babaAd').value,baba_tel:document.getElementById('babaIletisim').value,
     baba_meslek:document.getElementById('babaMeslek').value,baba_alt:document.getElementById('babaAlt').value,
     tc_no:document.getElementById('tcNo').value,
-    rehab:rVal('rehab'),
+    rehab:document.getElementById('rehabTog')?.classList.contains('on')?'Evet':'',
     rehab_merkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:'',
     rehab_sure:D.rehabSure||'',aaa:rVal('aileAAA'),temel_ihtiyac:rVal('temelIhtiyac'),
     rapor_olasilik:D.raporOlas||'',karar:rVal('karar')
@@ -963,9 +961,21 @@ function setRoff(id,off){
 }
 
 /* ─ DİĞER ─ */
+function togOzelYeni(el){
+  el.classList.toggle('on');
+  const on=el.classList.contains('on');
+  el.querySelector('.tdot').textContent=on?'✓':'';
+  document.getElementById('ozelAcikCard').classList.toggle('hidden',!on);
+}
 function togOzel(v){document.getElementById('ozelAcikCard').classList.toggle('hidden',v!=='Evet');}
 function goBackSec6(){if(['Raporlu Dil','Raporlu Dil+','Aday Dil','Aday Dil+'].includes(D.tani))goTo(5);else goTo(3);}
 function selSc(el,k,val){el.parentElement.querySelectorAll('.scbtn').forEach(b=>b.classList.remove('on'));el.classList.add('on');D[k]=val;}
+function togRehabYeni(el){
+  el.classList.toggle('on');
+  const on=el.classList.contains('on');
+  el.querySelector('.tdot').textContent=on?'✓':'';
+  document.getElementById('rehabDetail').classList.toggle('hidden',!on);
+}
 function togRehab(v){document.getElementById('rehabDetail').classList[v==='Evet'?'remove':'add']('hidden');}
 function rVal(n){const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:'';}
 function togKarar(){
@@ -1145,7 +1155,7 @@ async function submitForm(){
       ak_okuma:rVal('ak_okuma'),ak_anlama:rVal('ak_anlama'),ak_yazma:rVal('ak_yazma'),
       ak_mat:rVal('ak_mat'),ak_ifade:rVal('ak_ifade'),ak_kavram:rVal('ak_kavram'),
       tani:D.tani||'',dil_modul:rVal('dilModul'),aile_dil:rVal('aileDil'),dil_prob:getDilStr(),
-      ozel_egitim:rVal('ozelEgitim'),
+      ozel_egitim:document.getElementById('ozelEgitimTog')?.classList.contains('on')?'Evet':'',
       ozel_egitim_acik:document.getElementById('ozelEgitimAcik').value,
       saglik_anne:document.getElementById('anneVefatCb')?.checked?'Vefat':'Sağ',saglik_baba:document.getElementById('babaVefatCb')?.checked?'Vefat':'Sağ',
       egitim_anne:rVal('egitimAnne'),egitim_baba:rVal('egitimBaba'),
@@ -1160,7 +1170,7 @@ async function submitForm(){
       baba_meslek:document.getElementById('babaMeslek').value,
       baba_alt:document.getElementById('babaAlt').value,
       tc_no:document.getElementById('tcNo').value,
-      rehab:rVal('rehab'),
+      rehab:document.getElementById('rehabTog')?.classList.contains('on')?'Evet':'',
       rehab_merkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:'',
       rehab_sure:D.rehabSure||'',
       aaa:rVal('aileAAA'),
