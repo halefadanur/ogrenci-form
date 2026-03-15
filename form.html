@@ -842,16 +842,13 @@ function toggleRadio(el,callback){
   else{document.querySelectorAll('input[name="'+el.name+'"]').forEach(function(r){r._wasChecked=false;});el._wasChecked=true;if(callback)callback();}
 }
 function capWords(el){
-  // Her kelimenin ilk harfi büyük
-  el.value=el.value.replace(/\w/g,function(c){return c.toUpperCase();});
+  el.value=el.value.split(' ').map(function(w){return w?w[0].toUpperCase()+w.slice(1):w;}).join(' ');
 }
 function capSentence(el){
-  // Cümle düzeni: . ! ? ve satır başından sonra büyük harf
-  const v=el.value;
-  el.value=v.replace(/(^|[.!?]\s+|[
-])([a-züğişçö])/gi,function(m,p1,p2){return p1+p2.toUpperCase();});
-  // İlk karakter büyük
-  if(el.value.length>0) el.value=el.value.charAt(0).toUpperCase()+el.value.slice(1);
+  let v=el.value;
+  if(!v)return;
+  v=v.charAt(0).toUpperCase()+v.slice(1);
+  el.value=v;
 }
 
 /* ─ TOAST ─ */
