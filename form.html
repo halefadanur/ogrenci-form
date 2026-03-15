@@ -176,28 +176,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .sucwrap h2{font-size:25px;font-weight:900;letter-spacing:-.4px;margin-bottom:7px}
 .sucwrap p{color:var(--sub);font-size:15px;margin-bottom:26px}
 
-/* ─ CAP FIRST ─ */
-function capFirst(el){
-  const v=el.value;
-  if(v.length>0) el.value=v.charAt(0).toUpperCase()+v.slice(1);
-}
-function toggleRadio(el,callback){
-  if(el._wasChecked){el.checked=false;el._wasChecked=false;if(callback)callback();}
-  else{document.querySelectorAll('input[name="'+el.name+'"]').forEach(function(r){r._wasChecked=false;});el._wasChecked=true;if(callback)callback();}
-}
-function capWords(el){
-  // Her kelimenin ilk harfi büyük
-  el.value=el.value.replace(/\w/g,function(c){return c.toUpperCase();});
-}
-function capSentence(el){
-  // Cümle düzeni: . ! ? ve satır başından sonra büyük harf
-  const v=el.value;
-  el.value=v.replace(/(^|[.!?]\s+|[
-])([a-züğişçö])/gi,function(m,p1,p2){return p1+p2.toUpperCase();});
-  // İlk karakter büyük
-  if(el.value.length>0) el.value=el.value.charAt(0).toUpperCase()+el.value.slice(1);
-}
-
 /* ─ TOAST ─ */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);background:#1a1610;color:#fff;padding:11px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:9998;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .28s;opacity:0;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
