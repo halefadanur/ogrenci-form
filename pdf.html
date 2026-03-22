@@ -132,23 +132,25 @@ function f(label, val) {
 function render() {
   var ad = (g('ad')+' '+g('soyad')).trim() || '—';
   document.getElementById('barTitle').textContent = ad + ' — ' + TIP;
-  document.getElementById('elAd').textContent = ad;
-  if (g('uzman')) document.getElementById('elUzman').textContent = '🧑‍💼 ' + g('uzman');
 
-  // Uzman ve tarih - üst satır
+  // İsim + TC aynı satırda
+  var tcHtml = g('tc_no') ? ' <span style="font-size:11px;font-weight:600;color:#8a8070;background:#f0ede8;padding:1px 7px;border-radius:5px;margin-left:6px">🪪 '+g('tc_no')+'</span>' : '';
+  document.getElementById('elAd').innerHTML = ad + tcHtml;
+
+  // Uzman ve tarih
   var uzmanEl = document.getElementById('elUzman');
   if (uzmanEl) uzmanEl.innerHTML = (g('uzman')?'🧑‍💼 '+g('uzman'):'') + (g('gorusme_tarihi')?' &nbsp;·&nbsp; 📅 '+tf(g('gorusme_tarihi')):'');
-  // Öğrenci bilgileri - alt satır
+
+  // Meta: Sınıf, doğum, okul (TC artık ismin yanında)
   var meta = '';
   if (g('sinif')) meta += '<span>🎓 '+g('sinif')+'</span>';
   if (g('dogum_tarihi')) meta += '<span>🎂 '+tf(g('dogum_tarihi'))+'</span>';
   if (g('okul')) meta += '<span>🏫 '+g('okul')+'</span>';
-  if (g('tc_no')) meta += '<span>🪪 TC: '+g('tc_no')+'</span>';
   document.getElementById('elMeta').innerHTML = meta;
 
-  // Öğrenci fotoğrafı header'da
+  // Öğrenci fotoğrafı
   if (g('foto_url')) {
-    document.getElementById('elFoto').innerHTML = '<img src="'+g('foto_url')+'" onerror="this.parentElement.textContent=\'👤\'">';
+    document.getElementById('elFoto').innerHTML = '<img src="'+g('foto_url')+'" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent=\'👤\'">';
   }
 
   document.getElementById('ftL').textContent = ad + ' — Öğrenci Tanıma Formu';
@@ -167,14 +169,12 @@ function render() {
   html += '<div class="ag" style="margin-bottom:6px">';
   html += '<div class="ac aca"><div class="act">👩 Anne</div>';
   if (g('saglik_anne')==='Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:5px;display:inline-block">⚠️ Vefat</div>';
-  html += '<div class="ar"><span class="ak">Adı</span><span class="av">'+(g('anne_ad')||'—')+'</span></div>';
-  html += '<div class="ar"><span class="ak">Tel</span><span class="av">'+(g('anne_tel')||'—')+'</span></div>';
+  html += '<div class="ar"><span class="av" style="font-weight:700">'+(g('anne_ad')||'—')+'</span><span style="color:#c0b8ae;margin:0 5px">·</span><span class="av">'+(g('anne_tel')||'—')+'</span></div>';
   if(g('anne_alt')) html += '<div class="ar"><span class="ak">Not</span><span class="av">'+g('anne_alt')+'</span></div>';
   html += '</div>';
   html += '<div class="ac acb"><div class="act">👨 Baba</div>';
   if (g('saglik_baba')==='Vefat') html += '<div style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:5px;display:inline-block">⚠️ Vefat</div>';
-  html += '<div class="ar"><span class="ak">Adı</span><span class="av">'+(g('baba_ad')||'—')+'</span></div>';
-  html += '<div class="ar"><span class="ak">Tel</span><span class="av">'+(g('baba_tel')||'—')+'</span></div>';
+  html += '<div class="ar"><span class="av" style="font-weight:700">'+(g('baba_ad')||'—')+'</span><span style="color:#c0b8ae;margin:0 5px">·</span><span class="av">'+(g('baba_tel')||'—')+'</span></div>';
   if(g('baba_alt')) html += '<div class="ar"><span class="ak">Not</span><span class="av">'+g('baba_alt')+'</span></div>';
   html += '</div></div>';
   html += '<div class="g3">';
