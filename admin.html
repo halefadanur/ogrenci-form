@@ -50,9 +50,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .tani-chip:hover{border-color:var(--br);color:var(--br2)}
 .tani-label{font-size:11px;color:var(--muted);font-weight:600;margin-right:4px}
 /* TABLE */
-.table-wrap{flex:1;overflow-x:auto;padding:16px 20px}
+.table-wrap{flex:1;overflow:auto;padding:16px 20px;height:calc(100vh - 170px)}
 .table{width:100%;border-collapse:collapse;font-size:13px}
-.table th{background:var(--surf);color:var(--sub);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.6px;padding:9px 12px;text-align:left;border-bottom:1.5px solid var(--bd);white-space:nowrap;position:sticky;top:56px;cursor:pointer;user-select:none}
+.table th{background:var(--surf);color:var(--sub);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.6px;padding:9px 12px;text-align:left;border-bottom:1.5px solid var(--bd);white-space:nowrap;position:sticky;top:0;cursor:pointer;user-select:none}
 .table th:hover{color:var(--br2)}
 .table th.sorted{color:var(--br2)}
 .table td{padding:11px 12px;border-bottom:1px solid var(--bd);vertical-align:middle}
@@ -77,6 +77,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .name-info span{font-size:11px;color:var(--sub)}
 .yeni-badge{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--br2);margin-right:4px;vertical-align:middle}
 .hidden{display:none!important}
+.drop-wrap{position:relative;display:inline-block}
+.drop-btn{background:var(--surf2);border:1.5px solid var(--bd);border-radius:9px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--sub);font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+.drop-btn:hover,.drop-btn.has-gizli{border-color:var(--br);color:var(--br2)}
+.drop-btn .arr{font-size:9px;transition:transform .2s}
+.drop-wrap.open .drop-btn .arr{transform:rotate(180deg)}
+.drop-menu{position:absolute;top:calc(100% + 6px);left:0;background:var(--surf);border:1.5px solid var(--bd);border-radius:12px;padding:10px;min-width:220px;max-width:360px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.5);display:none;flex-wrap:wrap;gap:6px}
+.drop-wrap.open .drop-menu{display:flex}
+.tani-chip{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--bd);color:var(--sub);background:transparent;transition:all .13s;font-family:inherit;white-space:nowrap}
+.tani-chip.gizli{opacity:.4;text-decoration:line-through;border-color:var(--red);color:#f87171}
+.tani-chip:hover{border-color:var(--br);color:var(--br2)}
 </style>
 </head>
 <body>
@@ -119,14 +129,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <select class="filter-sel" id="kararSel" onchange="filtrele()">
       <option value="">Tüm Kararlar</option>
     </select>
-  </div>
-
-  <div class="tani-filters" id="taniFilters">
-    <span class="tani-label">Tanı gizle:</span>
-  </div>
-
-  <div class="tani-filters" id="kararFilters">
-    <span class="tani-label">Karar gizle:</span>
+    <div class="drop-wrap" id="taniDropWrap">
+      <button class="drop-btn" id="taniDropBtn" onclick="toggleDrop('tani')">🏷 Tanı Gizle <span class="arr">▼</span></button>
+      <div class="drop-menu" id="taniFilters"></div>
+    </div>
+    <div class="drop-wrap" id="kararDropWrap">
+      <button class="drop-btn" id="kararDropBtn" onclick="toggleDrop('karar')">📋 Karar Gizle <span class="arr">▼</span></button>
+      <div class="drop-menu" id="kararFilters"></div>
+    </div>
   </div>
 
   <div class="table-wrap">
@@ -221,6 +231,31 @@ async function verileriYukle() {
   }
 }
 
+function toggleDrop(tip) {
+  const wrap = document.getElementById(tip + 'DropWrap');
+  const isOpen = wrap.classList.contains('open');
+  // Tüm dropları kapat
+  document.querySelectorAll('.drop-wrap').forEach(w => w.classList.remove('open'));
+  if (!isOpen) wrap.classList.add('open');
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.drop-wrap')) {
+    document.querySelectorAll('.drop-wrap').forEach(w => w.classList.remove('open'));
+  }
+});
+
+function gizliSayiGuncelle() {
+  const tBtn = document.getElementById('taniDropBtn');
+  const kBtn = document.getElementById('kararDropBtn');
+  const tSayi = gizliTaniler.size;
+  const kSayi = gizliKararlar.size;
+  tBtn.innerHTML = '🏷 Tanı Gizle' + (tSayi ? ' <span style="background:var(--br);color:#fff;border-radius:99px;padding:1px 7px;font-size:10px">'+tSayi+'</span>' : '') + ' <span class="arr">▼</span>';
+  kBtn.innerHTML = '📋 Karar Gizle' + (kSayi ? ' <span style="background:var(--br);color:#fff;border-radius:99px;padding:1px 7px;font-size:10px">'+kSayi+'</span>' : '') + ' <span class="arr">▼</span>';
+  tBtn.classList.toggle('has-gizli', tSayi > 0);
+  kBtn.classList.toggle('has-gizli', kSayi > 0);
+}
+
 function taniFiltrelerOlustur() {
   const taniler = [...new Set(tumVeriler.map(r => r.tani).filter(Boolean))].sort();
   const wrap = document.getElementById('taniFilters');
@@ -233,6 +268,7 @@ function taniFiltrelerOlustur() {
     btn.onclick = function() {
       if (gizliTaniler.has(t)) { gizliTaniler.delete(t); btn.classList.remove('gizli'); }
       else { gizliTaniler.add(t); btn.classList.add('gizli'); }
+      gizliSayiGuncelle();
       filtrele();
     };
     wrap.appendChild(btn);
@@ -251,6 +287,7 @@ function kararFiltrelerOlustur() {
     btn.onclick = function() {
       if (gizliKararlar.has(k)) { gizliKararlar.delete(k); btn.classList.remove('gizli'); }
       else { gizliKararlar.add(k); btn.classList.add('gizli'); }
+      gizliSayiGuncelle();
       filtrele();
     };
     wrap.appendChild(btn);
