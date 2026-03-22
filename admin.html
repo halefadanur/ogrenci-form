@@ -317,7 +317,7 @@ function tabloyuGoster(veriler) {
   veriler.forEach(function(r) {
     const tr = document.createElement('tr');
     const fotoHtml = r.foto_url
-      ? '<div class="mini-foto"><img src="' + r.foto_url + '" onerror="this.parentElement.textContent='👤'"></div>'
+      ? '<div class="mini-foto"><img src="' + r.foto_url + '" onerror="this.parentElement.textContent=\'👤\'"></div>'
       : '<div class="mini-foto">👤</div>';
     const dogum = r.dogum_tarihi ? tarihFormat(r.dogum_tarihi) : '';
     const yeniDot = isYeni(r) ? '<span class="yeni-badge" title="Son 24 saatte güncellendi"></span>' : '';
