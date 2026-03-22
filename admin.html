@@ -77,6 +77,23 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .name-info span{font-size:11px;color:var(--sub)}
 .yeni-badge{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--br2);margin-right:4px;vertical-align:middle}
 .hidden{display:none!important}
+
+/* İSTATİSTİK KARTLARI */
+.stat-bar{display:flex;gap:10px;padding:10px 16px;background:var(--surf);border-bottom:1px solid var(--bd);flex-wrap:wrap}
+.stat-card{background:var(--surf2);border:1px solid var(--bd);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;min-width:140px;flex:1}
+.stat-card-ico{font-size:20px;flex-shrink:0}
+.stat-card-info strong{display:block;font-size:18px;font-weight:800;color:var(--text);line-height:1}
+.stat-card-info span{font-size:10px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.4px}
+.stat-card.green .stat-card-info strong{color:#4ade80}
+.stat-card.orange .stat-card-info strong{color:var(--br2)}
+.stat-card.blue .stat-card-info strong{color:#60a5fa}
+.stat-card.red .stat-card-info strong{color:#f87171}
+/* CHECKBOX SEÇİM */
+.row-check{width:16px;height:16px;cursor:pointer;accent-color:var(--br)}
+.toplu-bar{display:none;align-items:center;gap:10px;padding:8px 16px;background:#1a1612;border-bottom:1px solid var(--bd)}
+.toplu-bar.visible{display:flex}
+.toplu-count{font-size:13px;font-weight:700;color:var(--br2)}
+
 .drop-wrap{position:relative;display:inline-block}
 .drop-btn{background:var(--surf2);border:1.5px solid var(--bd);border-radius:9px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--sub);font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
 .drop-btn:hover,.drop-btn.has-gizli{border-color:var(--br);color:var(--br2)}
@@ -113,6 +130,32 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <button class="tbtn" onclick="cikisYap()">Çıkış</button>
   </div>
 
+  <div class="stat-bar" id="statBar">
+    <div class="stat-card">
+      <div class="stat-card-ico">👥</div>
+      <div class="stat-card-info"><strong id="statToplam">—</strong><span>Toplam</span></div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-card-ico">✅</div>
+      <div class="stat-card-info"><strong id="statKayitli">—</strong><span>Kayıtlı</span></div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-card-ico">⏳</div>
+      <div class="stat-card-info"><strong id="statBekleyen">—</strong><span>Karar Bekleyen</span></div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-card-ico">📅</div>
+      <div class="stat-card-info"><strong id="statBuAy">—</strong><span>Bu Ay Yeni</span></div>
+    </div>
+  </div>
+
+  <!-- TOPLU İŞLEM ÇUBUĞU -->
+  <div class="toplu-bar" id="topluBar">
+    <span class="toplu-count" id="topluCount">0 seçildi</span>
+    <button class="tbtn tbtn-new" onclick="topluPdf()">📄 Seçililerin PDF'i</button>
+    <button class="tbtn" onclick="secimTemizle()" style="background:rgba(255,255,255,.08)">✕ Seçimi Kaldır</button>
+  </div>
+
   <div class="filters-bar">
     <input class="search-input" type="text" id="aramaInput" placeholder="Ad, soyad, okul, uzman, tanı, karar..." oninput="filtrele()">
     <select class="filter-sel" id="sortSel" onchange="filtrele()">
@@ -145,7 +188,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <table class="table hidden" id="mainTable">
       <thead>
         <tr>
-          <th onclick="sortBy('ad')">Öğrenci</th>
+          <th style="width:32px"><input type="checkbox" id="checkAll" onclick="tumSecToggle(this)" style="cursor:pointer;accent-color:var(--br)"></th><th onclick="sortBy('ad')">Öğrenci</th>
           <th onclick="sortBy('tarih')">Görüşme</th>
           <th>Sınıf</th>
           <th onclick="sortBy('tani')">Tanı</th>
@@ -226,9 +269,21 @@ async function verileriYukle() {
     kararFiltrelerOlustur();
     uzmanKararDoldur();
     filtrele();
+    istatistikGuncelle();
   } catch(e) {
     document.getElementById('loadingState').innerHTML = '<div class="state-ico">❌</div><p>Veri yüklenemedi</p>';
   }
+}
+
+function istatistikGuncelle() {
+  const buAy = new Date(); buAy.setDate(1); buAy.setHours(0,0,0,0);
+  const kayitli = tumVeriler.filter(r => r.karar === 'KAYDEDİLDİ' || r.karar === 'Özel Ders Alacak').length;
+  const bekleyen = tumVeriler.filter(r => !r.karar || r.karar === '' || r.karar === 'Karar Bekleniyor').length;
+  const buAyYeni = tumVeriler.filter(r => r.created_at && new Date(r.created_at) >= buAy).length;
+  document.getElementById('statToplam').textContent = tumVeriler.length;
+  document.getElementById('statKayitli').textContent = kayitli;
+  document.getElementById('statBekleyen').textContent = bekleyen;
+  document.getElementById('statBuAy').textContent = buAyYeni;
 }
 
 function toggleDrop(tip) {
@@ -398,7 +453,9 @@ function tabloyuGoster(veriler) {
     const dogum = r.dogum_tarihi ? tarihFormat(r.dogum_tarihi) : '';
     const yeniDot = isYeni(r) ? '<span class="yeni-badge" title="Son 24 saatte güncellendi"></span>' : '';
 
+    tr.dataset.id = r.id;
     tr.innerHTML = `
+      <td><input type='checkbox' class='row-check' value='${r.id}' onclick='satırSec(event)'></td>
       <td>
         <div class="name-cell">
           ${fotoHtml}
@@ -499,3 +556,58 @@ function kararBadge(k) {
 </script>
 </body>
 </html>
+
+/* ── TOPLU SEÇİM & PDF ─────────────────────────── */
+let seciliIdler = new Set();
+
+function satırSec(e) {
+  e.stopPropagation();
+  const cb = e.target;
+  if (cb.checked) seciliIdler.add(cb.value);
+  else seciliIdler.delete(cb.value);
+  topluBarGuncelle();
+}
+
+function tumSecToggle(cb) {
+  seciliIdler.clear();
+  document.querySelectorAll('.row-check').forEach(c => {
+    c.checked = cb.checked;
+    if (cb.checked) seciliIdler.add(c.value);
+  });
+  topluBarGuncelle();
+}
+
+function topluBarGuncelle() {
+  const bar = document.getElementById('topluBar');
+  const cnt = document.getElementById('topluCount');
+  if (seciliIdler.size > 0) {
+    bar.classList.add('visible');
+    cnt.textContent = seciliIdler.size + ' öğrenci seçildi';
+  } else {
+    bar.classList.remove('visible');
+  }
+  // checkAll durumu
+  const all = document.querySelectorAll('.row-check');
+  const allCb = document.getElementById('checkAll');
+  if (allCb) allCb.checked = all.length > 0 && seciliIdler.size === all.length;
+}
+
+function secimTemizle() {
+  seciliIdler.clear();
+  document.querySelectorAll('.row-check').forEach(c => c.checked = false);
+  const allCb = document.getElementById('checkAll');
+  if (allCb) allCb.checked = false;
+  topluBarGuncelle();
+}
+
+async function topluPdf() {
+  if (!seciliIdler.size) return;
+  const idler = [...seciliIdler];
+  for (const id of idler) {
+    const r = tumVeriler.find(x => x.id == id);
+    if (!r) continue;
+    const url = PDF_URL + '?v=' + Date.now() + '&id=' + id;
+    window.open(url, '_blank');
+    await new Promise(res => setTimeout(res, 400));
+  }
+}
