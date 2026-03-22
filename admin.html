@@ -90,8 +90,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .stat-card.red .stat-card-info strong{color:#f87171}
 /* CHECKBOX SEÇİM */
 .row-check{width:16px;height:16px;cursor:pointer;accent-color:var(--br)}
-.toplu-bar{display:none;align-items:center;gap:10px;padding:8px 16px;background:#1a1612;border-bottom:1px solid var(--bd)}
-.toplu-bar.visible{display:flex}
+.toplu-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:999;
+  display:none;align-items:center;justify-content:center;gap:12px;
+  padding:14px 20px;
+  background:linear-gradient(135deg,#1a0f05,#2a1a08);
+  border-top:2px solid var(--br);
+  box-shadow:0 -4px 24px rgba(200,112,10,.3);
+  transform:translateY(100%);
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.toplu-bar.visible{display:flex;transform:translateY(0)}
 .toplu-count{font-size:13px;font-weight:700;color:var(--br2)}
 
 .drop-wrap{position:relative;display:inline-block}
@@ -153,11 +162,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
   </div>
 
-  <!-- TOPLU İŞLEM ÇUBUĞU -->
+  <!-- TOPLU İŞLEM ÇUBUĞU — sayfanın altında sabit -->
   <div class="toplu-bar" id="topluBar">
-    <span class="toplu-count" id="topluCount">0 seçildi</span>
-    <button class="tbtn tbtn-new" onclick="topluPdf()">📄 Seçililerin PDF'i</button>
-    <button class="tbtn" onclick="secimTemizle()" style="background:rgba(255,255,255,.08)">✕ Seçimi Kaldır</button>
+    <span class="toplu-count" id="topluCount" style="font-size:14px;font-weight:800;color:#fff;padding:6px 14px;background:rgba(255,255,255,.1);border-radius:8px;">0 seçildi</span>
+    <button class="tbtn tbtn-new" onclick="topluPdf()" style="padding:10px 20px;font-size:14px;">📄 Seçililerin PDF'ini Aç</button>
+    <button class="tbtn" onclick="secimTemizle()" style="background:rgba(255,255,255,.08);padding:10px 16px;font-size:13px;">✕ Seçimi Kaldır</button>
   </div>
 
   <div class="filters-bar">
