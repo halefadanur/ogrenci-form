@@ -97,7 +97,19 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 
 <div class="save-bar">
   <button style="background:#2a2720;color:#9a9080;flex:1;max-width:160px" onclick="history.back()">İptal</button>
+  <button style="background:rgba(200,112,10,.15);color:var(--br2);border:1px solid var(--br);flex:1;max-width:180px" onclick="eksikGoster()">⚠️ Eksik Alanlar</button>
   <button style="background:linear-gradient(135deg,#0d4a27,#18733c);color:#fff;flex:1;max-width:280px" onclick="kaydet()">✓ Kaydet</button>
+</div>
+
+<!-- EKSİK ALAN MODAL -->
+<div id="eksikModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:flex-end;justify-content:center;">
+  <div style="background:#1e1a16;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:600px;max-height:70vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <span style="font-size:15px;font-weight:700;color:#fff;">⚠️ Eksik veya Boş Alanlar</span>
+      <button onclick="document.getElementById('eksikModal').style.display='none'" style="background:none;border:none;color:#9a9080;font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <div id="eksikList"></div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -575,6 +587,50 @@ async function kaydet(){
   } catch(e){
     toast('❌ Hata: '+e.message);
   }
+}
+function eksikGoster() {
+  const alanlar = [
+    { id:'ad',            label:'Ad' },
+    { id:'soyad',         label:'Soyad' },
+    { id:'gorusme_tarihi',label:'Görüşme Tarihi' },
+    { id:'uzman',         label:'Uzman' },
+    { id:'dogum_tarihi',  label:'Doğum Tarihi' },
+    { id:'tani',          label:'Tanı / Rapor' },
+    { id:'karar',         label:'Karar', radio:true },
+    { id:'anne_ad',       label:'Anne Adı' },
+    { id:'anne_tel',      label:'Anne Telefonu' },
+    { id:'adres',         label:'Adres' },
+  ];
+
+  // Sinif kontrolü ayrı (chip)
+  const sinif = document.querySelector('#sinifChips .chip.on') || (typeof g === 'function' && g('sinif'));
+  const ihtiyac = document.querySelectorAll('[data-ihtiyac].on').length;
+
+  const eksikler = [];
+  alanlar.forEach(a => {
+    if (a.radio) {
+      const el = document.querySelector(`input[name="${a.id}"]:checked`);
+      if (!el) eksikler.push(a.label);
+    } else {
+      const val = fv(a.id);
+      if (!val) eksikler.push(a.label);
+    }
+  });
+  if (!sinif) eksikler.push('Sınıf');
+  if (!ihtiyac) eksikler.push('Temel İhtiyaç Alanı');
+
+  const list = document.getElementById('eksikList');
+  if (!eksikler.length) {
+    list.innerHTML = '<div style="color:#4ade80;font-size:14px;padding:12px 0;">✅ Tüm önemli alanlar dolu!</div>';
+  } else {
+    list.innerHTML = eksikler.map(e =>
+      `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:#2a2218;margin-bottom:6px;">
+        <span style="color:#f87171;font-size:16px;">○</span>
+        <span style="color:#e8e0d8;font-size:14px;">${e}</span>
+      </div>`
+    ).join('');
+  }
+  document.getElementById('eksikModal').style.display = 'flex';
 }
 </script>
 </body>
