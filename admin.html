@@ -640,18 +640,53 @@ async function topluPdf() {
   const idler = [...seciliIdler];
   const btn = document.querySelector('#topluBar .tbtn-new');
   if (btn) { btn.innerHTML = '⏳ Yükleniyor...'; btn.disabled = true; }
+
   try {
+    // Tüm öğrenci verilerini çek
+    const kayitlar = [];
     for (const id of idler) {
       const res = await fetch(SUPA_URL + '/rest/v1/ogrenciler?id=eq.' + id, {
         headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
       });
       const data = await res.json();
-      if (data && data[0]) {
-        const encoded = encodeURIComponent(JSON.stringify(data[0]));
-        window.open(PDF_URL + '?v=' + Date.now() + '&d=' + encoded + '&tip=TAM+FORM', '_blank');
-        await new Promise(res => setTimeout(res, 500));
-      }
+      if (data && data[0]) kayitlar.push(data[0]);
     }
+    if (!kayitlar.length) return;
+
+    // Tek pencerede tüm verileri gönder
+    window.__TOPLU_PDF__ = kayitlar;
+    const yeniSayfa = window.open('', '_blank');
+    yeniSayfa.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>Toplu PDF</title>
+<style>
+  body{font-family:sans-serif;background:#f0ede8;margin:0;padding:0}
+  .bar{background:#1a1814;color:#fff;padding:10px 20px;display:flex;gap:10px;align-items:center;position:sticky;top:0;z-index:99;print-color-adjust:none}
+  .bar h3{flex:1;font-size:13px;opacity:.7;margin:0}
+  .bar button{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit;background:#c9720a;color:#fff}
+  @media print{.bar{display:none!important}}
+</style>
+</head><body>
+<div class="bar">
+  <h3 id="barTitle"></h3>
+  <button onclick="window.print()">🖨️ Tümünü Yazdır</button>
+  <button onclick="window.close()" style="background:rgba(255,255,255,.1)">✕</button>
+</div>
+<div id="icerik"></div>
+<script>
+  const kayitlar = ${JSON.stringify(kayitlar)};
+  document.getElementById('barTitle').textContent = kayitlar.length + ' öğrenci — Toplu PDF';
+  // pdf.html'in render fonksiyonunu buraya taşımak yerine iframe kullan
+  const wrap = document.getElementById('icerik');
+  kayitlar.forEach((r, i) => {
+    const d = encodeURIComponent(JSON.stringify(r));
+    const div = document.createElement('div');
+    div.style.cssText = 'page-break-after:always;margin-bottom:0';
+    div.innerHTML = '<iframe src="${window.location.origin}/ogrenci-form/pdf.html?d=' + d + '&tip=TAM+FORM" style="width:100%;height:1200px;border:none;display:block;" onload="this.style.height=(this.contentWindow.document.body.scrollHeight+40)+\\'px\\'"></iframe>';
+    wrap.appendChild(div);
+  });
+</scr` + `ipt></body></html>`);
+    yeniSayfa.document.close();
+
   } catch(e) { alert('Hata: ' + e.message); }
   if (btn) { btn.innerHTML = '📄 Seçililerin PDF\'ini Aç'; btn.disabled = false; }
 }
