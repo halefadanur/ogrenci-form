@@ -153,7 +153,7 @@ function render() {
   var meta = '';
   if (g('sinif')) meta += '<span>🎓 '+g('sinif')+'</span>';
   if (g('dogum_tarihi')) meta += '<span>🎂 '+tf(g('dogum_tarihi'))+'</span>';
-  if (g('okul')) meta += '<span>🏫 '+g('okul')+'</span>';
+  if (g('okul')) { var okul = g('okul'); meta += '<span>🏫 '+(okul.length>30 ? okul.slice(0,30)+'…' : okul)+'</span>'; }
   document.getElementById('elMeta').innerHTML = meta;
 
   // Öğrenci fotoğrafı
