@@ -75,15 +75,15 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 <div class="page">
-  <div style="padding:12px 20px 10px;border-bottom:3px solid #c8700a;display:flex;align-items:center;gap:16px">
+  <div style="padding:12px 20px 10px;border-bottom:3px solid #c8700a;display:flex;align-items:center;position:relative;min-height:80px">
     <!-- Sol: Öğrenci bilgileri -->
-    <div style="flex:1;min-width:0">
+    <div style="flex:1;min-width:0;padding-right:160px">
       <div class="hdr-name" id="elAd">—</div>
       <div class="hdr-uzman" id="elUzman"></div>
       <div class="meta" id="elMeta"></div>
     </div>
-    <!-- Orta: Logo + Kurum adı (ortalı, çizgisiz) -->
-    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;padding:0 10px">
+    <!-- Orta: Logo + Kurum adı (gerçek orta, absolute) -->
+    <div style="position:absolute;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px">
       <img src="https://halefadanur.github.io/ogrenci-form/logo.png?v=2" style="height:46px;object-fit:contain;display:block">
       <div style="text-align:center;line-height:1.2">
         <div style="font-size:12px;font-weight:900;color:#16130e;letter-spacing:-.1px">EĞİTİMCİ DİL KONUŞMA</div>
