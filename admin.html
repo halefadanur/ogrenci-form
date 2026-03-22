@@ -143,9 +143,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="stat-card-ico">⚙️</div>
       <div class="stat-card-info"><strong id="statIslemde">—</strong><span>İşlemde</span></div>
     </div>
-    <div class="stat-card blue" style="cursor:pointer" onclick="statFiltrele('takip')" title="Takibe alınanları filtrele">
+    <div class="stat-card blue" style="cursor:pointer" onclick="statFiltrele('aile')" title="Aile düşünecek olanları filtrele">
+      <div class="stat-card-ico">👨‍👩‍👧</div>
+      <div class="stat-card-info"><strong id="statAile">—</strong><span>Aile Düşünecek</span></div>
+    </div>
+    <div class="stat-card red" style="cursor:pointer" onclick="statFiltrele('takip')" title="Takibe alınanları filtrele">
       <div class="stat-card-ico">📋</div>
-      <div class="stat-card-info"><strong id="statTakip">—</strong><span>Takipte</span></div>
+      <div class="stat-card-info"><strong id="statTakip">—</strong><span>Takibe Alındı</span></div>
     </div>
   </div>
 
@@ -278,34 +282,34 @@ async function verileriYukle() {
 function istatistikGuncelle() {
   const KAYITLI = ['KAYDEDİLDİ','Özel Ders Alacak'];
   const ISLEMDE = ['İşlemde'];
-  const TAKIP   = ['Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)','Takibe Alındı (MHRS yok)'];
-
-  const kayitli = tumVeriler.filter(r => KAYITLI.includes(r.karar)).length;
-  const islemde = tumVeriler.filter(r => ISLEMDE.includes(r.karar)).length;
-  const takip   = tumVeriler.filter(r => TAKIP.includes(r.karar)).length;
+  const AILE    = ['Aile Düşünecek','Başka Kurumda Kayıtlı, DÜŞÜNECEK.','Başka Kurumda Kayıtlı, KAYDOLACAK'];
+  const TAKIP   = ['Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)'];
 
   document.getElementById('statToplam').textContent  = tumVeriler.length;
-  document.getElementById('statKayitli').textContent = kayitli;
-  document.getElementById('statIslemde').textContent = islemde;
-  document.getElementById('statTakip').textContent   = takip;
+  document.getElementById('statKayitli').textContent = tumVeriler.filter(r => KAYITLI.includes(r.karar)).length;
+  document.getElementById('statIslemde').textContent = tumVeriler.filter(r => ISLEMDE.includes(r.karar)).length;
+  document.getElementById('statAile').textContent    = tumVeriler.filter(r => AILE.includes(r.karar)).length;
+  document.getElementById('statTakip').textContent   = tumVeriler.filter(r => TAKIP.includes(r.karar)).length;
 }
 
 // Karta tıklayınca filtrele
 function statFiltrele(tip) {
   const KAYITLI = ['KAYDEDİLDİ','Özel Ders Alacak'];
   const ISLEMDE = ['İşlemde'];
-  const TAKIP   = ['Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)','Takibe Alındı (MHRS yok)'];
+  const AILE    = ['Aile Düşünecek','Başka Kurumda Kayıtlı, DÜŞÜNECEK.','Başka Kurumda Kayıtlı, KAYDOLACAK'];
+  const TAKIP   = ['Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)'];
 
   document.getElementById('aramaInput').value = '';
 
   if (!tip)                   { window._statFiltre = null; }
   else if (tip === 'kayitli') { window._statFiltre = KAYITLI; }
   else if (tip === 'islemde') { window._statFiltre = ISLEMDE; }
+  else if (tip === 'aile')    { window._statFiltre = AILE; }
   else if (tip === 'takip')   { window._statFiltre = TAKIP; }
 
   // Kart aktif görünümü
   document.querySelectorAll('.stat-card').forEach(c => c.style.outline = '');
-  if (tip) event.currentTarget.style.outline = '2px solid var(--br)';
+  if (tip && event && event.currentTarget) event.currentTarget.style.outline = '2px solid var(--br)';
 
   filtrele();
 }
