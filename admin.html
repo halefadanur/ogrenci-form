@@ -303,8 +303,10 @@ function uzmanKararDoldur() {
   kararlar.forEach(k => { const o = document.createElement('option'); o.value = k; o.textContent = k; kSel.appendChild(o); });
 }
 
+function trLower(s){ return String(s||'').replace(/İ/g,'i').replace(/I/g,'ı').toLowerCase(); }
+
 function filtrele() {
-  const q = document.getElementById('aramaInput').value.toLowerCase().trim();
+  const q = trLower(document.getElementById('aramaInput').value.trim());
   const uzman = document.getElementById('uzmanSel').value;
   const karar = document.getElementById('kararSel').value;
   const sort = document.getElementById('sortSel').value;
@@ -315,7 +317,7 @@ function filtrele() {
     if (uzman && r.uzman !== uzman) return false;
     if (karar && r.karar !== karar) return false;
     if (q) {
-      const hay = ((r.ad||'') + ' ' + (r.soyad||'') + ' ' + (r.tani||'') + ' ' + (r.karar||'') + ' ' + (r.uzman||'') + ' ' + (r.okul||'')).toLowerCase();
+      const hay = trLower((r.ad||'') + ' ' + (r.soyad||'') + ' ' + (r.tani||'') + ' ' + (r.karar||'') + ' ' + (r.uzman||'') + ' ' + (r.okul||''));
       if (!hay.includes(q)) return false;
     }
     return true;
