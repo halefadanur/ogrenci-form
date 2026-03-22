@@ -110,6 +110,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <option value="tarih">↓ Görüşme Tarihi</option>
       <option value="ad">A→Z Ad</option>
       <option value="tani">Tanı</option>
+      <option value="karar">Karar</option>
       <option value="uzman">Uzman</option>
     </select>
     <select class="filter-sel" id="uzmanSel" onchange="filtrele()">
@@ -124,6 +125,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <span class="tani-label">Tanı gizle:</span>
   </div>
 
+  <div class="tani-filters" id="kararFilters">
+    <span class="tani-label">Karar gizle:</span>
+  </div>
+
   <div class="table-wrap">
     <div class="state" id="loadingState"><div class="state-ico">⏳</div><p>Yükleniyor...</p></div>
     <div class="state hidden" id="emptyState"><div class="state-ico">📭</div><p>Kayıt bulunamadı</p></div>
@@ -134,7 +139,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
           <th onclick="sortBy('tarih')">Görüşme</th>
           <th>Sınıf</th>
           <th onclick="sortBy('tani')">Tanı</th>
-          <th>Karar</th>
+          <th onclick="sortBy('karar')">Karar</th>
           <th onclick="sortBy('uzman')">Uzman</th>
           <th>İşlemler</th>
         </tr>
@@ -153,6 +158,7 @@ const SIFRE    = "enabiz2026";
 let tumVeriler = [];
 let filtreliVeriler = [];
 let gizliTaniler = new Set();
+let gizliKararlar = new Set();
 let sortField = 'guncelleme';
 let sortAsc = false;
 
@@ -207,6 +213,7 @@ async function verileriYukle() {
     filtreliVeriler = tumVeriler;
     document.getElementById('topbarCount').textContent = tumVeriler.length + ' öğrenci';
     taniFiltrelerOlustur();
+    kararFiltrelerOlustur();
     uzmanKararDoldur();
     filtrele();
   } catch(e) {
@@ -232,6 +239,24 @@ function taniFiltrelerOlustur() {
   });
 }
 
+function kararFiltrelerOlustur() {
+  const kararlar = [...new Set(tumVeriler.map(r => r.karar).filter(Boolean))].sort((a,b) => a.localeCompare(b,'tr'));
+  const wrap = document.getElementById('kararFilters');
+  wrap.innerHTML = '<span class="tani-label">Karar gizle:</span>';
+  kararlar.forEach(k => {
+    const btn = document.createElement('button');
+    btn.className = 'tani-chip';
+    btn.textContent = k;
+    btn.dataset.karar = k;
+    btn.onclick = function() {
+      if (gizliKararlar.has(k)) { gizliKararlar.delete(k); btn.classList.remove('gizli'); }
+      else { gizliKararlar.add(k); btn.classList.add('gizli'); }
+      filtrele();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
 function uzmanKararDoldur() {
   const uzmanlar = [...new Set(tumVeriler.map(r => r.uzman).filter(Boolean))].sort();
   const kararlar = [...new Set(tumVeriler.map(r => r.karar).filter(Boolean))].sort();
@@ -249,6 +274,7 @@ function filtrele() {
 
   let veriler = tumVeriler.filter(r => {
     if (gizliTaniler.has(r.tani)) return false;
+    if (gizliKararlar.has(r.karar)) return false;
     if (uzman && r.uzman !== uzman) return false;
     if (karar && r.karar !== karar) return false;
     if (q) {
@@ -277,6 +303,10 @@ function filtrele() {
       va = a.tani || '';
       vb = b.tani || '';
       return va.localeCompare(vb, 'tr');
+    } else if (sort === 'karar') {
+      va = a.karar || '';
+      vb = b.karar || '';
+      return va.localeCompare(vb, 'tr');
     } else if (sort === 'uzman') {
       va = a.uzman || '';
       vb = b.uzman || '';
@@ -295,6 +325,7 @@ function sortBy(field) {
   if (field === 'ad') sel.value = 'ad';
   else if (field === 'tarih') sel.value = 'tarih';
   else if (field === 'tani') sel.value = 'tani';
+  else if (field === 'karar') sel.value = 'karar';
   else if (field === 'uzman') sel.value = 'uzman';
   filtrele();
 }
