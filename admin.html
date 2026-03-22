@@ -638,13 +638,22 @@ function secimTemizle() {
 async function topluPdf() {
   if (!seciliIdler.size) return;
   const idler = [...seciliIdler];
-  for (const id of idler) {
-    const r = tumVeriler.find(x => x.id == id);
-    if (!r) continue;
-    const url = PDF_URL + '?v=' + Date.now() + '&id=' + id;
-    window.open(url, '_blank');
-    await new Promise(res => setTimeout(res, 400));
-  }
+  const btn = document.querySelector('#topluBar .tbtn-new');
+  if (btn) { btn.innerHTML = '⏳ Yükleniyor...'; btn.disabled = true; }
+  try {
+    for (const id of idler) {
+      const res = await fetch(SUPA_URL + '/rest/v1/ogrenciler?id=eq.' + id, {
+        headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
+      });
+      const data = await res.json();
+      if (data && data[0]) {
+        const encoded = encodeURIComponent(JSON.stringify(data[0]));
+        window.open(PDF_URL + '?v=' + Date.now() + '&d=' + encoded + '&tip=TAM+FORM', '_blank');
+        await new Promise(res => setTimeout(res, 500));
+      }
+    }
+  } catch(e) { alert('Hata: ' + e.message); }
+  if (btn) { btn.innerHTML = '📄 Seçililerin PDF\'ini Aç'; btn.disabled = false; }
 }
 </script>
 </body>
