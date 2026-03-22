@@ -13,6 +13,14 @@
   --br:#c8700a;--br2:#f0a020;
   --text:#f0ede8;--sub:#8a8070;--muted:#554f44;
   --bd:#2a2720;--red:#d12b1e;--green:#176638;
+  color-scheme:dark;
+}
+:root.light{
+  --bg:#f5f2ee;--surf:#ffffff;--surf2:#f0ece6;
+  --br:#c8700a;--br2:#d06000;
+  --text:#16130e;--sub:#6b6258;--muted:#a09a94;
+  --bd:#e0dbd4;--red:#d12b1e;--green:#176638;
+  color-scheme:light;
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
@@ -136,6 +144,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="topbar-count" id="topbarCount">0 öğrenci</div>
     <button class="tbtn tbtn-new" onclick="window.open('https://halefadanur.github.io/ogrenci-form/form.html','_blank')">+ Yeni Form</button>
     <button class="tbtn tbtn-excel" onclick="excelIndir()" id="excelBtn">⬇ Excel</button>
+    <button class="tbtn" id="temaBtn" onclick="temaToggle()" style="font-size:16px;padding:8px 12px;" title="Tema değiştir">🌙</button>
     <button class="tbtn" onclick="cikisYap()">Çıkış</button>
   </div>
 
@@ -216,6 +225,27 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 </div>
 
 <script>
+// ── TEMA ─────────────────────────────────────────
+function temaUygula(tema) {
+  if (tema === 'light') {
+    document.documentElement.classList.add('light');
+    document.getElementById('temaBtn').textContent = '☀️';
+  } else {
+    document.documentElement.classList.remove('light');
+    document.getElementById('temaBtn').textContent = '🌙';
+  }
+}
+function temaToggle() {
+  const yeni = document.documentElement.classList.contains('light') ? 'dark' : 'light';
+  localStorage.setItem('adminTema', yeni);
+  temaUygula(yeni);
+}
+// Sayfa yüklenince kayıtlı temayı uygula
+(function() {
+  const kayitli = localStorage.getItem('adminTema') || 'dark';
+  if (kayitli === 'light') document.documentElement.classList.add('light');
+})();
+
 const SUPA_URL = "https://zciraijmwxcwhryidlki.supabase.co";
 const SUPA_KEY = "sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
 const PDF_URL  = "https://halefadanur.github.io/ogrenci-form/pdf.html";
