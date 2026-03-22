@@ -549,6 +549,11 @@ async function kaydet(){
     yonetici_notu: fv('yonetici_notu'),
   };
 
+  // Rehber notu varsa güncelleme zamanını kaydet
+  if (p.rehber_notu && p.rehber_notu.trim()) {
+    p.rehber_guncelleme = new Date().toISOString();
+  }
+
   try {
     const res = await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+kayitId, {
       method: 'PATCH',
