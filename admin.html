@@ -189,7 +189,7 @@ async function verileriYukle() {
     const pageSize = 1000;
     while(true) {
       const to = from + pageSize - 1;
-      const res = await fetch(SUPA_URL + '/rest/v1/ogrenciler?order=updated_at.desc,created_at.desc', {
+      const res = await fetch(SUPA_URL + '/rest/v1/ogrenciler?order=created_at.desc', {
         headers: {
           'apikey': SUPA_KEY,
           'Authorization': 'Bearer ' + SUPA_KEY,
@@ -262,8 +262,8 @@ function filtrele() {
   veriler.sort((a, b) => {
     let va, vb;
     if (sort === 'guncelleme') {
-      va = a.updated_at || a.created_at || '';
-      vb = b.updated_at || b.created_at || '';
+      va = a.created_at || '';
+      vb = b.created_at || '';
       return vb.localeCompare(va); // en yeni üstte
     } else if (sort === 'tarih') {
       va = a.gorusme_tarihi || '';
@@ -301,7 +301,7 @@ function sortBy(field) {
 
 // Son 24 saat içinde güncellenmiş mi?
 function isYeni(r) {
-  const t = r.updated_at || r.created_at;
+  const t = r.created_at;
   if (!t) return false;
   return (Date.now() - new Date(t).getTime()) < 86400000;
 }
