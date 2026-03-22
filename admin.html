@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Öğrenci Admin</title>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -14,8 +15,6 @@
   --bd:#2a2720;--red:#d12b1e;--green:#176638;
 }
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
-
-/* LOGIN */
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
 .login-box{background:var(--surf);border:1px solid var(--bd);border-radius:20px;padding:40px;width:100%;max-width:380px}
 .login-logo{font-size:36px;text-align:center;margin-bottom:16px}
@@ -26,56 +25,57 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--br),var(--br2));color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity .15s}
 .login-btn:hover{opacity:.9}
 .login-err{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none}
-
-/* APP */
 .app{display:none;flex-direction:column;min-height:100vh}
-
-/* TOPBAR */
-.topbar{background:var(--surf);border-bottom:1px solid var(--bd);padding:0 24px;display:flex;align-items:center;gap:16px;height:58px;position:sticky;top:0;z-index:100}
-.topbar-logo{font-size:20px}
-.topbar-title{font-size:15px;font-weight:800;flex:1;letter-spacing:-.2px}
-.topbar-count{font-size:12px;color:var(--sub);background:var(--surf2);padding:4px 12px;border-radius:99px}
-.logout-btn{background:transparent;border:1px solid var(--muted);color:var(--sub);padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
-.logout-btn:hover{border-color:var(--red);color:var(--red)}
-
-/* SEARCH */
-.search-bar{padding:16px 24px;background:var(--surf);border-bottom:1px solid var(--bd)}
-.search-input{width:100%;background:var(--surf2);border:1.5px solid var(--bd);border-radius:11px;padding:11px 16px 11px 40px;font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:border-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23554f44' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center}
+.topbar{background:var(--surf);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;align-items:center;gap:10px;height:56px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.topbar-title{font-size:14px;font-weight:800;flex:1;letter-spacing:-.2px}
+.topbar-count{font-size:12px;color:var(--sub);background:var(--surf2);padding:4px 10px;border-radius:99px;white-space:nowrap}
+.tbtn{background:transparent;border:1px solid var(--muted);color:var(--sub);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.tbtn:hover{border-color:var(--br);color:var(--br2)}
+.tbtn-new{border-color:var(--br);color:var(--br2)}
+.tbtn-excel{border-color:#16a34a;color:#4ade80}
+.tbtn-excel:hover{background:rgba(22,163,74,.1)}
+/* FILTERS BAR */
+.filters-bar{padding:12px 20px;background:var(--surf);border-bottom:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.search-input{background:var(--surf2);border:1.5px solid var(--bd);border-radius:9px;padding:8px 14px 8px 36px;font-size:13px;font-family:inherit;color:var(--text);outline:none;transition:border-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23554f44' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center;min-width:200px;flex:1}
 .search-input:focus{border-color:var(--br)}
-
+.filter-sel{background:var(--surf2);border:1.5px solid var(--bd);border-radius:9px;padding:8px 12px;font-size:12px;font-family:inherit;color:var(--text);outline:none;cursor:pointer;-webkit-appearance:none}
+.filter-sel:focus{border-color:var(--br)}
+.sort-btn{background:var(--surf2);border:1.5px solid var(--bd);border-radius:9px;padding:7px 11px;font-size:11px;font-weight:700;cursor:pointer;color:var(--sub);transition:all .15s;font-family:inherit;white-space:nowrap}
+.sort-btn.active{border-color:var(--br);color:var(--br2);background:rgba(200,112,10,.1)}
+/* TANI FİLTRELER */
+.tani-filters{padding:8px 20px;background:var(--surf);border-bottom:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tani-chip{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--bd);color:var(--sub);background:transparent;transition:all .13s;font-family:inherit}
+.tani-chip.gizli{opacity:.35;text-decoration:line-through}
+.tani-chip:hover{border-color:var(--br);color:var(--br2)}
+.tani-label{font-size:11px;color:var(--muted);font-weight:600;margin-right:4px}
 /* TABLE */
-.table-wrap{flex:1;overflow-x:auto;padding:20px 24px}
+.table-wrap{flex:1;overflow-x:auto;padding:16px 20px}
 .table{width:100%;border-collapse:collapse;font-size:13px}
-.table th{background:var(--surf);color:var(--sub);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;padding:10px 14px;text-align:left;border-bottom:1.5px solid var(--bd);white-space:nowrap;position:sticky;top:58px}
-.table td{padding:12px 14px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.table th{background:var(--surf);color:var(--sub);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.6px;padding:9px 12px;text-align:left;border-bottom:1.5px solid var(--bd);white-space:nowrap;position:sticky;top:56px;cursor:pointer;user-select:none}
+.table th:hover{color:var(--br2)}
+.table th.sorted{color:var(--br2)}
+.table td{padding:11px 12px;border-bottom:1px solid var(--bd);vertical-align:middle}
 .table tr:hover td{background:var(--surf2)}
 .table tr:last-child td{border-bottom:none}
-
-/* BADGES */
-.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap}
 .badge-orange{background:rgba(200,112,10,.15);color:var(--br2)}
 .badge-green{background:rgba(23,102,56,.2);color:#4ade80}
 .badge-red{background:rgba(209,43,30,.15);color:#f87171}
 .badge-blue{background:rgba(30,100,200,.15);color:#60a5fa}
 .badge-gray{background:rgba(100,100,100,.15);color:#9ca3af}
-
-/* PDF BUTTONS */
-.pdf-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap}
+.pdf-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap}
 .pdf-btn-tam{background:linear-gradient(135deg,var(--br),var(--br2));color:#fff}
 .pdf-btn-tam:hover{opacity:.85}
-
-/* LOADING / EMPTY */
 .state{padding:60px 24px;text-align:center;color:var(--sub)}
 .state-ico{font-size:40px;margin-bottom:12px}
 .state p{font-size:14px}
-
-/* FOTO */
-.mini-foto{width:36px;height:48px;border-radius:6px;object-fit:cover;border:1px solid var(--bd);background:var(--surf2);display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;flex-shrink:0}
+.mini-foto{width:32px;height:42px;border-radius:5px;object-fit:cover;border:1px solid var(--bd);background:var(--surf2);display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden;flex-shrink:0}
 .mini-foto img{width:100%;height:100%;object-fit:cover}
-
-.name-cell{display:flex;align-items:center;gap:10px}
+.name-cell{display:flex;align-items:center;gap:9px}
 .name-info strong{display:block;font-size:13px;font-weight:700;color:var(--text)}
 .name-info span{font-size:11px;color:var(--sub)}
+.yeni-badge{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--br2);margin-right:4px;vertical-align:middle}
+.hidden{display:none!important}
 </style>
 </head>
 <body>
@@ -95,27 +95,46 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <!-- APP -->
 <div class="app" id="appWrap">
   <div class="topbar">
-    <div class="topbar-logo">📋</div>
-    <div class="topbar-title">Öğrenci Tanıma — Admin</div>
+    <div class="topbar-title">📋 Öğrenci Tanıma — Admin</div>
     <div class="topbar-count" id="topbarCount">0 öğrenci</div>
-    <button class="logout-btn" style="border-color:var(--br);color:var(--br2)" onclick="window.open('https://halefadanur.github.io/ogrenci-form/form.html','_blank')">+ Yeni Form</button>
-    <button class="logout-btn" onclick="cikisYap()">Çıkış</button>
+    <button class="tbtn tbtn-new" onclick="window.open('https://halefadanur.github.io/ogrenci-form/form.html','_blank')">+ Yeni Form</button>
+    <button class="tbtn tbtn-excel" onclick="excelIndir()" id="excelBtn">⬇ Excel</button>
+    <button class="tbtn" onclick="cikisYap()">Çıkış</button>
   </div>
-  <div class="search-bar">
-    <input class="search-input" type="text" id="aramaInput" placeholder="Ad, soyad, tanı, karar ile arayın..." oninput="filtrele()">
+
+  <div class="filters-bar">
+    <input class="search-input" type="text" id="aramaInput" placeholder="Ad, soyad, okul, uzman, tanı, karar..." oninput="filtrele()">
+    <select class="filter-sel" id="sortSel" onchange="filtrele()">
+      <option value="guncelleme">↓ Son Güncelleme</option>
+      <option value="tarih">↓ Görüşme Tarihi</option>
+      <option value="ad">A→Z Ad</option>
+      <option value="tani">Tanı</option>
+      <option value="uzman">Uzman</option>
+    </select>
+    <select class="filter-sel" id="uzmanSel" onchange="filtrele()">
+      <option value="">Tüm Uzmanlar</option>
+    </select>
+    <select class="filter-sel" id="kararSel" onchange="filtrele()">
+      <option value="">Tüm Kararlar</option>
+    </select>
   </div>
+
+  <div class="tani-filters" id="taniFilters">
+    <span class="tani-label">Tanı gizle:</span>
+  </div>
+
   <div class="table-wrap">
     <div class="state" id="loadingState"><div class="state-ico">⏳</div><p>Yükleniyor...</p></div>
     <div class="state hidden" id="emptyState"><div class="state-ico">📭</div><p>Kayıt bulunamadı</p></div>
     <table class="table hidden" id="mainTable">
       <thead>
         <tr>
-          <th>Öğrenci</th>
-          <th>Görüşme</th>
+          <th onclick="sortBy('ad')">Öğrenci</th>
+          <th onclick="sortBy('tarih')">Görüşme</th>
           <th>Sınıf</th>
-          <th>Tanı</th>
+          <th onclick="sortBy('tani')">Tanı</th>
           <th>Karar</th>
-          <th>Uzman</th>
+          <th onclick="sortBy('uzman')">Uzman</th>
           <th>İşlemler</th>
         </tr>
       </thead>
@@ -128,12 +147,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 const SUPA_URL = "https://zciraijmwxcwhryidlki.supabase.co";
 const SUPA_KEY = "sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
 const PDF_URL  = "https://halefadanur.github.io/ogrenci-form/pdf.html";
-const SIFRE    = "enabiz2026"; // ← ŞİFREYİ BURADAN DEĞİŞTİRİN
+const SIFRE    = "enabiz2026";
 
 let tumVeriler = [];
 let filtreliVeriler = [];
+let gizliTaniler = new Set();
+let sortField = 'guncelleme';
+let sortAsc = false;
 
-// GİRİŞ
 function girisYap() {
   const s = document.getElementById('sifreInput').value;
   if (s === SIFRE) {
@@ -154,45 +175,131 @@ function cikisYap() {
   document.getElementById('loginWrap').style.display = 'flex';
 }
 
-// Oturum kontrolü
 if (sessionStorage.getItem('admin_auth') === '1') {
   document.getElementById('loginWrap').style.display = 'none';
   document.getElementById('appWrap').style.display = 'flex';
   verileriYukle();
 }
 
-// VERİ YÜKLE
 async function verileriYukle() {
   try {
-    const res = await fetch(SUPA_URL + '/rest/v1/ogrenciler?order=created_at.desc&limit=500', {
-      headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
-    });
-    tumVeriler = await res.json();
+    // Tüm kayıtları çek - pagination ile
+    let all = [];
+    let offset = 0;
+    const pageSize = 1000;
+    while(true) {
+      const res = await fetch(SUPA_URL + '/rest/v1/ogrenciler?order=updated_at.desc,created_at.desc&limit=' + pageSize + '&offset=' + offset, {
+        headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Prefer': 'count=exact' }
+      });
+      const data = await res.json();
+      if (!data || !data.length) break;
+      all = all.concat(data);
+      if (data.length < pageSize) break;
+      offset += pageSize;
+    }
+    tumVeriler = all;
     filtreliVeriler = tumVeriler;
-    tabloyuGoster(filtreliVeriler);
     document.getElementById('topbarCount').textContent = tumVeriler.length + ' öğrenci';
+    taniFiltrelerOlustur();
+    uzmanKararDoldur();
+    filtrele();
   } catch(e) {
     document.getElementById('loadingState').innerHTML = '<div class="state-ico">❌</div><p>Veri yüklenemedi</p>';
   }
 }
 
-// FİLTRELE
-function filtrele() {
-  const q = document.getElementById('aramaInput').value.toLowerCase().trim();
-  if (!q) { filtreliVeriler = tumVeriler; }
-  else {
-    filtreliVeriler = tumVeriler.filter(r =>
-      (r.ad||'').toLowerCase().includes(q) ||
-      (r.soyad||'').toLowerCase().includes(q) ||
-      (r.tani||'').toLowerCase().includes(q) ||
-      (r.karar||'').toLowerCase().includes(q) ||
-      (r.uzman||'').toLowerCase().includes(q)
-    );
-  }
-  tabloyuGoster(filtreliVeriler);
+function taniFiltrelerOlustur() {
+  const taniler = [...new Set(tumVeriler.map(r => r.tani).filter(Boolean))].sort();
+  const wrap = document.getElementById('taniFilters');
+  wrap.innerHTML = '<span class="tani-label">Tanı gizle:</span>';
+  taniler.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'tani-chip';
+    btn.textContent = t;
+    btn.dataset.tani = t;
+    btn.onclick = function() {
+      if (gizliTaniler.has(t)) { gizliTaniler.delete(t); btn.classList.remove('gizli'); }
+      else { gizliTaniler.add(t); btn.classList.add('gizli'); }
+      filtrele();
+    };
+    wrap.appendChild(btn);
+  });
 }
 
-// TABLO GÖSTER
+function uzmanKararDoldur() {
+  const uzmanlar = [...new Set(tumVeriler.map(r => r.uzman).filter(Boolean))].sort();
+  const kararlar = [...new Set(tumVeriler.map(r => r.karar).filter(Boolean))].sort();
+  const uSel = document.getElementById('uzmanSel');
+  uzmanlar.forEach(u => { const o = document.createElement('option'); o.value = u; o.textContent = u; uSel.appendChild(o); });
+  const kSel = document.getElementById('kararSel');
+  kararlar.forEach(k => { const o = document.createElement('option'); o.value = k; o.textContent = k; kSel.appendChild(o); });
+}
+
+function filtrele() {
+  const q = document.getElementById('aramaInput').value.toLowerCase().trim();
+  const uzman = document.getElementById('uzmanSel').value;
+  const karar = document.getElementById('kararSel').value;
+  const sort = document.getElementById('sortSel').value;
+
+  let veriler = tumVeriler.filter(r => {
+    if (gizliTaniler.has(r.tani)) return false;
+    if (uzman && r.uzman !== uzman) return false;
+    if (karar && r.karar !== karar) return false;
+    if (q) {
+      const hay = ((r.ad||'') + ' ' + (r.soyad||'') + ' ' + (r.tani||'') + ' ' + (r.karar||'') + ' ' + (r.uzman||'') + ' ' + (r.okul||'')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  // Sıralama
+  veriler.sort((a, b) => {
+    let va, vb;
+    if (sort === 'guncelleme') {
+      va = a.updated_at || a.created_at || '';
+      vb = b.updated_at || b.created_at || '';
+      return vb.localeCompare(va); // en yeni üstte
+    } else if (sort === 'tarih') {
+      va = a.gorusme_tarihi || '';
+      vb = b.gorusme_tarihi || '';
+      return vb.localeCompare(va);
+    } else if (sort === 'ad') {
+      va = ((a.ad||'') + ' ' + (a.soyad||'')).toLowerCase();
+      vb = ((b.ad||'') + ' ' + (b.soyad||'')).toLowerCase();
+      return va.localeCompare(vb, 'tr');
+    } else if (sort === 'tani') {
+      va = a.tani || '';
+      vb = b.tani || '';
+      return va.localeCompare(vb, 'tr');
+    } else if (sort === 'uzman') {
+      va = a.uzman || '';
+      vb = b.uzman || '';
+      return va.localeCompare(vb, 'tr');
+    }
+    return 0;
+  });
+
+  filtreliVeriler = veriler;
+  document.getElementById('topbarCount').textContent = veriler.length + ' / ' + tumVeriler.length + ' öğrenci';
+  tabloyuGoster(veriler);
+}
+
+function sortBy(field) {
+  const sel = document.getElementById('sortSel');
+  if (field === 'ad') sel.value = 'ad';
+  else if (field === 'tarih') sel.value = 'tarih';
+  else if (field === 'tani') sel.value = 'tani';
+  else if (field === 'uzman') sel.value = 'uzman';
+  filtrele();
+}
+
+// Son 24 saat içinde güncellenmiş mi?
+function isYeni(r) {
+  const t = r.updated_at || r.created_at;
+  if (!t) return false;
+  return (Date.now() - new Date(t).getTime()) < 86400000;
+}
+
 function tabloyuGoster(veriler) {
   document.getElementById('loadingState').classList.add('hidden');
   const tbody = document.getElementById('tableBody');
@@ -209,25 +316,23 @@ function tabloyuGoster(veriler) {
 
   veriler.forEach(function(r) {
     const tr = document.createElement('tr');
-
-    // Fotoğraf + isim
     const fotoHtml = r.foto_url
-      ? '<div class="mini-foto"><img src="' + r.foto_url + '" onerror="this.parentElement.textContent=\'👤\'"></div>'
+      ? '<div class="mini-foto"><img src="' + r.foto_url + '" onerror="this.parentElement.textContent='👤'"></div>'
       : '<div class="mini-foto">👤</div>';
-
     const dogum = r.dogum_tarihi ? tarihFormat(r.dogum_tarihi) : '';
+    const yeniDot = isYeni(r) ? '<span class="yeni-badge" title="Son 24 saatte güncellendi"></span>' : '';
 
     tr.innerHTML = `
       <td>
         <div class="name-cell">
           ${fotoHtml}
           <div class="name-info">
-            <strong>${r.ad||''} ${r.soyad||''}</strong>
+            <strong>${yeniDot}${r.ad||''} ${r.soyad||''}</strong>
             <span>${dogum}</span>
           </div>
         </div>
       </td>
-      <td>${tarihFormat(r.gorusme_tarihi)||''}</td>
+      <td style="font-size:12px;color:var(--sub)">${tarihFormat(r.gorusme_tarihi)||'—'}</td>
       <td>${r.sinif ? '<span class="badge badge-blue">'+r.sinif+'</span>' : '—'}</td>
       <td>${r.tani ? '<span class="badge '+taniBadge(r.tani)+'">'+r.tani+'</span>' : '—'}</td>
       <td>${r.karar ? '<span class="badge '+kararBadge(r.karar)+'">'+r.karar+'</span>' : '—'}</td>
@@ -241,18 +346,14 @@ function tabloyuGoster(veriler) {
   });
 }
 
-// DÜZENLE
 function duzenle(id) {
   window.open('https://halefadanur.github.io/ogrenci-form/edit.html?id=' + id + '&admin=1', '_blank');
 }
 
-// PDF AÇ
 async function pdfAc(id, btn) {
   if (!id) return;
-  const originalText = btn.innerHTML;
-  btn.innerHTML = '⏳ Yükleniyor...';
-  btn.disabled = true;
-
+  const orig = btn.innerHTML;
+  btn.innerHTML = '⏳'; btn.disabled = true;
   try {
     const res = await fetch(SUPA_URL + '/rest/v1/ogrenciler?id=eq.' + id, {
       headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
@@ -262,15 +363,42 @@ async function pdfAc(id, btn) {
       const encoded = encodeURIComponent(JSON.stringify(data[0]));
       window.open(PDF_URL + '?v=' + Date.now() + '&d=' + encoded + '&tip=TAM+FORM', '_blank');
     }
-  } catch(e) {
-    alert('Hata: ' + e.message);
-  }
-
-  btn.innerHTML = originalText;
-  btn.disabled = false;
+  } catch(e) { alert('Hata: ' + e.message); }
+  btn.innerHTML = orig; btn.disabled = false;
 }
 
-// YARDIMCI FONKSİYONLAR
+// EXCEL İNDİR
+function excelIndir() {
+  if (!filtreliVeriler.length) { alert('İndirilecek kayıt yok.'); return; }
+  const satirlar = filtreliVeriler.map(r => ({
+    'Ad': r.ad || '',
+    'Soyad': r.soyad || '',
+    'Doğum Tarihi': r.dogum_tarihi || '',
+    'Görüşme Tarihi': r.gorusme_tarihi || '',
+    'Uzman': r.uzman || '',
+    'Okul': r.okul || '',
+    'Sınıf': r.sinif || '',
+    'Tanı': r.tani || '',
+    'Karar': r.karar || '',
+    'Anne Adı': r.anne_ad || '',
+    'Anne Tel': r.anne_tel || '',
+    'Baba Adı': r.baba_ad || '',
+    'Baba Tel': r.baba_tel || '',
+    'TC No': r.tc_no || '',
+    'Adres': r.adres || '',
+    'Temel İhtiyaç': r.temel_ihtiyac || '',
+    'Görüşme Notu': r.gorusme_not || '',
+    'Yönetici Notu': r.yonetici_notu || '',
+    'Rehber Notu': r.rehber_notu || '',
+    'Rapor Olasılığı': r.rapor_olasilik || '',
+  }));
+  const ws = XLSX.utils.json_to_sheet(satirlar);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Öğrenciler');
+  const tarih = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, 'ogrenciler_' + tarih + '.xlsx');
+}
+
 function tarihFormat(t) {
   if (!t) return '';
   const m = String(t).match(/(\d{4})-(\d{2})-(\d{2})/);
