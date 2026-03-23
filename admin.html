@@ -356,26 +356,29 @@ function tabloDoldur(){
       <td data-label="Uzman">${r.uzman||''}</td>
       <td data-label="">
         <button class="act-btn act-edit" onclick="window.open('https://halefadanur.github.io/ogrenci-form/edit.html?admin=1&id=${r.id}')">Düzenle</button>
-        <button class="act-btn act-pdf" onclick="rA('${r.id}')">Rehber Notu</button>
+        <button class="act-btn act-pdf" style="background:var(--orange-bg);color:var(--orange);margin-bottom:4px;" onclick="notAc('${r.id}','yonetici_notu')">Yönetici Notu</button>
+        <button class="act-btn act-pdf" onclick="notAc('${r.id}','rehber_notu')">Rehber Notu</button>
       </td>
     </tr>
   `).join('');
 }
 
-let actId=null;
-function rA(id){
-  actId=id;
+let actId=null, actTip=null;
+function notAc(id, tip){
+  actId=id; actTip=tip;
   const o=tumVeriler.find(x=>x.id===id);
-  document.getElementById('notModalBaslik').textContent=o.ad+' - Rehber Notu';
-  document.getElementById('notModalText').value=o.rehber_notu||'';
+  const lbl = tip==='yonetici_notu' ? 'Yönetici Notu' : 'Rehber Notu';
+  document.getElementById('notModalBaslik').textContent=o.ad+' - '+lbl;
+  document.getElementById('notModalText').value=o[tip]||'';
   document.getElementById('notModalOverlay').style.display='flex';
 }
 function notModalKapat(){ document.getElementById('notModalOverlay').style.display='none'; }
 async function notModalKaydet(){
   const val = document.getElementById('notModalText').value;
   try{
-    await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+actId,{method:'PATCH',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({rehber_notu:val})});
-    tumVeriler.find(x=>x.id===actId).rehber_notu=val;
+    const req = {}; req[actTip] = val;
+    await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+actId,{method:'PATCH',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(req)});
+    tumVeriler.find(x=>x.id===actId)[actTip]=val;
     notModalKapat();
   }catch(e){alert('Hata');}
 }
