@@ -131,7 +131,20 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
     <div class="tcount" id="topbarCount">—</div>
     <button class="tbtn tbtn-primary" onclick="window.open('https://halefadanur.github.io/ogrenci-form/form.html','_blank')">+ Yeni</button>
     <button class="tbtn tbtn-green" onclick="excelIndir()">Excel</button>
-    <button class="tbtn" id="raporBtn" onclick="raporAc()" style="display:none;border-color:#8b5cf6;color:#8b5cf6;">📊 Yönetici Raporu</button>
+    <button class="tbtn" id="raporBtn" onclick="raporModalAc()" style="display:none;border-color:#8b5cf6;color:#8b5cf6;">📊 Yönetici Raporu</button>
+
+  <!-- Rapor Ay Seçici Modal -->
+  <div id="raporModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:var(--surf);border-radius:16px;padding:28px;width:340px;box-shadow:0 8px 32px rgba(0,0,0,.3);">
+      <h3 style="margin-bottom:16px;font-size:16px;font-weight:700;">📊 Yönetici Raporu</h3>
+      <label style="font-size:13px;color:var(--sub);font-weight:600;display:block;margin-bottom:8px;">Rapor Ayı</label>
+      <select id="raporAySel" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;outline:none;margin-bottom:20px;"></select>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button onclick="document.getElementById('raporModalOverlay').style.display='none'" style="padding:9px 18px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--sub);cursor:pointer;font-family:inherit;font-size:13px;">İptal</button>
+        <button onclick="raporAc()" style="padding:9px 18px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;">Raporu Aç</button>
+      </div>
+    </div>
+  </div>
     <button class="tbtn" id="temaBtn" onclick="temaToggle()">🌙</button>
     <button class="tbtn" onclick="cikisYap()">Çıkış</button>
   </div>
@@ -457,7 +470,31 @@ function chkUp(){
 }
 function tumSecToggle(e){ document.querySelectorAll('.rchk').forEach(c=>c.checked=e.checked); chkUp(); }
 function secimTemizle(){ document.querySelectorAll('.rchk').forEach(c=>c.checked=false); chkUp(); }
-function topluPdf(){ alert('Bu işlemi orjinal PDF modülünde kullanabilirsiniz.'); }
+async function topluPdf(){
+  const idler = [...document.querySelectorAll('.rchk:checked')].map(c=>c.value);
+  if(!idler.length) return;
+  const btn = document.querySelector('#topluBar .tbtn-primary');
+  if(btn){btn.textContent='⏳ Yükleniyor...';btn.disabled=true;}
+  try{
+    const kayitlar = [];
+    for(const id of idler){
+      const res = await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+id,{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}});
+      const data = await res.json();
+      if(data&&data[0]) kayitlar.push(data[0]);
+    }
+    if(!kayitlar.length) return;
+    const PDF_URL = 'https://halefadanur.github.io/ogrenci-form/pdf.html';
+    const yeni = window.open('','_blank');
+    yeni.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Toplu PDF</title>
+<style>body{font-family:sans-serif;background:#f0ede8;margin:0}.bar{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:12px 20px;display:flex;gap:10px;align-items:center;position:sticky;top:0;z-index:99}.bar h3{flex:1;font-size:14px;font-weight:700;margin:0}.bar button{padding:8px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}.btnp{background:#fff;color:#764ba2}.btnx{background:rgba(255,255,255,.2);color:#fff}@media print{.bar{display:none!important}}</style>
+</head><body>
+<div class="bar"><h3>${kayitlar.length} öğrenci — Toplu PDF</h3><button class="btnp" onclick="window.print()">🖨️ Yazdır</button><button class="btnx" onclick="window.close()">✕</button></div>
+<div id="ic"></div>
+<script>const K=${JSON.stringify(kayitlar)};const w=document.getElementById('ic');K.forEach(r=>{const d=encodeURIComponent(JSON.stringify(r));const div=document.createElement('div');div.style.cssText='page-break-after:always';div.innerHTML='<iframe src="${PDF_URL}?d='+d+'&tip=TAM+FORM" style="width:100%;height:1200px;border:none;display:block;" onload="this.style.height=(this.contentWindow.document.body.scrollHeight+40)+\\'px\\'"></iframe>';w.appendChild(div);});<\/script></body></html>`);
+    yeni.document.close();
+  }catch(e){alert('Hata: '+e.message);}
+  if(btn){btn.textContent='Toplu PDF';btn.disabled=false;}
+}
 
 function excelIndir(){
   const s = filtreliVeriler.map(r=>({Ad:r.ad||'',Soyad:r.soyad||'',Görüşme:r.gorusme_tarihi||'',Uzman:r.uzman||'',Tanı:r.tani||'',Karar:r.karar||'',Rehber:r.rehber_notu||''}));
@@ -466,23 +503,47 @@ function excelIndir(){
   XLSX.writeFile(wb, "Ogrenciler.xlsx");
 }
 
+function raporModalAc() {
+  const sel = document.getElementById('raporAySel');
+  sel.innerHTML = '';
+  const simdi = new Date();
+  for(let i=0; i<12; i++){
+    const d = new Date(simdi.getFullYear(), simdi.getMonth()-i, 1);
+    const val = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const lbl = d.toLocaleString('tr-TR',{month:'long',year:'numeric'});
+    const opt = document.createElement('option');
+    opt.value = val; opt.textContent = lbl;
+    if(i===0) opt.selected = true;
+    sel.appendChild(opt);
+  }
+  document.getElementById('raporModalOverlay').style.display = 'flex';
+}
+
 async function raporAc() {
-  const btn = event.currentTarget;
+  document.getElementById('raporModalOverlay').style.display = 'none';
+  const ayVal = document.getElementById('raporAySel').value; // YYYY-MM
+  const [yil, ay] = ayVal.split('-').map(Number);
+  const baslangic = new Date(yil, ay-1, 1).toISOString();
+  const bitis = new Date(yil, ay, 1).toISOString();
+  const ayAdi = new Date(yil, ay-1, 1).toLocaleString('tr-TR',{month:'long',year:'numeric'});
+
+  const btn = document.getElementById('raporBtn');
+  const origText = btn.innerHTML;
   btn.innerHTML = '⏳';
   btn.disabled = true;
 
   try {
-    const son30 = new Date(Date.now() - 30*24*60*60*1000).toISOString();
     const SUPA = "https://zciraijmwxcwhryidlki.supabase.co";
     const KEY  = "sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
     const hdrs = { apikey: KEY, Authorization: 'Bearer ' + KEY };
 
     // Paralel sorgular
-    const [rKarar, rYon, rRehber, rUzman] = await Promise.all([
-      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,karar_guncelleme,karar_degisim&karar_guncelleme=gte.' + son30 + '&order=karar_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
-      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,yonetici_notu,yonetici_notu_guncelleme&yonetici_notu_guncelleme=gte.' + son30 + '&order=yonetici_notu_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
-      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,rehber_notu,rehber_guncelleme&rehber_guncelleme=gte.' + son30 + '&order=rehber_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
-      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,uzman_guncelleme,uzman_degisim&uzman_guncelleme=gte.' + son30 + '&order=uzman_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
+    const [rKarar, rYon, rRehber, rUzman, rYeni] = await Promise.all([
+      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,karar_guncelleme,karar_degisim&karar_guncelleme=gte.' + baslangic + '&karar_guncelleme=lt.' + bitis + '&order=karar_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
+      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,yonetici_notu,yonetici_notu_guncelleme&yonetici_notu_guncelleme=gte.' + baslangic + '&yonetici_notu_guncelleme=lt.' + bitis + '&order=yonetici_notu_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
+      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,rehber_notu,rehber_guncelleme&rehber_guncelleme=gte.' + baslangic + '&rehber_guncelleme=lt.' + bitis + '&order=rehber_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
+      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,uzman_guncelleme,uzman_degisim&uzman_guncelleme=gte.' + baslangic + '&uzman_guncelleme=lt.' + bitis + '&order=uzman_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
+      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,gorusme_tarihi,created_at&created_at=gte.' + baslangic + '&created_at=lt.' + bitis + '&order=created_at.desc', {headers:hdrs}).then(r=>r.json()),
     ]);
 
     const fmt = ts => ts ? new Date(ts).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
@@ -512,6 +573,7 @@ async function raporAc() {
     const yonSatirlar  = (rYon||[]).map(r=>({_cols:['Öğrenci','Karar','Uzman','Not','Tarih'],_cells:[adSoyad(r),karar(r),uzman(r),`<div style="font-size:13px;color:#374151;max-width:320px;white-space:pre-wrap;word-break:break-word;">${(r.yonetici_notu||'').slice(0,200)}${r.yonetici_notu&&r.yonetici_notu.length>200?'…':''}</div>`,`<span style="font-size:12px;color:#6B7280;">${fmt(r.yonetici_notu_guncelleme)}</span>`]}));
     const rehberSatirlar=(rRehber||[]).map(r=>({_cols:['Öğrenci','Karar','Uzman','Not','Tarih'],_cells:[adSoyad(r),karar(r),uzman(r),`<div style="font-size:13px;color:#374151;max-width:320px;white-space:pre-wrap;word-break:break-word;">${(r.rehber_notu||'').slice(0,200)}${r.rehber_notu&&r.rehber_notu.length>200?'…':''}</div>`,`<span style="font-size:12px;color:#6B7280;">${fmt(r.rehber_guncelleme)}</span>`]}));
     const uzmanSatirlar=(rUzman||[]).map(r=>({_cols:['Öğrenci','Değişiklik','Karar','Tarih'],_cells:[adSoyad(r),r.uzman_degisim?`<span style="font-size:13px;font-weight:600;color:#7C3AED;">${r.uzman_degisim}</span>`:uzman(r),karar(r),`<span style="font-size:12px;color:#6B7280;">${fmt(r.uzman_guncelleme)}</span>`]}));
+    const yeniSatirlar=(rYeni||[]).map(r=>({_cols:['Öğrenci','Karar','Uzman','Görüşme Tarihi','Sisteme Giriş'],_cells:[adSoyad(r),karar(r),uzman(r),`<span style="font-size:12px;color:#6B7280;">${r.gorusme_tarihi?r.gorusme_tarihi.split('-').reverse().join('.'):'—'}</span>`,`<span style="font-size:12px;color:#6B7280;">${fmt(r.created_at)}</span>`]}));
 
     const html = `<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">
 <title>Yönetici Raporu — Son 30 Gün</title>
@@ -527,13 +589,14 @@ body{font-family:'Segoe UI',sans-serif;background:#F9FAFB;color:#111827;padding:
 </style>
 </head><body>
 <div class="bar">
-  <div><h1>📊 Yönetici Raporu</h1><br><span>Son 30 gün — ${new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}</span></div>
+  <div><h1>📊 Yönetici Raporu</h1><br><span>${ayAdi} Ayı Raporu</span></div>
   <div style="display:flex;gap:8px;">
     <button onclick="window.print()" style="background:#4F46E5;color:#fff;">🖨️ Yazdır</button>
     <button onclick="window.close()" style="background:rgba(255,255,255,.15);color:#fff;">✕</button>
   </div>
 </div>
 <div class="content">
+  ${tablo(ayAdi + ' Ayında Sisteme Giren Çocuklar','#0891B2','🆕',yeniSatirlar)}
   ${tablo('Karar Durumu Değişenler','#4338CA','🔄',kararSatirlar)}
   ${tablo('Yönetici Notu Girilenler','#D97706','📝',yonSatirlar)}
   ${tablo('Rehber Öğretmen Notu Girilenler','#059669','📚',rehberSatirlar)}
@@ -546,7 +609,7 @@ body{font-family:'Segoe UI',sans-serif;background:#F9FAFB;color:#111827;padding:
     win.document.close();
 
   } catch(e) { alert('Hata: ' + e.message); }
-  btn.innerHTML = '📊 Yönetici Raporu';
+  btn.innerHTML = origText;
   btn.disabled = false;
 }
 </script>
