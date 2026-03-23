@@ -89,7 +89,20 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
 .modal-body textarea{width:100%;height:150px;background:var(--bg);color:var(--text);border:1px solid var(--bd);border-radius:8px;padding:12px;}
 .modal-foot{padding:16px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:12px;}
 
+.search-wrapper { display:flex; flex:1; min-width:250px; gap:8px; }
+.adv-filters { display:flex; gap:12px; flex-wrap:wrap; }
+.filtre-btn { display:none; }
+
 @media(max-width:768px){
+  .search-wrapper { width:100%; flex:none; }
+  .filtre-btn { display:flex; align-items:center; gap:6px; }
+  .adv-filters { display:none; flex-direction:column; width:100%; padding-top:12px; margin-top:4px; border-top:1px solid var(--bd); }
+  .adv-filters.show { display:flex; }
+  .stat-card { padding: 12px; min-width: 120px; }
+  .stat-num { font-size: 24px; }
+  .stat-lbl { font-size: 11px; }
+  .tbtn { padding: 8px 12px; font-size: 13px; }
+  .topbar { padding: 10px 16px; gap: 8px; }
   .table thead{display:none;}
   .table tbody{display:grid;gap:16px;padding:16px;}
   .table tr{display:flex;flex-direction:column;background:var(--surf);border:1px solid var(--bd);border-radius:16px;padding:16px;position:relative;}
@@ -139,15 +152,20 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
   </div>
 
   <div class="filter-bar">
-    <input class="search-inp" type="text" id="aramaInput" placeholder="Ara..." oninput="filtrele()">
-    <select class="fsel" id="sortSel" onchange="sCol=null; filtrele()">
-      <option value="guncelleme">Son Güncelleme</option>
-      <option value="tarih">Görüşme Tarihi</option>
-      <option value="ad">Ad A-Z</option>
-      <option value="sutun" style="display:none">Sütuna Göre</option>
-    </select>
-    <select class="fsel" id="kararGizleSel" onchange="kararGizleEkle()"><option value="">🚫 Buradan Karar Gizle...</option></select>
-    <select class="fsel" id="kararSel" onchange="filtrele()"><option value="">Tüm Kararlar</option></select>
+    <div class="search-wrapper">
+      <input class="search-inp" type="text" id="aramaInput" placeholder="Ara..." oninput="filtrele()">
+      <button class="tbtn filtre-btn" onclick="document.getElementById('advFilters').classList.toggle('show')">Filtreler <span style="font-size:10px">▼</span></button>
+    </div>
+    <div id="advFilters" class="adv-filters">
+      <select class="fsel" id="sortSel" onchange="sCol=null; filtrele()">
+        <option value="guncelleme">Son Güncelleme</option>
+        <option value="tarih">Görüşme Tarihi</option>
+        <option value="ad">Ad A-Z</option>
+        <option value="sutun" style="display:none">Sütuna Göre</option>
+      </select>
+      <select class="fsel" id="kararGizleSel" onchange="kararGizleEkle()"><option value="">🚫 Buradan Karar Gizle...</option></select>
+      <select class="fsel" id="kararSel" onchange="filtrele()"><option value="">Tüm Kararlar</option></select>
+    </div>
   </div>
   <div id="gizlenenlerKutusu" style="margin-top:-10px; margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;"></div>
 
