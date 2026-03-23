@@ -131,6 +131,7 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
     <div class="tcount" id="topbarCount">—</div>
     <button class="tbtn tbtn-primary" onclick="window.open('https://halefadanur.github.io/ogrenci-form/form.html','_blank')">+ Yeni</button>
     <button class="tbtn tbtn-green" onclick="excelIndir()">Excel</button>
+    <button class="tbtn" onclick="raporAc()" style="border-color:#8b5cf6;color:#8b5cf6;">📊 Yönetici Raporu</button>
     <button class="tbtn" id="temaBtn" onclick="temaToggle()">🌙</button>
     <button class="tbtn" onclick="cikisYap()">Çıkış</button>
   </div>
@@ -437,6 +438,90 @@ function excelIndir(){
   const ws = XLSX.utils.json_to_sheet(s);
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Liste");
   XLSX.writeFile(wb, "Ogrenciler.xlsx");
+}
+
+async function raporAc() {
+  const btn = event.currentTarget;
+  btn.innerHTML = '⏳';
+  btn.disabled = true;
+
+  try {
+    const son30 = new Date(Date.now() - 30*24*60*60*1000).toISOString();
+    const SUPA = "https://zciraijmwxcwhryidlki.supabase.co";
+    const KEY  = "sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
+    const hdrs = { apikey: KEY, Authorization: 'Bearer ' + KEY };
+
+    // Paralel sorgular
+    const [rKarar, rYon, rRehber, rUzman] = await Promise.all([
+      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,karar_guncelleme&karar_guncelleme=gte.' + son30 + '&order=karar_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
+      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,yonetici_notu,yonetici_notu_guncelleme&yonetici_notu_guncelleme=gte.' + son30 + '&order=yonetici_notu_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
+      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,rehber_notu,rehber_guncelleme&rehber_guncelleme=gte.' + son30 + '&order=rehber_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
+      fetch(SUPA + '/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,uzman_guncelleme&uzman_guncelleme=gte.' + son30 + '&order=uzman_guncelleme.desc', {headers:hdrs}).then(r=>r.json()),
+    ]);
+
+    const fmt = ts => ts ? new Date(ts).toLocaleString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    const adSoyad = r => `<strong>${r.ad||''} ${r.soyad||''}</strong>`;
+    const karar = r => `<span style="background:#EEF2FF;color:#4338CA;padding:2px 8px;border-radius:5px;font-size:12px;">${r.karar||'—'}</span>`;
+    const uzman = r => `<span style="color:#6B7280;font-size:12px;">${r.uzman||'—'}</span>`;
+
+    const tablo = (baslik, renk, ikon, satirlar) => `
+      <div style="margin-bottom:32px;">
+        <h2 style="font-size:16px;font-weight:700;color:${renk};margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+          ${ikon} ${baslik} <span style="background:${renk}22;color:${renk};padding:1px 8px;border-radius:99px;font-size:13px;">${satirlar.length}</span>
+        </h2>
+        ${satirlar.length === 0
+          ? '<p style="color:#9CA3AF;font-size:14px;padding:12px 0;">Bu dönemde kayıt yok.</p>'
+          : `<table style="width:100%;border-collapse:collapse;font-size:14px;">
+              <thead><tr style="border-bottom:2px solid #E5E7EB;">
+                ${satirlar[0]._cols.map(c=>`<th style="text-align:left;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#9CA3AF;font-weight:700;">${c}</th>`).join('')}
+              </tr></thead>
+              <tbody>${satirlar.map((r,i)=>`<tr style="border-bottom:1px solid #F3F4F6;background:${i%2?'#F9FAFB':'#fff'};">
+                ${r._cells.map(c=>`<td style="padding:10px 12px;">${c}</td>`).join('')}
+              </tr>`).join('')}</tbody>
+            </table>`
+        }
+      </div>`;
+
+    const kararSatirlar = (rKarar||[]).map(r=>({_cols:['Öğrenci','Karar','Uzman','Tarih'],_cells:[adSoyad(r),karar(r),uzman(r),`<span style="font-size:12px;color:#6B7280;">${fmt(r.karar_guncelleme)}</span>`]}));
+    const yonSatirlar  = (rYon||[]).map(r=>({_cols:['Öğrenci','Karar','Uzman','Not','Tarih'],_cells:[adSoyad(r),karar(r),uzman(r),`<div style="font-size:13px;color:#374151;max-width:320px;white-space:pre-wrap;word-break:break-word;">${(r.yonetici_notu||'').slice(0,200)}${r.yonetici_notu&&r.yonetici_notu.length>200?'…':''}</div>`,`<span style="font-size:12px;color:#6B7280;">${fmt(r.yonetici_notu_guncelleme)}</span>`]}));
+    const rehberSatirlar=(rRehber||[]).map(r=>({_cols:['Öğrenci','Karar','Uzman','Not','Tarih'],_cells:[adSoyad(r),karar(r),uzman(r),`<div style="font-size:13px;color:#374151;max-width:320px;white-space:pre-wrap;word-break:break-word;">${(r.rehber_notu||'').slice(0,200)}${r.rehber_notu&&r.rehber_notu.length>200?'…':''}</div>`,`<span style="font-size:12px;color:#6B7280;">${fmt(r.rehber_guncelleme)}</span>`]}));
+    const uzmanSatirlar=(rUzman||[]).map(r=>({_cols:['Öğrenci','Yeni Uzman','Karar','Tarih'],_cells:[adSoyad(r),uzman(r),karar(r),`<span style="font-size:12px;color:#6B7280;">${fmt(r.uzman_guncelleme)}</span>`]}));
+
+    const html = `<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">
+<title>Yönetici Raporu — Son 30 Gün</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#F9FAFB;color:#111827;padding:0;}
+.bar{background:#1F2937;color:#fff;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99;}
+.bar h1{font-size:16px;font-weight:700;}
+.bar span{font-size:13px;opacity:.6;}
+.bar button{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;}
+.content{max-width:1000px;margin:0 auto;padding:32px;}
+@media print{.bar button{display:none}}
+</style>
+</head><body>
+<div class="bar">
+  <div><h1>📊 Yönetici Raporu</h1><br><span>Son 30 gün — ${new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'})}</span></div>
+  <div style="display:flex;gap:8px;">
+    <button onclick="window.print()" style="background:#4F46E5;color:#fff;">🖨️ Yazdır</button>
+    <button onclick="window.close()" style="background:rgba(255,255,255,.15);color:#fff;">✕</button>
+  </div>
+</div>
+<div class="content">
+  ${tablo('Karar Durumu Değişenler','#4338CA','🔄',kararSatirlar)}
+  ${tablo('Yönetici Notu Girilenler','#D97706','📝',yonSatirlar)}
+  ${tablo('Rehber Öğretmen Notu Girilenler','#059669','📚',rehberSatirlar)}
+  ${tablo('Uzman Değişenler','#7C3AED','👤',uzmanSatirlar)}
+</div>
+</body></html>`;
+
+    const win = window.open('','_blank');
+    win.document.write(html);
+    win.document.close();
+
+  } catch(e) { alert('Hata: ' + e.message); }
+  btn.innerHTML = '📊 Yönetici Raporu';
+  btn.disabled = false;
 }
 </script>
 </body>
