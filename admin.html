@@ -219,10 +219,11 @@ body{
   position:absolute;top:calc(100% + 5px);left:0;
   background:var(--surf);border:1.5px solid var(--bd);
   border-radius:14px;padding:10px;
-  min-width:220px;max-width:340px;
+  min-width:220px;max-width:320px;
   z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.4);
   display:none;flex-wrap:wrap;gap:6px;
 }
+#kararDropWrap .drop-menu{left:auto;right:0;}
 .drop-wrap.open .drop-menu{display:flex}
 .tani-chip{
   padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600;
@@ -231,6 +232,14 @@ body{
 }
 .tani-chip.gizli{opacity:.35;text-decoration:line-through;border-color:var(--red);color:#f87171}
 .tani-chip:hover{border-color:var(--br);color:var(--br2)}
+
+/* Stat etiket renkleri */
+.stat-card .stat-lbl{color:var(--sub)}
+.stat-card.s-green .stat-lbl{color:rgba(74,222,128,.7)}
+.stat-card.s-orange .stat-lbl{color:rgba(245,157,48,.7)}
+.stat-card.s-blue .stat-lbl{color:rgba(96,165,250,.7)}
+.stat-card.s-red .stat-lbl{color:rgba(248,113,113,.7)}
+.stat-card.s-purple .stat-lbl{color:rgba(167,139,250,.7)}
 
 /* ── TABLO ── */
 .table-wrap{flex:1;overflow:auto}
@@ -380,19 +389,19 @@ body{
     </div>
     <div class="stat-card s-green" onclick="statFiltrele('kayitli')">
       <div class="stat-num" id="statKayitli">—</div>
-      <div class="stat-lbl">Kayıtlı</div>
+      <div class="stat-lbl" style="color:#4ade80">Kayıtlı</div>
     </div>
     <div class="stat-card s-orange" onclick="statFiltrele('islemde')">
       <div class="stat-num" id="statIslemde">—</div>
-      <div class="stat-lbl">İşlemde</div>
+      <div class="stat-lbl" style="color:var(--br2)">İşlemde</div>
     </div>
     <div class="stat-card s-blue" onclick="statFiltrele('aile')">
       <div class="stat-num" id="statAile">—</div>
-      <div class="stat-lbl">Aile<br>Düşünecek</div>
+      <div class="stat-lbl" style="color:#60a5fa">Aile<br>Düşünecek</div>
     </div>
     <div class="stat-card s-red" onclick="statFiltrele('takip')">
       <div class="stat-num" id="statTakip">—</div>
-      <div class="stat-lbl">Takipte</div>
+      <div class="stat-lbl" style="color:#f87171">Takipte</div>
     </div>
   </div>
 
