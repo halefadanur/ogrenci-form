@@ -242,7 +242,12 @@ async function verileriYukle(){
   tumVeriler=all;
   const ks=new Set();
   tumVeriler.forEach(r=>{ if(r.karar)ks.add(r.karar); });
-  ks.forEach(k=>{
+  const ksSorted = [...ks].sort((a,b)=>{
+    if(a==='KAYDEDİLDİ') return -1;
+    if(b==='KAYDEDİLDİ') return 1;
+    return a.localeCompare(b,'tr');
+  });
+  ksSorted.forEach(k=>{
     document.getElementById('kararSel').innerHTML+=`<option value="${k}">${k}</option>`;
     document.getElementById('kararGizleSel').innerHTML+=`<option value="${k}">${k}</option>`;
   });
@@ -360,7 +365,7 @@ function bdg(k){
 }
 
 function kSel(id,k){
-  const opts = ['KAYDEDİLDİ','Aile Düşünecek','Aile Takip Edecek','Ayrıldı (Biz Ayırdık)','Ayrıldı (Memnun Değil)','Ayrıldı (Zorunlu Sebeplerle)','Başka Kuruma Gitti','Başka Kurumda Kayıtlı, Düşünecek','Başka Kurumda Kayıtlı, Kaydolacak','ERİKLİ','Eski Kurumuna Devam','İlaç Tedavisi/Beklesin','İşlemde','Kaydedilecek','Mezun Oldu','Özel Ders Alacak','Rapor Çıkmadı','Rapor İhtiyacı Yok','Rapor Yenilemedi (Kurum)','Rapor Yenilemedi (Veli)','Rapordan Vazgeçti','RED','Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)'];
+  const opts = ['KAYDEDİLDİ','Aile Düşünecek','Aile Takip Edecek','Ayrıldı (Biz Ayırdık)','Ayrıldı (Memnun Değil)','Ayrıldı (Zorunlu Sebeplerle)','Başka Kuruma Gitti','Başka Kurumda Kayıtlı, Düşünecek','Başka Kurumda Kayıtlı, Kaydolacak','ERİKLİ','Eski Kurumuna Devam','İlaç Tedavisi/Beklesin','İşlemde','Kaydedilecek','Mezun Oldu','Özel Ders Alacak','Rapor Çıkmadı','Rapor İhtiyacı Yok','Rapor Yenilemedi (Kurum)','Rapor Yenilemedi (Veli)','Rapordan Vazgeçti','RED','Takibe Alındı','Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)'];
   let h=`<select class="hizli-karar-sel badge ${bdg(k)}" onchange="kGuncelle('${id}',this.value,this)"><option value="">Seçilmedi</option>`;
   opts.forEach(o=>h+=`<option ${o===k?'selected':''}>${o}</option>`);
   return h+'</select>';
