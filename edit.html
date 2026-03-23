@@ -569,9 +569,18 @@ async function kaydet(){
   if (p.yonetici_notu && p.yonetici_notu.trim()) {
     p.yonetici_notu_guncelleme = now;
   }
-  // Karar ve uzman her kayıtta güncellenir
-  p.karar_guncelleme = now;
-  p.uzman_guncelleme = now;
+  // Karar değişimi
+  const eskiKarar = g('karar');
+  if (p.karar && p.karar !== eskiKarar) {
+    p.karar_guncelleme = now;
+    p.karar_degisim = (eskiKarar ? eskiKarar + ' → ' : '') + p.karar;
+  }
+  // Uzman değişimi
+  const eskiUzman = g('uzman');
+  if (p.uzman && p.uzman !== eskiUzman) {
+    p.uzman_guncelleme = now;
+    p.uzman_degisim = (eskiUzman ? eskiUzman + ' → ' : '') + p.uzman;
+  }
 
   try {
     const res = await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+kayitId, {
