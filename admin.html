@@ -375,7 +375,8 @@ function kSel(id,k){
 async function kGuncelle(id,nk,el){
   el.disabled=true;
   try{
-    await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+id,{method:'PATCH',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({karar:nk})});
+    const now = new Date().toISOString();
+    await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+id,{method:'PATCH',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({karar:nk,karar_guncelleme:now})});
     tumVeriler.find(o=>o.id===id).karar=nk;
     el.className=`hizli-karar-sel badge ${bdg(nk)}`;
     istatistikGuncelle();
@@ -415,11 +416,14 @@ function notModalKapat(){ document.getElementById('notModalOverlay').style.displ
 async function notModalKaydet(){
   const val = document.getElementById('notModalText').value;
   try{
+    const now = new Date().toISOString();
     const req = {}; req[actTip] = val;
-    if(actTip === 'rehber_notu') req['rehber_guncelleme'] = new Date().toISOString();
+    if(actTip === 'rehber_notu') req['rehber_guncelleme'] = now;
+    if(actTip === 'yonetici_notu') req['yonetici_notu_guncelleme'] = now;
     await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+actId,{method:'PATCH',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(req)});
     tumVeriler.find(x=>x.id===actId)[actTip]=val;
-    if(actTip === 'rehber_notu') tumVeriler.find(x=>x.id===actId).rehber_guncelleme = req['rehber_guncelleme'];
+    if(actTip === 'rehber_notu') tumVeriler.find(x=>x.id===actId).rehber_guncelleme = now;
+    if(actTip === 'yonetici_notu') tumVeriler.find(x=>x.id===actId).yonetici_notu_guncelleme = now;
     notModalKapat();
   }catch(e){alert('Hata');}
 }
