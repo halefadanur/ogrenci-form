@@ -140,21 +140,28 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
 
   <div class="filter-bar">
     <input class="search-inp" type="text" id="aramaInput" placeholder="Ara..." oninput="filtrele()">
-    <select class="fsel" id="sortSel" onchange="filtrele()">
+    <select class="fsel" id="sortSel" onchange="sCol=null; filtrele()">
       <option value="guncelleme">Son Güncelleme</option>
       <option value="tarih">Görüşme Tarihi</option>
       <option value="ad">Ad A-Z</option>
+      <option value="sutun" style="display:none">Sütuna Göre</option>
     </select>
-    <select class="fsel" id="uzmanSel" onchange="filtrele()"><option value="">Tüm Uzmanlar</option></select>
+    <select class="fsel" id="kararGizleSel" onchange="kararGizleEkle()"><option value="">🚫 Buradan Karar Gizle...</option></select>
     <select class="fsel" id="kararSel" onchange="filtrele()"><option value="">Tüm Kararlar</option></select>
   </div>
+  <div id="gizlenenlerKutusu" style="margin-top:-10px; margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;"></div>
 
   <div class="table-wrap">
     <table class="table" id="mainTable">
       <thead>
         <tr>
           <th><input type="checkbox" id="checkAll" onclick="tumSecToggle(this)"></th>
-          <th>Öğrenci</th><th>Görüşme</th><th>Tanı</th><th>Karar</th><th>Uzman</th><th>İşlemler</th>
+          <th style="cursor:pointer;user-select:none" onclick="sutunaGoreSirala('ad')">ÖĞRENCİ ⇅</th>
+          <th style="cursor:pointer;user-select:none" onclick="sutunaGoreSirala('gorusme_tarihi')">GÖRÜŞME ⇅</th>
+          <th style="cursor:pointer;user-select:none" onclick="sutunaGoreSirala('tani')">TANI ⇅</th>
+          <th style="cursor:pointer;user-select:none" onclick="sutunaGoreSirala('karar')">KARAR ⇅</th>
+          <th style="cursor:pointer;user-select:none" onclick="sutunaGoreSirala('uzman')">UZMAN ⇅</th>
+          <th>İŞLEMLER</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -213,10 +220,12 @@ async function verileriYukle(){
     from+=1000;
   }
   tumVeriler=all;
-  const us=new Set(), ks=new Set();
-  tumVeriler.forEach(r=>{if(r.uzman)us.add(r.uzman); if(r.karar)ks.add(r.karar);});
-  us.forEach(u=>document.getElementById('uzmanSel').innerHTML+=`<option value="${u}">${u}</option>`);
-  ks.forEach(k=>document.getElementById('kararSel').innerHTML+=`<option value="${k}">${k}</option>`);
+  const ks=new Set();
+  tumVeriler.forEach(r=>{ if(r.karar)ks.add(r.karar); });
+  ks.forEach(k=>{
+    document.getElementById('kararSel').innerHTML+=`<option value="${k}">${k}</option>`;
+    document.getElementById('kararGizleSel').innerHTML+=`<option value="${k}">${k}</option>`;
+  });
   istatistikGuncelle();
   filtrele();
 }
@@ -226,12 +235,13 @@ const K_ISLEMDE=['İşlemde'];
 const K_AILE=['Aile Düşünecek','Aile Takip Edecek','Başka Kurumda Kayıtlı, Düşünecek','Başka Kurumda Kayıtlı, Kaydolacak'];
 const K_TAKIP=['Takibe Alındı'];
 
-function istatistikGuncelle(){
-  document.getElementById('statToplam').textContent=tumVeriler.length;
-  document.getElementById('statKayitli').textContent=tumVeriler.filter(r=>K_KAYITLI.includes(r.karar)).length;
-  document.getElementById('statIslemde').textContent=tumVeriler.filter(r=>K_ISLEMDE.includes(r.karar)).length;
-  document.getElementById('statAile').textContent=tumVeriler.filter(r=>K_AILE.includes(r.karar)).length;
-  document.getElementById('statTakip').textContent=tumVeriler.filter(r=>K_TAKIP.includes(r.karar)).length;
+function istatistikGuncelle(data){
+  const d = data || tumVeriler;
+  document.getElementById('statToplam').textContent=d.length;
+  document.getElementById('statKayitli').textContent=d.filter(r=>K_KAYITLI.includes(r.karar)).length;
+  document.getElementById('statIslemde').textContent=d.filter(r=>K_ISLEMDE.includes(r.karar)).length;
+  document.getElementById('statAile').textContent=d.filter(r=>K_AILE.includes(r.karar)).length;
+  document.getElementById('statTakip').textContent=d.filter(r=>K_TAKIP.includes(r.karar)).length;
 }
 
 function statFiltrele(tip){
@@ -243,11 +253,10 @@ function statFiltrele(tip){
 
 function filtrele(){
   const q=document.getElementById('aramaInput').value.toLowerCase();
-  const u=document.getElementById('uzmanSel').value;
   const k=document.getElementById('kararSel').value;
   
   filtreliVeriler = tumVeriler.filter(r=>{
-    if(u && r.uzman!==u) return false;
+    if(r.karar && gizlenenKararlar.includes(r.karar)) return false;
     if(k && r.karar!==k) return false;
     if(window._st && !window._st.includes(r.karar)) return false;
     if(q){
@@ -259,6 +268,11 @@ function filtrele(){
   
   const sort = document.getElementById('sortSel').value;
   filtreliVeriler.sort((a,b)=>{
+    if(sort==='sutun' && sCol) {
+      let v1 = a[sCol]||''; let v2 = b[sCol]||'';
+      const c = String(v1).localeCompare(String(v2), 'tr', {sensitivity:'base'});
+      return sAsc ? c : -c;
+    }
     if(sort==='guncelleme') return (b.created_at||'').localeCompare(a.created_at||'');
     if(sort==='tarih') return (b.gorusme_tarihi||'').localeCompare(a.gorusme_tarihi||'');
     return (a.ad||'').localeCompare(b.ad||'');
@@ -266,6 +280,41 @@ function filtrele(){
 
   document.getElementById('topbarCount').textContent = filtreliVeriler.length;
   tabloDoldur();
+  istatistikGuncelle(filtreliVeriler);
+}
+
+let sCol = null, sAsc = true;
+let gizlenenKararlar = [];
+
+function kararGizleEkle() {
+  const sel = document.getElementById('kararGizleSel');
+  const val = sel.value;
+  if(val && !gizlenenKararlar.includes(val)) gizlenenKararlar.push(val);
+  sel.value = ""; 
+  gizlenenlerRender();
+  filtrele();
+}
+
+function gizlemeKaldir(val) {
+  gizlenenKararlar = gizlenenKararlar.filter(k => k !== val);
+  gizlenenlerRender();
+  filtrele();
+}
+
+function gizlenenlerRender() {
+  const kutu = document.getElementById('gizlenenlerKutusu');
+  kutu.innerHTML = '';
+  gizlenenKararlar.forEach(k => {
+    kutu.innerHTML += `<span style="background:var(--red); color:white; padding:4px 10px; border-radius:12px; font-size:12px; cursor:pointer; box-shadow:0 2px 4px rgba(209,43,30,0.2)" onclick="gizlemeKaldir('${k}')" title="Gizlemeyi kaldır">✖ ${k}</span>`;
+  });
+}
+
+function sutunaGoreSirala(col){
+  if(sCol===col) sAsc = !sAsc; else { sCol = col; sAsc = true; }
+  const sel=document.getElementById('sortSel');
+  if(![...sel.options].some(o=>o.value==='sutun')) sel.innerHTML += '<option value="sutun" style="display:none">Sütuna Göre</option>';
+  sel.value = 'sutun';
+  filtrele();
 }
 
 function tFmt(t){return t?t.split('-').reverse().join('.'):'';}
