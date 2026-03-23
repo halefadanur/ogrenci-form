@@ -338,7 +338,7 @@ function formOlustur(){
   `);
 
   // 7. Karar
-  const kararOpts = ['Başka Kurumda Kayıtlı, Kaydolacak','Başka Kurumda Kayıtlı, Düşünecek','KAYDEDİLDİ','Kaydedilecek','Özel Ders Alacak','RED','Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)','Aile Düşünecek','Aile Takip Edecek','Ayrıldı (Biz Ayırdık)','Ayrıldı (Memnun Değil)','Ayrıldı (Zorunlu Sebeplerle)','Başka Kuruma Gitti','ERİKLİ','Eski Kurumuna Devam','İlaç Tedavisi/Beklesin','Mezun Oldu','Rapor Çıkmadı','Rapor İhtiyacı Yok','Rapordan Vazgeçti','Rapor Yenilemedi (Kurum)','Rapor Yenilemedi (Veli)','İşlemde'];
+  const kararOpts = ['KAYDEDİLDİ','Aile Düşünecek','Aile Takip Edecek','Ayrıldı (Biz Ayırdık)','Ayrıldı (Memnun Değil)','Ayrıldı (Zorunlu Sebeplerle)','Başka Kuruma Gitti','Başka Kurumda Kayıtlı, Düşünecek','Başka Kurumda Kayıtlı, Kaydolacak','ERİKLİ','Eski Kurumuna Devam','İlaç Tedavisi/Beklesin','İşlemde','Kaydedilecek','Mezun Oldu','Özel Ders Alacak','Rapor Çıkmadı','Rapor İhtiyacı Yok','Rapor Yenilemedi (Kurum)','Rapor Yenilemedi (Veli)','Rapordan Vazgeçti','RED','Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)'];
   const ihtiyacOpts = ['Dil Gelişimi','Davranış Eğitimi','Kavram Eğitimi','Akademik Gelişim'];
   const mevcutIhtiyaclar = g('temel_ihtiyac') ? g('temel_ihtiyac').split(';').map(s=>s.trim()).filter(Boolean) : [];
   html += acc('karar','⭐','Değerlendirme & Karar', `
