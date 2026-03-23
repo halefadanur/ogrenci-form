@@ -397,8 +397,10 @@ async function notModalKaydet(){
   const val = document.getElementById('notModalText').value;
   try{
     const req = {}; req[actTip] = val;
+    if(actTip === 'rehber_notu') req['rehber_guncelleme'] = new Date().toISOString();
     await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+actId,{method:'PATCH',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(req)});
     tumVeriler.find(x=>x.id===actId)[actTip]=val;
+    if(actTip === 'rehber_notu') tumVeriler.find(x=>x.id===actId).rehber_guncelleme = req['rehber_guncelleme'];
     notModalKapat();
   }catch(e){alert('Hata');}
 }
