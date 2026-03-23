@@ -121,6 +121,53 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .tani-chip{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--bd);color:var(--sub);background:transparent;transition:all .13s;font-family:inherit;white-space:nowrap}
 .tani-chip.gizli{opacity:.4;text-decoration:line-through;border-color:var(--red);color:#f87171}
 .tani-chip:hover{border-color:var(--br);color:var(--br2)}
+
+/* ── MOBİL RESPONSIVE ─────────────────────────── */
+@media(max-width:600px){
+  .mobil-gizle{display:none!important}
+  .topbar{height:auto;padding:10px 14px;gap:8px;flex-wrap:wrap}
+  .topbar-title{font-size:13px;font-weight:800;flex:1;min-width:120px}
+  .topbar-count{font-size:11px}
+  /* Küçük butonlar */
+  .tbtn{padding:5px 9px;font-size:11px}
+  /* Tema ve çıkış butonlarını sağa grupla */
+  .topbar > .tbtn:last-child,
+  .topbar > #temaBtn { order:2; }
+
+  /* Stat kartlar: 2x2 + 1 tam genişlik */
+  .stat-bar{padding:8px 10px;gap:8px}
+  .stat-card{min-width:calc(50% - 4px);flex:1 1 calc(50% - 4px);padding:8px 12px;gap:8px;border-radius:10px}
+  .stat-card-ico{font-size:18px}
+  .stat-card-info strong{font-size:16px}
+  .stat-card-info span{font-size:9px}
+  /* 5. kart (Takibe Alındı) tam genişlik */
+  .stat-card:last-child{flex:1 1 100%;min-width:100%}
+
+  /* Filtreler: kompakt */
+  .filters-bar{padding:8px 10px;gap:6px}
+  .search-input{min-width:100%;width:100%;order:-1}
+  .filter-sel{font-size:11px;padding:6px 10px;flex:1}
+  .drop-btn{font-size:11px;padding:6px 10px}
+
+  /* Tablo: yatay kaydırma */
+  .table-wrap{padding:8px;overflow-x:auto}
+  .table{font-size:12px}
+  .table th,.table td{padding:8px 8px}
+  /* Mobilde sınıf, tanı, uzman sütunlarını gizle */
+  .table th:nth-child(4),
+  .table td:nth-child(4),
+  .table th:nth-child(5),
+  .table td:nth-child(5),
+  .table th:nth-child(7),
+  .table td:nth-child(7){display:none}
+
+  /* PDF ve Düzenle butonları küçük */
+  .pdf-btn{padding:5px 8px;font-size:10px}
+
+  /* Toplu bar */
+  .toplu-bar{flex-direction:column;gap:8px;padding:12px 16px}
+  .toplu-bar .tbtn{width:100%;text-align:center;justify-content:center;padding:10px}
+}
 </style>
 </head>
 <body>
@@ -143,9 +190,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="topbar-title">📋 Öğrenci Tanıma — Admin</div>
     <div class="topbar-count" id="topbarCount">0 öğrenci</div>
     <button class="tbtn tbtn-new" onclick="window.open('https://halefadanur.github.io/ogrenci-form/form.html','_blank')">+ Yeni Form</button>
-    <button class="tbtn tbtn-excel" onclick="excelIndir()" id="excelBtn">⬇ Excel</button>
+    <button class="tbtn tbtn-excel mobil-gizle" onclick="excelIndir()" id="excelBtn">⬇ Excel</button>
     <button class="tbtn" id="temaBtn" onclick="temaToggle()" style="font-size:16px;padding:8px 12px;" title="Tema değiştir">🌙</button>
-    <button class="tbtn" onclick="cikisYap()">Çıkış</button>
+    <button class="tbtn mobil-gizle" onclick="cikisYap()">Çıkış</button>
   </div>
 
   <div class="stat-bar" id="statBar">
