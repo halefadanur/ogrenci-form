@@ -339,7 +339,7 @@ function formOlustur(){
 
   // 7. Karar
   const kararOpts = ['Başka Kurumda Kayıtlı, Kaydolacak','Başka Kurumda Kayıtlı, Düşünecek','KAYDEDİLDİ','Kaydedilecek','Özel Ders Alacak','RED','Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)','Aile Düşünecek','Aile Takip Edecek','Ayrıldı (Biz Ayırdık)','Ayrıldı (Memnun Değil)','Ayrıldı (Zorunlu Sebeplerle)','Başka Kuruma Gitti','ERİKLİ','Eski Kurumuna Devam','İlaç Tedavisi/Beklesin','Mezun Oldu','Rapor Çıkmadı','Rapor İhtiyacı Yok','Rapordan Vazgeçti','Rapor Yenilemedi (Kurum)','Rapor Yenilemedi (Veli)','İşlemde'];
-  const ihtiyacOpts = ['Dil Gelişimi','Akademik Gelişim','Davranış ve Dikkat Eğitimi','Kavram Eğitimi'];
+  const ihtiyacOpts = ['Dil Gelişimi','Davranış Eğitimi','Kavram Eğitimi','Akademik Gelişim'];
   const mevcutIhtiyaclar = g('temel_ihtiyac') ? g('temel_ihtiyac').split(';').map(s=>s.trim()).filter(Boolean) : [];
   html += acc('karar','⭐','Değerlendirme & Karar', `
     <div style="margin-top:12px">
