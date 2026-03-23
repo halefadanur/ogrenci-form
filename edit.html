@@ -561,10 +561,17 @@ async function kaydet(){
     yonetici_notu: fv('yonetici_notu'),
   };
 
-  // Rehber notu varsa güncelleme zamanını kaydet
+  // Timestamp'leri güncelle
+  const now = new Date().toISOString();
   if (p.rehber_notu && p.rehber_notu.trim()) {
-    p.rehber_guncelleme = new Date().toISOString();
+    p.rehber_guncelleme = now;
   }
+  if (p.yonetici_notu && p.yonetici_notu.trim()) {
+    p.yonetici_notu_guncelleme = now;
+  }
+  // Karar ve uzman her kayıtta güncellenir
+  p.karar_guncelleme = now;
+  p.uzman_guncelleme = now;
 
   try {
     const res = await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+kayitId, {
