@@ -145,8 +145,8 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
     <div class="stat-card" onclick="statFiltrele('islemde')">
       <div class="stat-num" id="statIslemde">—</div><div class="stat-lbl" style="color:var(--orange)">İşlemde</div>
     </div>
-    <div class="stat-card" onclick="statFiltrele('aile')">
-      <div class="stat-num" id="statAile">—</div><div class="stat-lbl" style="color:var(--br)">Aile Düşünecek</div>
+    <div class="stat-card" onclick="statFiltrele('yakin')">
+      <div class="stat-num" id="statAile">—</div><div class="stat-lbl" style="color:var(--br)">Yakın Takip</div>
     </div>
     <div class="stat-card" onclick="statFiltrele('takip')">
       <div class="stat-num" id="statTakip">—</div><div class="stat-lbl" style="color:var(--purple)">Takipte</div>
@@ -252,7 +252,7 @@ async function verileriYukle(){
 
 const K_KAYITLI=['KAYDEDİLDİ','Kaydedilecek','Özel Ders Alacak'];
 const K_ISLEMDE=['İşlemde'];
-const K_AILE=['Aile Düşünecek','Aile Takip Edecek','Başka Kurumda Kayıtlı, Düşünecek','Başka Kurumda Kayıtlı, Kaydolacak'];
+const K_AILE=['Aile Düşünecek','Aile Takip Edecek','Başka Kurumda Kayıtlı, Düşünecek','Başka Kurumda Kayıtlı, Kaydolacak','Kaydedilecek'];
 const K_TAKIP=['Takibe Alındı'];
 
 function istatistikGuncelle(data){
@@ -265,7 +265,7 @@ function istatistikGuncelle(data){
 }
 
 function statFiltrele(tip){
-  window._st = tip==='kayitli'?K_KAYITLI : tip==='islemde'?K_ISLEMDE : tip==='aile'?K_AILE : tip==='takip'?K_TAKIP : null;
+  window._st = tip==='kayitli'?K_KAYITLI : tip==='islemde'?K_ISLEMDE : tip==='yakin'?K_AILE : tip==='takip'?K_TAKIP : null;
   document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('aktif'));
   event.currentTarget.classList.add('aktif');
   filtrele();
@@ -360,7 +360,7 @@ function bdg(k){
 }
 
 function kSel(id,k){
-  const opts = ["Başka Kurumda Kayıtlı, Kaydolacak","Başka Kurumda Kayıtlı, Düşünecek","KAYDEDİLDİ","Kaydedilecek","Özel Ders Alacak","RED","Takibe Alındı","Aile Düşünecek","Aile Takip Edecek","Ayrıldı (Biz Ayırdık)","Ayrıldı (Memnun Değil)","Ayrıldı (Zorunlu Sebeplerle)","Başka Kuruma Gitti","ERİKLİ","Eski Kurumuna Devam","İlaç Tedavisi/Beklesin","Mezun Oldu","Rapor Çıkmadı","Rapor İhtiyacı Yok","Rapordan Vazgeçti","Rapor Yenilemedi (Kurum)","Rapor Yenilemedi (Veli)","İşlemde"];
+  const opts = ['KAYDEDİLDİ','Aile Düşünecek','Aile Takip Edecek','Ayrıldı (Biz Ayırdık)','Ayrıldı (Memnun Değil)','Ayrıldı (Zorunlu Sebeplerle)','Başka Kuruma Gitti','Başka Kurumda Kayıtlı, Düşünecek','Başka Kurumda Kayıtlı, Kaydolacak','ERİKLİ','Eski Kurumuna Devam','İlaç Tedavisi/Beklesin','İşlemde','Kaydedilecek','Mezun Oldu','Özel Ders Alacak','Rapor Çıkmadı','Rapor İhtiyacı Yok','Rapor Yenilemedi (Kurum)','Rapor Yenilemedi (Veli)','Rapordan Vazgeçti','RED','Takibe Alındı (MHRS var)','Takibe Alındı (MHRS yok)'];
   let h=`<select class="hizli-karar-sel badge ${bdg(k)}" onchange="kGuncelle('${id}',this.value,this)"><option value="">Seçilmedi</option>`;
   opts.forEach(o=>h+=`<option ${o===k?'selected':''}>${o}</option>`);
   return h+'</select>';
