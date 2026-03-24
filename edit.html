@@ -380,7 +380,10 @@ function formOlustur(){
   html += acc('foto','📷','Fotoğraf & Kimlik', `
     <div style="margin-top:12px">
     <div class="frow"><div class="flabel">📷 Öğrenci Fotoğrafı</div>
-      ${g('foto_url') ? `<div style="margin-bottom:8px"><img src="${g('foto_url')}" style="max-width:120px;max-height:160px;border-radius:8px;border:1.5px solid var(--bd);object-fit:cover" onerror="this.style.display='none'"></div>` : ''}
+      <div id="mevcutFotoWrap" style="${g('foto_url') ? '' : 'display:none;'}margin-bottom:8px;display:${g('foto_url') ? 'flex' : 'none'};align-items:flex-start;gap:10px">
+        <img id="mevcutFotoImg" src="${g('foto_url') || ''}" style="max-width:120px;max-height:160px;border-radius:8px;border:1.5px solid var(--bd);object-fit:cover" onerror="this.style.display='none'">
+        <button type="button" onclick="fotoSil()" style="background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer">🗑️ Sil</button>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
         <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:#fdfcfa;color:var(--sub)" onclick="document.getElementById('eKam').click()">📷 Kamera</div>
         <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:#fdfcfa;color:var(--sub)" onclick="document.getElementById('eGal').click()">🖼️ Galeri</div>
@@ -390,7 +393,10 @@ function formOlustur(){
       <input type="file" id="eGal" accept="image/*" style="display:none" onchange="handleFoto(this)">
     </div>
     <div class="frow"><div class="flabel">🪪 Kimlik Fotoğrafı</div>
-      ${g('kimlik_url') ? `<div style="margin-bottom:8px"><img src="${g('kimlik_url')}" style="max-width:200px;border-radius:8px;border:1.5px solid var(--bd)" onerror="this.style.display='none'"></div>` : ''}
+      <div id="mevcutKimlikWrap" style="margin-bottom:8px;display:${g('kimlik_url') ? 'flex' : 'none'};align-items:flex-start;gap:10px">
+        <img id="mevcutKimlikImg" src="${g('kimlik_url') || ''}" style="max-width:200px;border-radius:8px;border:1.5px solid var(--bd)" onerror="this.style.display='none'">
+        <button type="button" onclick="kimlikSil()" style="background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer">🗑️ Sil</button>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:#fdfcfa;color:var(--sub)" onclick="document.getElementById('eKKam').click()">📷 Kamera</div>
         <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:#fdfcfa;color:var(--sub)" onclick="document.getElementById('eKGal').click()">🖼️ Galeri</div>
@@ -448,13 +454,35 @@ function togDil(el){
 
 var _yeniFotoData = '';
 var _yeniKimlikData = '';
+var _fotoSilindi = false;
+var _kimlikSilindi = false;
+
+function fotoSil(){
+  _fotoSilindi = true;
+  _yeniFotoData = '';
+  const wrap = document.getElementById('mevcutFotoWrap');
+  if(wrap) wrap.style.display = 'none';
+  document.getElementById('fotoOnizleme').style.display = 'none';
+}
+
+function kimlikSil(){
+  _kimlikSilindi = true;
+  _yeniKimlikData = '';
+  const wrap = document.getElementById('mevcutKimlikWrap');
+  if(wrap) wrap.style.display = 'none';
+  document.getElementById('kimlikOnizleme').style.display = 'none';
+}
 
 function handleFoto(input){
   const file = input.files[0];
   if(!file) return;
+  // Mevcut fotoğrafı gizle
+  const wrap = document.getElementById('mevcutFotoWrap');
+  if(wrap) wrap.style.display = 'none';
   const reader = new FileReader();
   reader.onload = function(e){
     _yeniFotoData = e.target.result;
+    _fotoSilindi = false;
     document.getElementById('fotoOnizImg').src = e.target.result;
     document.getElementById('fotoOnizleme').style.display = 'block';
   };
@@ -464,6 +492,9 @@ function handleFoto(input){
 function handleKimlik(input){
   const file = input.files[0];
   if(!file) return;
+  // Mevcut kimliği gizle
+  const wrap = document.getElementById('mevcutKimlikWrap');
+  if(wrap) wrap.style.display = 'none';
   const reader = new FileReader();
   reader.onload = function(e){
     _yeniKimlikData = e.target.result;
@@ -498,8 +529,8 @@ async function kaydet(){
   const ihtiyacArr = [...document.querySelectorAll('[data-ihtiyac].on')].map(t=>t.dataset.ihtiyac);
 
   // Fotoğraf upload gerekiyorsa
-  let fotoUrl = g('foto_url');
-  let kimlikUrl = g('kimlik_url');
+  let fotoUrl = _fotoSilindi ? '' : g('foto_url');
+  let kimlikUrl = _kimlikSilindi ? '' : g('kimlik_url');
   const ogrenciTam = (fv('ad')+' '+fv('soyad')).trim()
     .replace(/ğ/g,'g').replace(/Ğ/g,'G').replace(/ş/g,'s').replace(/Ş/g,'S')
     .replace(/ı/g,'i').replace(/İ/g,'I').replace(/ö/g,'o').replace(/Ö/g,'O')
