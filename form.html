@@ -159,12 +159,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /* ─ CROP ─ */
 .cropmodal{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;display:flex;align-items:flex-end;justify-content:center}
 .cropmodal.hidden{display:none!important}
-
-/* OKUL AUTOCOMPLETE */
-.okul-item{padding:10px 14px;cursor:pointer;font-size:14px;border-bottom:1px solid var(--bd2);color:var(--ink);transition:background .1s}
-.okul-item:hover,.okul-item.sel{background:var(--brbg);color:var(--br)}
-.okul-item:last-child{border-bottom:none}
-
 .cropsheet{background:#fff;border-radius:24px 24px 0 0;padding:14px 18px 30px;width:100%;max-width:600px;display:flex;flex-direction:column;gap:13px;max-height:94vh;overflow-y:auto}
 .chandle{width:34px;height:4px;background:#ddd;border-radius:99px;margin:0 auto -4px}
 .ctitle{font-size:16px;font-weight:900;text-align:center}
@@ -191,12 +185,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 
 .hidden{display:none!important}
-
-/* OKUL AUTOCOMPLETE */
-.okul-item{padding:10px 14px;cursor:pointer;font-size:14px;border-bottom:1px solid var(--bd2);color:var(--ink);transition:background .1s}
-.okul-item:hover,.okul-item.sel{background:var(--brbg);color:var(--br)}
-.okul-item:last-child{border-bottom:none}
-
 </style>
 </head>
 <body>
@@ -237,6 +225,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <input type="text" id="ogrenciSoyad" placeholder="Soyad" oninput="capWords(this)">
     </div>
   </div>
+  <div class="card">
+    <div class="clabel">🏫 Okul</div>
+    <input type="text" id="okul" placeholder="Devam ettiği okul" oninput="capWords(this)">
+  </div>
   <div class="card" id="cSinif">
     <div class="clabel">📚 Sınıf <span class="rq">*</span></div>
     <div class="chips">
@@ -251,16 +243,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="chip" onclick="selectSinif(this,'6')">6</div>
       <div class="chip" onclick="selectSinif(this,'7')">7</div>
       <div class="chip" onclick="selectSinif(this,'8+')">8+</div>
-    </div>
-  </div>
-  <div class="card" id="cOkul">
-    <div class="clabel">🏫 Okul</div>
-    <div style="position:relative">
-      <input type="text" id="okul" placeholder="Devam ettiği okul..." autocomplete="off"
-        oninput="okulOneri(this)" onblur="setTimeout(okulKapat,200)" onkeydown="okulKeydown(event)">
-      <div id="okulOneriList" style="position:absolute;top:100%;left:0;right:0;background:#fff;
-        border:1.5px solid var(--br);border-radius:0 0 12px 12px;max-height:200px;overflow-y:auto;
-        z-index:500;display:none;box-shadow:0 6px 20px rgba(0,0,0,.12)"></div>
     </div>
   </div>
   <div class="card">
@@ -576,11 +558,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
   <div class="card" id="cIhtiyac">
     <div class="clabel">🎯 Temel İhtiyaç Alanı <span class="rq">*</span></div>
-    <div class="chips" id="ihtiyacChips">
-      <div class="chip" onclick="togIhtiyacForm(this)" data-val="Dil Gelişimi">Dil Gelişimi</div>
-      <div class="chip" onclick="togIhtiyacForm(this)" data-val="Davranış Eğitimi">Davranış Eğitimi</div>
-      <div class="chip" onclick="togIhtiyacForm(this)" data-val="Kavram Eğitimi">Kavram Eğitimi</div>
-      <div class="chip" onclick="togIhtiyacForm(this)" data-val="Akademik Gelişim">Akademik Gelişim</div>
+    <div class="togs">
+      <div class="tog" onclick="togIhtiyac(this,'Dil Gelişimi')"><span class="tdot"></span>Dil Gelişimi</div>
+      <div class="tog" onclick="togIhtiyac(this,'Akademik Gelişim')"><span class="tdot"></span>Akademik Gelişim</div>
+      <div class="tog" onclick="togIhtiyac(this,'Davranış ve Dikkat Eğitimi')"><span class="tdot"></span>Davranış ve Dikkat Eğitimi</div>
+      <div class="tog" onclick="togIhtiyac(this,'Kavram Eğitimi')"><span class="tdot"></span>Kavram Eğitimi</div>
     </div>
   </div>
 
@@ -588,6 +570,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="clabel">📝 Görüşme Notları</div>
     <div id="notOnizleme" style="display:none;background:#f8f5f0;border:1.5px solid #e5dfd6;border-radius:10px;padding:11px 13px;font-size:13.5px;line-height:1.65;color:#4a443c;margin-bottom:10px;white-space:pre-wrap;word-break:break-word"></div>
     <textarea id="gorusmeNot2" placeholder="Ek not ekleyebilirsiniz..." oninput="capSentence(this)"></textarea>
+  </div>
+
+  <!-- YÖNETİCİ NOTU -->
+  <div class="card" id="cYoneticiNotu">
+    <div class="clabel">🔒 Yönetici Notu</div>
+    <textarea id="yoneticiNotu" placeholder="Yönetici notu..." oninput="capSentence(this)"></textarea>
   </div>
 
   <!-- Rapor Olasılığı — Raporlu tanılar için gizlenir -->
@@ -606,32 +594,38 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="card">
     <div class="clabel">✅ Karar</div>
     <div id="kararVisible" style="display:flex;flex-direction:column;gap:7px">
-            <label class="ri"><input type="radio" name="karar" value="KAYDEDİLDİ"> KAYDEDİLDİ</label>
+      <label class="ri"><input type="radio" name="karar" value="Başka Kurumda Kayıtlı, Kaydolacak"> Başka Kurumda Kayıtlı, Kaydolacak</label>
+      <label class="ri"><input type="radio" name="karar" value="Başka Kurumda Kayıtlı, Düşünecek"> Başka Kurumda Kayıtlı, Düşünecek</label>
+      <label class="ri"><input type="radio" name="karar" value="KAYDEDİLDİ"> KAYDEDİLDİ</label>
+      <label class="ri"><input type="radio" name="karar" value="Kaydedilecek"> Kaydedilecek</label>
+      <label class="ri"><input type="radio" name="karar" value="Özel Ders Alacak"> Özel Ders Alacak</label>
+      <label class="ri"><input type="radio" name="karar" value="RED"> RED</label>
+      <label class="ri"><input type="radio" name="karar" value="Takibe Alındı"> Takibe Alındı</label>
+    </div>
+    <button class="kmore" id="kMoreBtn" onclick="togKarar()">
+      <span id="kMoreTxt">Diğer seçenekleri göster</span><span class="arr">▼</span>
+    </button>
+    <div id="kararExtra" style="display:none;flex-direction:column;gap:7px;margin-top:7px">
       <label class="ri"><input type="radio" name="karar" value="Aile Düşünecek"> Aile Düşünecek</label>
       <label class="ri"><input type="radio" name="karar" value="Aile Takip Edecek"> Aile Takip Edecek</label>
       <label class="ri"><input type="radio" name="karar" value="Ayrıldı (Biz Ayırdık)"> Ayrıldı (Biz Ayırdık)</label>
       <label class="ri"><input type="radio" name="karar" value="Ayrıldı (Memnun Değil)"> Ayrıldı (Memnun Değil)</label>
       <label class="ri"><input type="radio" name="karar" value="Ayrıldı (Zorunlu Sebeplerle)"> Ayrıldı (Zorunlu Sebeplerle)</label>
       <label class="ri"><input type="radio" name="karar" value="Başka Kuruma Gitti"> Başka Kuruma Gitti</label>
-      <label class="ri"><input type="radio" name="karar" value="Başka Kurumda Kayıtlı, Düşünecek"> Başka Kurumda Kayıtlı, Düşünecek</label>
-      <label class="ri"><input type="radio" name="karar" value="Başka Kurumda Kayıtlı, Kaydolacak"> Başka Kurumda Kayıtlı, Kaydolacak</label>
+      <label class="ri"><input type="radio" name="karar" value="Devamsız"> Devamsız</label>
       <label class="ri"><input type="radio" name="karar" value="ERİKLİ"> ERİKLİ</label>
       <label class="ri"><input type="radio" name="karar" value="Eski Kurumuna Devam"> Eski Kurumuna Devam</label>
-      <label class="ri"><input type="radio" name="karar" value="İlaç Tedavisi/Beklesin"> İlaç Tedavisi/Beklesin</label>
-      <label class="ri"><input type="radio" name="karar" value="İşlemde"> İşlemde</label>
-      <label class="ri"><input type="radio" name="karar" value="Kaydedilecek"> Kaydedilecek</label>
+      <label class="ri"><input type="radio" name="karar" value="İlaç Tedavisi/Beklesin"> İlaç Tedavisi / Beklesin</label>
       <label class="ri"><input type="radio" name="karar" value="Mezun Oldu"> Mezun Oldu</label>
-      <label class="ri"><input type="radio" name="karar" value="Özel Ders Alacak"> Özel Ders Alacak</label>
       <label class="ri"><input type="radio" name="karar" value="Rapor Çıkmadı"> Rapor Çıkmadı</label>
       <label class="ri"><input type="radio" name="karar" value="Rapor İhtiyacı Yok"> Rapor İhtiyacı Yok</label>
+      <label class="ri"><input type="radio" name="karar" value="Rapordan Vazgeçti"> Rapordan Vazgeçti</label>
       <label class="ri"><input type="radio" name="karar" value="Rapor Yenilemedi (Kurum)"> Rapor Yenilemedi (Kurum)</label>
       <label class="ri"><input type="radio" name="karar" value="Rapor Yenilemedi (Veli)"> Rapor Yenilemedi (Veli)</label>
-      <label class="ri"><input type="radio" name="karar" value="Rapordan Vazgeçti"> Rapordan Vazgeçti</label>
-      <label class="ri"><input type="radio" name="karar" value="RED"> RED</label>
-      <label class="ri"><input type="radio" name="karar" value="Takibe Alındı (MHRS var)"> Takibe Alındı (MHRS var)</label>
-      <label class="ri"><input type="radio" name="karar" value="Takibe Alındı (MHRS yok)"> Takibe Alındı (MHRS yok)</label>
+      <label class="ri"><input type="radio" name="karar" value="İşlemde"> İşlemde</label>
     </div>
   </div>
+
 
   <!-- FOTOĞRAF -->
   <div class="card">
@@ -706,6 +700,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 const SUPA_URL="https://zciraijmwxcwhryidlki.supabase.co";
 const SUPA_KEY="sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
 const D={sinif:null,tani:null,saglik:{},dilProb:{},rehabSure:null,raporOlas:null};
+
+
 
 /* ─ INIT ─ */
 (function(){
@@ -813,7 +809,7 @@ function v6(){
   goTo(7);
 }
 function v8(){
-  if(!document.querySelectorAll('#ihtiyacChips .chip.on').length){flashCard('cIhtiyac');toast('⚠️ Temel ihtiyaç alanı zorunlu');return;}
+  if(!document.querySelectorAll('.tog[data-ihtiyac].on').length){flashCard('cIhtiyac');toast('⚠️ Temel ihtiyaç alanı zorunlu');return;}
   const raporluTani=D.tani&&D.tani.startsWith('Raporlu');
   const raporKarti=document.getElementById('cRaporOlas');
   const raporGizli=raporKarti&&raporKarti.classList.contains('hidden');
@@ -826,73 +822,17 @@ function v8(){
 
 /* ─ SAĞLIK ─ */
 function togSaglik(el,k){el.classList.toggle('on');D.saglik[k]=el.classList.contains('on');el.querySelector('.tdot').textContent=D.saglik[k]?'✓':'';}
+function togIhtiyac(el,val){el.dataset.ihtiyac=val;el.classList.toggle('on');el.querySelector('.tdot').textContent=el.classList.contains('on')?'✓':'';}
+
 function getSaglikStr(){
   const L={okuldanKacma:'Okuldan kaçma',uygunsuzDavranis:'Uygunsuz davranış',epilepsi:'Epilepsi/nöbet',sinirKrizi:'Sinir krizi',aglamaKrizi:'Ağlama krizleri',kendiZarar:'Kendine zarar',cevreZarar:'Çevresine zarar',tuvalet:'Tuvalet alışkanlığı yok',komutAlmiyor:'Komut almıyor',dehap:'DEHAP',travma:'Travma',ilac:'Düzenli ilaç',alerji:'Ciddi alerji',fizyolojik:'Fizyolojik farklılık',zihinsel:'Zihinsel gelişim farklılığı',iletisim:'İletişim problemi'};
   return Object.entries(L).filter(([k])=>D.saglik[k]).map(([,v])=>v).join('; ')||'';
 }
 
 /* ─ SINIF ─ */
-
-const OKUL_LISTESI = ["ADNAN MENDERES İMAM HATİP ORTAOKULU", "ADNAN MENDERES ORTAOKULU", "AHMET HAMDİ TANPINAR İLKOKULU", "AKÇAĞLAYAN ANADOLU İMAM HATİP LİSESİ", "AKÇAĞLAYAN İHSAN DİKMEN İLKOKULU", "AKINCITÜRK İHSAN DİKMEN İLKOKULU", "ALİRIZABEY İLKOKULU", "ALİRIZABEY İMAM HATİP ORTAOKULU", "ANADOLU İMAM HATİP ORTAOKULU", "ARİF NİHAT ASYA İLKOKULU", "ATATÜRK ANAOKULU", "AYŞE MÜZEYYEN TOZLUOĞLU İLKOKULU", "BALA HATUN ANAOKULU", "BALABANBEY DÖRTÇELİK İLKOKULU", "BELEDİYE 100.YIL ANAOKULU", "BURSA AHMET VEFİK PAŞA ANADOLU LİSESİ", "BURSA İPEKÇİLİK ANADOLU İMAM HATİP LİSESİ", "BURSA MERKEZ ANADOLU İMAM HATİP LİSESİ", "BURSA YILDIRIM TİCARET VE SANAYİ ODASI ANADOLU LİSESİ", "CUMALIKIZIK İLKOKULU", "CUMALIKIZIK ORTAOKULU", "CUMHURİYET İLKOKULU", "ÇELEBİ MEHMET ANADOLU LİSESİ", "DAVUTKADI EŞREF EVCİL İLKOKULU", "DEĞİRMENLİKIZIK DUMLUPINAR İLKOKULU", "DEĞİRMENÖNÜ İLKOKULU", "DÖRTÇELİK İLKOKULU", "DUMLUPINAR ANAOKULU", "EMEK ORTAOKULU", "EMİNE SAİT UYAR İLKOKULU", "EMİR SULTAN ANADOLU LİSESİ", "EMİRBUHARİ İMAM HATİP ORTAOKULU", "EMİRBUHARİ ORTAOKULU", "ERDOĞAN ŞAHİNOĞLU ORTAOKULU", "ERTUĞRUL GAZİ ANADOLU LİSESİ", "EYÜP SULTAN ANAOKULU", "FAİK ÇELİK KIZ MESLEKİ VE TEKNİK ANADOLU LİSESİ", "FATİH SULTAN MEHMET İMAM HATİP ORTAOKULU", "FATİH SULTAN MEHMET ORTAOKULU", "FETHİYE DÖRTÇELİK ANADOLU İMAM HATİP LİSESİ", "FEVZİ ÇAKMAK İLKOKULU", "FEVZİ ÇAKMAK ORTAOKULU", "FEVZİYE YAZICIOĞLU KIZILAY ANAOKULU", "FİDYEKIZIK İLKOKULU", "GÜLBAHAR HATUN ANAOKULU", "GÜLÇİÇEK HATUN KIZ ANADOLU İMAM HATİP LİSESİ", "GÜLHANIM KARASU İLKOKULU", "GÜZİDE HAFIZ KIZ ANADOLU İMAM HATİP LİSESİ", "HAFSA HATUN ANAOKULU", "HAS ASANSÖR MESLEKİ VE TEKNİK ANADOLU LİSESİ", "HASAN ALİ YÜCEL İLKOKULU", "HASAN ÖZTİMUR İLKOKULU", "HASAN ÖZTİMUR 75.YIL İLKOKULU", "HAŞİM İŞCAN İLKOKULU", "HÜMA HATUN ÖZEL EĞİTİM ANAOKULU", "İHSAN DİKMEN İMAM HATİP ORTAOKULU", "İHSAN DİKMEN 4 İLKOKULU", "İLÇE MİLLİ EĞİTİM MÜDÜRLÜĞÜ", "İŞGİR ORTAOKULU", "KANUNİ KIZ ANADOLU İMAM HATİP LİSESİ", "KARAPINAR İMAM HATİP ORTAOKULU", "KARAPINAR ŞEHİT SAMET ÇALDIR İLKOKULU", "KAŞGARLI MAHMUD ANADOLU LİSESİ", "KAZIM KARABEKİR İLKOKULU", "KIZIKLAR ORTAOKULU", "LATİF DÖRTÇELİK ANAOKULU", "MAHMUT CELALETTİN ÖKTEN İMAM HATİP ORTAOKULU", "MAKBULE-ATADAN ANAOKULU", "MALTEPE ANAOKULU", "MEHMET AKİF ERSOY ANADOLU LİSESİ", "MEHMET AKİF ERSOY ORTAOKULU", "MEHMET AKİF İNAN ANADOLU İMAM HATİP LİSESİ", "MEHMET AKİF İNAN İMAM HATİP ORTAOKULU", "MEVLANA ANAOKULU", "MİLLET MAHALLESİ İLKOKULU", "MİMAR SİNAN MESLEKİ VE TEKNİK ANADOLU LİSESİ", "MUSTAFA DÖRTÇELİK İLKOKULU", "MUSTAFA NECATİ İLKOKULU", "MÜMİN GENÇOĞLU 1 İLKOKULU", "MÜMİN GENÇOĞLU 2 İLKOKULU", "MÜMİN GENÇOĞLU 2 ORTAOKULU", "NAMAZGAH GIYASETTİN BİNGÖL İLKOKULU", "NAMIK KEMAL İMAM HATİP ORTAOKULU", "NAZ ÖZDİLEK İLKOKULU", "NECİP FAZIL KISAKÜREK ANADOLU İMAM HATİP LİSESİ", "NECMETTİN ERBAKAN ANADOLU İMAM HATİP LİSESİ", "NENE HATUN ANAOKULU", "NURETTİN-GÜLTEN KUTLUCAN İLKOKULU", "NURİ ERBAK ANADOLU LİSESİ", "NURİ ERBAK ORTAOKULU", "NURİ NİHAT ASLANOBA ANADOLU LİSESİ", "PEYAMİ SAFA ORTAOKULU", "PROF. DR. FUAT SEZGİN ANADOLU LİSESİ", "PROF. DR. FUAT SEZGİN ORTAOKULU", "RÜVEYDE DÖRTÇELİK ÖZEL EĞİTİM MESLEK OKULU", "SABİHA GÖKÇEN ANAOKULU", "SAİT SÜHEYLA BİLDİRENER İMAM HATİP ORTAOKULU", "SAMANLI İLKOKULU", "SAMANLI LATİF DÖRTÇELİK İMAM HATİP ORTAOKULU", "SAMANLI LATİF DÖRTÇELİK ORTAOKULU", "SAMANLI ÖZEL EĞİTİM UYGULAMA OKULU I. KADEME", "SAMANLI ÖZEL EĞİTİM UYGULAMA OKULU II. KADEME", "SAMANLI ÖZEL EĞİTİM UYGULAMA OKULU III. KADEME", "SELÇUK HATUN ORTAOKULU", "SEMİHA MUSTAFA ÖZER İMAM HATİP ORTAOKULU", "SEMİHA MUSTAFA ÖZER ORTAOKULU", "SETBAŞI ORTAOKULU", "ŞEHİT HARUN ARVAS ORTAOKULU", "ŞEHİT HASAN HÜSEYİN DAŞDEMİR İMAM HATİP ORTAOKULU", "ŞEHİT HASAN HÜSEYİN DAŞDEMİR ORTAOKULU", "ŞEHİT JANDARMA ER SELAHATTİN ÇIRAK İLKOKULU", "ŞEHİT JANDARMA KOMANDO ER BAHRİ AVCI MESLEKİ EĞİTİM MERKEZİ", "ŞEHİT ÖĞRETMEN KUBİLAY ANADOLU LİSESİ", "ŞEHİT ÖĞRETMEN MAHMUT ÇATALKAYA ORTAOKULU", "ŞEHİT P.BNB.ERCÜMENT TÜRKMEN ORTAOKULU", "ŞEHİT PİYADE ER NEZİR AKGÜL İMAM HATİP ORTAOKULU", "ŞEHİT PİYADE ER NEZİR AKGÜL ORTAOKULU", "ŞEHİT PİYADE ER RAHİM KESKİN ORTAOKULU", "ŞEHİT PİYADE ONBAŞI ORHAN TEZCAN İLKOKULU", "ŞEHİT POLİS BÜLENT ASLAN İLKOKULU", "ŞEHİT POLİS İBRAHİM AKIN ORTAOKULU", "ŞEHİT ZEKİ BURAK OKAY ORTAOKULU", "ŞEH.KURMAY BİNB.UFUK BÜLENT YAVUZ İLKOKULU", "ŞEH.KURMAY BİNB.UFUK BÜLENT YAVUZ ORTAOKULU", "ŞERAFEDDİN ATALAY ANAOKULU", "ŞERİF ARTIŞ İLKOKULU", "ŞERİF-RABİA KUTLUCAN ORTAOKULU", "ŞİRİNEVLER İLKOKULU", "ŞİRİNEVLER İMAM HATİP ORTAOKULU", "TEFERRÜÇ ALİ OSMAN GÜR İLKOKULU", "TİCARET BORSASI İMAM HATİP ORTAOKULU", "TURGAY CİNER İLKOKULU", "ULUBATLI HASAN ANADOLU LİSESİ", "ÜSTÜN ÜRÜNDÜL İLKOKULU", "VAKIF İLKOKULU", "VAKIF İMAM HATİP ORTAOKULU", "VAKIF ORTAOKULU", "VATAN ANAOKULU", "VİLAYETLER HİZMET BİRLİĞİ ANAOKULU", "YAHYA KEMAL BEYATLI ORTAOKULU", "YAVUZ SELİM İLKOKULU", "YAVUZ SELİM ORTAOKULU", "YEŞİL DEVLET HATUN ANADOLU İMAM HATİP LİSESİ", "YEŞİLEVLER MÜNEVVER ÖZRAN İLKOKULU", "YEŞİLYAYLA MESLEKİ VE TEKNİK ANADOLU LİSESİ", "YILDIRIM ANAOKULU", "YILDIRIM BELEDİYE ORTAOKULU", "YILDIRIM BELEDİYESİ HACI MEHMET ZORLU ÖZEL EĞİTİM MESLEK OKULU", "YILDIRIM BELEDİYESİ HACI SAİDE ZORLU ÖZEL EĞİTİM UYGULAMA OKULU I. KADEME", "YILDIRIM BELEDİYESİ HACI SAİDE ZORLU ÖZEL EĞİTİM UYGULAMA OKULU II. KADEME", "YILDIRIM BELEDİYESİ HACI SAİDE ZORLU ÖZEL EĞİTİM UYGULAMA OKULU III. KADEME", "YILDIRIM BELEDİYESİ İMAM HATİP ORTAOKULU", "YILDIRIM BEYAZIT ANADOLU LİSESİ", "YILDIRIM BEYAZIT BORSA İSTANBUL MESLEKİ VE TEKNİK ANADOLU LİSESİ", "YILDIRIM BİLİM VE SANAT MERKEZİ", "YILDIRIM BORSA İSTANBUL KIZ MESLEKİ VE TEKNİK ANADOLU LİSESİ", "YILDIRIM ERGUVAN İLKOKULU", "YILDIRIM FEN LİSESİ", "YILDIRIM HALK EĞİTİMİ MERKEZİ", "YILDIRIM İLKOKULU", "YILDIRIM REHBERLİK VE ARAŞTIRMA MERKEZİ", "YILDIRIM TİCARET MESLEKİ VE TEKNİK ANADOLU LİSESİ", "YİĞİTLER ANADOLU İMAM HATİP LİSESİ", "YİĞİTLER ANAOKULU", "YİĞİTLER KIZ MESLEKİ VE TEKNİK ANADOLU LİSESİ", "YUNUS EMRE ANAOKULU", "YUNUS EMRE İLKOKULU", "ZÜBEYDE HANIM ORTAOKULU", "6 NİSAN ANADOLU LİSESİ", "ADAKÖY ATEŞ SARIBAL İLKOKULU", "ADAKÖY ATEŞ SARIBAL ORTAOKULU", "ALİ FİRDEVS LİZOR İLKOKULU", "ATATÜRK İLKOKULU", "GÜRSU ANADOLU İMAM HATİP LİSESİ", "GÜRSU ANAOKULU", "GÜRSU ATATÜRK ANAOKULU", "GÜRSU BİLİM VE SANAT MERKEZİ", "GÜRSU BORSA İSTANBUL ANADOLU LİSESİ", "GÜRSU BORSA İSTANBUL İMAM HATİP ORTAOKULU", "GÜRSU FAZIL HÜSNÜ DAĞLARCA ANADOLU LİSESİ", "GÜRSU HALİME HATUN ANAOKULU", "GÜRSU HALK EĞİTİMİ MERKEZİ", "GÜRSU RECEP TAYYİP ERDOĞAN ORTAOKULU", "GÜRSU REHBERLİK VE ARAŞTIRMA MERKEZİ", "GÜRSU TOKİ İLKOKULU", "GÜRSU TOKİ ORTAOKULU", "HACI HURİYE TİNÇ İLKOKULU", "HACI HURİYE TİNÇ ORTAOKULU", "HAMDİ ÇALIŞ ORTAOKULU", "İĞDİR İLKOKULU", "KARAHIDIR İLKOKULU", "KAZIKLI İLKOKULU", "KUMLUKALAN ÖZEL EĞİTİM OKULU I. KADEME", "KUMLUKALAN ÖZEL EĞİTİM OKULU II. KADEME", "LATİF DÖRTÇELİK TİCARET MESLEKİ VE TEKNİK ANADOLU LİSESİ", "LOKMAN HEKİM MESLEKİ VE TEKNİK ANADOLU LİSESİ", "MEHMET AKİF ERSOY İLKOKULU", "SELCEN HATUN ANAOKULU", "ŞEHİT SEFA UZUN İLKOKULU", "TİCARET VE SANAYİ ODASI GÜRSU MESLEKİ VE TEKNİK ANADOLU LİSESİ", "YENİDOĞAN ANAOKULU", "YILDIZ ANADOLU LİSESİ", "YÜKSEL BODUR İLKOKULU", "ZAFER ORTAOKULU", "ZUHAL (DÖRTÇELİK) ŞENİPEK MESLEKİ VE TEKNİK ANADOLU LİSESİ", "80.YIL CUMHURİYET İMAM HATİP ORTAOKULU", "BABASULTAN İLKOKULU", "BABASULTAN ORTAOKULU", "BARAKFAKİH İLKOKULU", "BARAKFAKİH ORTAOKULU", "BARAKFAKİH ÖZEL EĞİTİM UYGULAMA OKULU III. KADEME", "BURSA ÇİMENTO MESLEKİ VE TEKNİK ANADOLU LİSESİ", "ÇATALTEPE İLKOKULU", "ÇATALTEPE ORTAOKULU", "DEREKIZIK İLKOKULU", "ERDOĞAN İLKOKULU", "ERDOĞAN ORTAOKULU", "GÖLCÜK İLKOKULU", "HASAN COŞKUN ANADOLU LİSESİ", "KESTEL ANAOKULU", "KESTEL BELEDİYESİ ESENTEPE İLKOKULU", "KESTEL BEŞEVLER ORTAOKULU", "KESTEL BİLİM VE SANAT MERKEZİ", "KESTEL HALK EĞİTİMİ MERKEZİ", "KESTEL HASAN ASLANOBA ANADOLU LİSESİ", "KESTEL KIZ ANADOLU İMAM HATİP LİSESİ", "KESTEL MEHMET AKİF ERSOY İLKOKULU", "KESTEL NURİ ERBAK ANAOKULU", "KESTEL REHBERLİK VE ARAŞTIRMA MERKEZİ", "KESTEL YUNUS EMRE İLKOKULU", "MUSA AMCA İLKOKULU", "MUSTAFA TUNALI İMAM HATİP ORTAOKULU", "NARLIDERE ÖZEL EĞİTİM UYGULAMA OKULU I. KADEME", "NARLIDERE ÖZEL EĞİTİM UYGULAMA OKULU II. KADEME", "ŞEHİT EMRE KARAASLAN KIZ MESLEKİ VE TEKNİK ANADOLU LİSESİ", "ŞEHİT MUSTAFA KURT ORTAOKULU", "ŞEHİT POLİS İSMAİL ÖZBEK ORTAOKULU", "TOPLU KONUTLAR ORTAOKULU", "ULUDAĞ ANADOLU İMAM HATİP LİSESİ", "ÜMİTALAN İLKOKULU", "VANİ MEHMET ANADOLU İMAM HATİP LİSESİ", "YENİMAHALLE İLKOKULU"];
-let okulSecIdx = -1;
-
-function trUpper(s){ return s.replace(/i/g,'İ').replace(/ı/g,'I').toUpperCase(); }
-
-function okulOneri(el) {
-  const q = trUpper(el.value.trim());
-  const list = document.getElementById('okulOneriList');
-  if (!q || q.length < 2) { list.style.display='none'; return; }
-  const eslesler = OKUL_LISTESI.filter(o => trUpper(o).includes(q)).slice(0, 12);
-  if (!eslesler.length) { list.style.display='none'; return; }
-  okulSecIdx = -1;
-  list.innerHTML = eslesler.map((o,i) =>
-    `<div class="okul-item" data-idx="${i}" onmousedown="okulSec('${o.replace(/'/g,"\\'")}')">${o}</div>`
-  ).join('');
-  list.style.display = 'block';
-}
-
-function okulSec(val) {
-  document.getElementById('okul').value = val;
-  document.getElementById('okulOneriList').style.display = 'none';
-}
-
-function okulKapat() {
-  document.getElementById('okulOneriList').style.display = 'none';
-}
-
-function okulKeydown(e) {
-  const list = document.getElementById('okulOneriList');
-  const items = list.querySelectorAll('.okul-item');
-  if (!items.length) return;
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    okulSecIdx = Math.min(okulSecIdx+1, items.length-1);
-    items.forEach((it,i) => it.classList.toggle('sel', i===okulSecIdx));
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    okulSecIdx = Math.max(okulSecIdx-1, 0);
-    items.forEach((it,i) => it.classList.toggle('sel', i===okulSecIdx));
-  } else if (e.key === 'Enter' && okulSecIdx >= 0) {
-    e.preventDefault();
-    okulSec(items[okulSecIdx].textContent);
-  } else if (e.key === 'Escape') {
-    okulKapat();
-  }
-}
-
 function selectSinif(el,val){
   el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');D.sinif=val;updAkademik();
-  // Okula Gitmeyen seçilince okul alanını pasifleştir
-  const okulInp = document.getElementById('okul');
-  const okulCard = document.getElementById('cOkul');
-  if(val==='Okula Gitmeyen'){
-    okulInp.value=''; okulInp.disabled=true;
-    okulCard.style.opacity='.4'; okulCard.style.pointerEvents='none';
-  } else {
-    okulInp.disabled=false;
-    okulCard.style.opacity=''; okulCard.style.pointerEvents='';
-  }
 }
 function updAkademik(){
   const k=(D.sinif==='Anaokulu-Kreş'||D.sinif==='Okula Gitmeyen');
@@ -976,10 +916,6 @@ function togRehabYeni(el){
   document.getElementById('rehabDetail').classList.toggle('hidden',!on);
 }
 function togRehab(v){document.getElementById('rehabDetail').classList[v==='Evet'?'remove':'add']('hidden');}
-function togIhtiyacForm(el){
-  el.classList.toggle('on');
-}
-
 function rVal(n){const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:'';}
 function togKarar(){
   const ex=document.getElementById('kararExtra'),btn=document.getElementById('kMoreBtn'),txt=document.getElementById('kMoreTxt');
@@ -1014,10 +950,7 @@ function goTo(n){
 
 /* ══ CROP ═════════════════════════════════════ */
 let cropTgt=null,cropImg=new Image();
-const OW=300,OH=400;       // Fotoğraf boyutu
-const OKW=800,OKH=520;     // Kimlik boyutu (yüksek çözünürlük)
-function getCW(){return cropTgt==='kimlik'?OKW:OW;}
-function getCH(){return cropTgt==='kimlik'?OKH:OH;}
+const OW=300,OH=400;
 let cr={ox:0,oy:0,scale:1,drag:false,lx:0,ly:0};
 
 function handleFile(inp,tgt){
@@ -1027,13 +960,11 @@ function handleFile(inp,tgt){
     cropTgt=tgt;const img=new Image();
     img.onload=()=>{
       cropImg=img;
-      const cw=getCW(),ch=getCH();
-      const s=Math.max(cw/img.naturalWidth,ch/img.naturalHeight);
-      cr={ox:(cw-img.naturalWidth*s)/2,oy:(ch-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
+      const s=Math.max(OW/img.naturalWidth,OH/img.naturalHeight);
+      cr={ox:(OW-img.naturalWidth*s)/2,oy:(OH-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
       const zEl=document.getElementById('cropZoom');
-      zEl.min=Math.max(0.01,s*0.2).toFixed(3);
-      zEl.max=(s*8).toFixed(3);
-      zEl.step='0.01';
+      zEl.min=Math.max(0.05,s*0.3).toFixed(3);
+      zEl.max=(s*5).toFixed(3);
       zEl.value=s;
       document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
       openCrop();
@@ -1044,13 +975,11 @@ function reCrop(tgt){
   const src=document.getElementById(tgt+'Img').src;if(!src||src.length<50)return;
   cropTgt=tgt;const img=new Image();
   img.onload=()=>{
-    const cw2=getCW(),ch2=getCH();
-    cropImg=img;const s=Math.max(cw2/img.naturalWidth,ch2/img.naturalHeight);
-    cr={ox:(cw2-img.naturalWidth*s)/2,oy:(ch2-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
+    cropImg=img;const s=Math.max(OW/img.naturalWidth,OH/img.naturalHeight);
+    cr={ox:(OW-img.naturalWidth*s)/2,oy:(OH-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
     const zEl2=document.getElementById('cropZoom');
-    zEl2.min=Math.max(0.01,s*0.2).toFixed(3);
-    zEl2.max=(s*8).toFixed(3);
-    zEl2.step='0.01';
+    zEl2.min=Math.max(0.05,s*0.3).toFixed(3);
+    zEl2.max=(s*5).toFixed(3);
     zEl2.value=s;document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
     openCrop();
   };img.src=src;
@@ -1064,10 +993,8 @@ function closeCrop(){
 }
 function setupCv(){
   const wrap=document.getElementById('cwrap'),old=document.getElementById('cropCanvas');
-  const cw3=getCW(),ch3=getCH();
-  const dw=Math.min(wrap.clientWidth||400,530),dh=Math.round(dw*(ch3/cw3));
+  const dw=Math.min(wrap.clientWidth||400,530),dh=Math.round(dw*(OH/OW));
   const cv=old.cloneNode(false);cv.id='cropCanvas';cv.width=dw;cv.height=dh;
-  cv._cw=cw3;cv._ch=ch3;
   cv.style.cssText='display:block;width:100%;touch-action:none;cursor:grab';
   old.parentNode.replaceChild(cv,old);
   cv.addEventListener('mousedown',sd);cv.addEventListener('touchstart',sd,{passive:false});
@@ -1081,8 +1008,7 @@ function dd(e){if(!cr.drag)return;const cv=document.getElementById('cropCanvas')
 function onZoom(){cr.scale=parseFloat(document.getElementById('cropZoom').value);document.getElementById('zoomVal').textContent=cr.scale.toFixed(2)+'×';renderCrop();}
 function renderCrop(){
   const cv=document.getElementById('cropCanvas');if(!cv||!cv.width)return;
-  const _cw=cv._cw||OW;
-  const ctx=cv.getContext('2d'),sc=cv.width/_cw;
+  const ctx=cv.getContext('2d'),sc=cv.width/OW;
   ctx.fillStyle='#1a1a1a';ctx.fillRect(0,0,cv.width,cv.height);
   ctx.save();ctx.scale(sc,sc);ctx.drawImage(cropImg,cr.ox,cr.oy,cropImg.naturalWidth*cr.scale,cropImg.naturalHeight*cr.scale);ctx.restore();
   ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;
@@ -1090,11 +1016,10 @@ function renderCrop(){
   ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=2;ctx.strokeRect(1,1,cv.width-2,cv.height-2);
 }
 function applyCrop(){
-  const acw=getCW(),ach=getCH();
-  const out=document.createElement('canvas');out.width=acw;out.height=ach;
-  const ctx=out.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,acw,ach);
+  const out=document.createElement('canvas');out.width=OW;out.height=OH;
+  const ctx=out.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,OW,OH);
   ctx.drawImage(cropImg,cr.ox,cr.oy,cropImg.naturalWidth*cr.scale,cropImg.naturalHeight*cr.scale);
-  const url=out.toDataURL('image/jpeg', cropTgt==='kimlik' ? .95 : .75);
+  const url=out.toDataURL('image/jpeg',.7);
   document.getElementById(cropTgt+'Img').src=url;
   document.getElementById(cropTgt+'Data').value=url;
   document.getElementById(cropTgt+'Preview').classList.remove('hidden');
@@ -1188,11 +1113,12 @@ async function submitForm(){
       rehab_merkez:document.getElementById('rehabMerkez')?document.getElementById('rehabMerkez').value:'',
       rehab_sure:D.rehabSure||'',
       aaa:rVal('aileAAA'),
-      temel_ihtiyac:[...document.querySelectorAll('#ihtiyacChips .chip.on')].map(c=>c.dataset.val).join(';'),
+      temel_ihtiyac:[...document.querySelectorAll('.tog[data-ihtiyac].on')].map(t=>t.dataset.ihtiyac).join('; '),
       rapor_olasilik:D.raporOlas||'',
       karar:rVal('karar'),
       foto_url:fotoUrl,
-      kimlik_url:kimlikUrl
+      kimlik_url:kimlikUrl,
+      yonetici_notu: document.getElementById('yoneticiNotu')?.value||''
     };
 
     const editId=document.getElementById('editId')?.value||'';
