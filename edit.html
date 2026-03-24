@@ -500,7 +500,11 @@ async function kaydet(){
   // Fotoğraf upload gerekiyorsa
   let fotoUrl = g('foto_url');
   let kimlikUrl = g('kimlik_url');
-  const ogrenciTam = (fv('ad')+' '+fv('soyad')).trim().replace(/\s+/g,'_');
+  const ogrenciTam = (fv('ad')+' '+fv('soyad')).trim()
+    .replace(/ğ/g,'g').replace(/Ğ/g,'G').replace(/ş/g,'s').replace(/Ş/g,'S')
+    .replace(/ı/g,'i').replace(/İ/g,'I').replace(/ö/g,'o').replace(/Ö/g,'O')
+    .replace(/ü/g,'u').replace(/Ü/g,'U').replace(/ç/g,'c').replace(/Ç/g,'C')
+    .replace(/[^a-zA-Z0-9 ]/g,'').replace(/\s+/g,'_');
   const tarih = new Date().toISOString().slice(0,10);
   if(_yeniFotoData) {
     toast('⏳ Fotoğraf yükleniyor...');
