@@ -133,36 +133,6 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
     <button class="tbtn tbtn-green" onclick="excelIndir()">Excel</button>
     <button class="tbtn" id="raporBtn" onclick="raporModalAc()" style="display:none;border-color:#8b5cf6;color:#8b5cf6;">📊 Yönetici Raporu</button>
 
-  <!-- Rapor Ay Seçici Modal -->
-  <div id="raporModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;">
-    <div style="background:var(--surf);border-radius:16px;padding:28px;width:480px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,.3);">
-      <h3 style="margin-bottom:20px;font-size:16px;font-weight:700;">📊 Yönetici Raporu</h3>
-
-      <!-- Rapor tipi seçimi -->
-      <div style="display:flex;gap:8px;margin-bottom:20px;">
-        <button id="rtipGenel" onclick="raporTipSec('genel')" style="flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #7C3AED;background:#7C3AED;color:#fff;font-family:inherit;">📅 Aylık Aktivite</button>
-        <button id="rtipOzel" onclick="raporTipSec('ozel')" style="flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--bd);background:transparent;color:var(--sub);font-family:inherit;">🎯 Karar Bazlı</button>
-      </div>
-
-      <label style="font-size:12px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Ay</label>
-      <select id="raporAySel" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;outline:none;margin-bottom:18px;"></select>
-
-      <!-- Karar bazlı seçenekler -->
-      <div id="ozelRaporSec" style="display:none;">
-        <label style="font-size:12px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:10px;">Dahil edilecek kararlar</label>
-        <div id="kararCheckWrap" style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;margin-bottom:16px;padding-right:4px;"></div>
-        <div style="display:flex;gap:8px;margin-bottom:18px;">
-          <button onclick="tumKararlariSec(true)" style="flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--sub);font-family:inherit;">Tümünü Seç</button>
-          <button onclick="tumKararlariSec(false)" style="flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--sub);font-family:inherit;">Temizle</button>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button onclick="document.getElementById('raporModalOverlay').style.display='none'" style="padding:9px 18px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--sub);cursor:pointer;font-family:inherit;font-size:13px;">İptal</button>
-        <button onclick="raporAc()" style="padding:9px 18px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;">Raporu Aç →</button>
-      </div>
-    </div>
-  </div>
     <button class="tbtn" id="temaBtn" onclick="temaToggle()">🌙</button>
     <button class="tbtn" onclick="cikisYap()">Çıkış</button>
   </div>
@@ -223,6 +193,7 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
   <div class="toplu-bar" id="topluBar">
     <span class="tbtn" id="topluCount">0 seçildi</span>
     <button class="tbtn tbtn-primary" onclick="topluPdf()">Toplu PDF</button>
+    <button class="tbtn" style="background:var(--red-bg);color:var(--red);border:none;" onclick="topluSilBaslat()">🗑️ Seçilenleri Sil</button>
     <button class="tbtn" onclick="secimTemizle()">Temizle</button>
   </div>
 
@@ -488,6 +459,35 @@ function chkUp(){
 }
 function tumSecToggle(e){ document.querySelectorAll('.rchk').forEach(c=>c.checked=e.checked); chkUp(); }
 function secimTemizle(){ document.querySelectorAll('.rchk').forEach(c=>c.checked=false); chkUp(); }
+
+function topluSilBaslat(){
+  const secili = [...document.querySelectorAll('.rchk:checked')];
+  if(!secili.length) return;
+  const sayac = secili.length;
+  document.getElementById('silModalAd').textContent = sayac + ' öğrenci kaydı kalıcı olarak silinecek. Bu işlem geri alınamaz.';
+  document.getElementById('silModalOverlay').style.display = 'flex';
+  document.getElementById('silOnayBtn').onclick = () => topluSilOnayla(secili.map(c=>c.value));
+}
+
+async function topluSilOnayla(idler){
+  document.getElementById('silModalOverlay').style.display = 'none';
+  const btn = document.querySelector('#topluBar .tbtn-primary');
+  if(btn){btn.textContent='⏳ Siliniyor...';btn.disabled=true;}
+  try{
+    for(const id of idler){
+      await fetch(SUPA_URL+'/rest/v1/ogrenciler?id=eq.'+id,{
+        method:'DELETE',
+        headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}
+      });
+      // Bellekten de sil
+      tumVeriler = tumVeriler.filter(r=>String(r.id)!==String(id));
+    }
+    filtrele();
+    istatistikGuncelle();
+    secimTemizle();
+  }catch(e){ alert('Silme hatası: '+e.message); }
+  if(btn){btn.textContent='Toplu PDF';btn.disabled=false;}
+}
 async function topluPdf(){
   const idler = [...document.querySelectorAll('.rchk:checked')].map(c=>c.value);
   if(!idler.length) return;
@@ -818,5 +818,42 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F9FAFB;color:#11182
   btn.innerHTML = orig; btn.disabled = false;
 }
 </script>
+
+<!-- RAPOR MODAL - body seviyesinde -->
+<div id="raporModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;">
+  <div style="background:var(--surf);border-radius:16px;padding:28px;width:480px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,.5);position:relative;">
+    <h3 style="margin-bottom:20px;font-size:16px;font-weight:700;">📊 Yönetici Raporu</h3>
+    <div style="display:flex;gap:8px;margin-bottom:20px;">
+      <button id="rtipGenel" onclick="raporTipSec('genel')" style="flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #7C3AED;background:#7C3AED;color:#fff;font-family:inherit;">📅 Aylık Aktivite</button>
+      <button id="rtipOzel" onclick="raporTipSec('ozel')" style="flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--bd);background:transparent;color:var(--sub);font-family:inherit;">🎯 Karar Bazlı</button>
+    </div>
+    <label style="font-size:12px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Ay</label>
+    <select id="raporAySel" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;outline:none;margin-bottom:18px;"></select>
+    <div id="ozelRaporSec" style="display:none;">
+      <label style="font-size:12px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:10px;">Dahil edilecek kararlar</label>
+      <div id="kararCheckWrap" style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto;margin-bottom:16px;padding-right:4px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:18px;">
+        <button onclick="tumKararlariSec(true)" style="flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--sub);font-family:inherit;">Tümünü Seç</button>
+        <button onclick="tumKararlariSec(false)" style="flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--sub);font-family:inherit;">Temizle</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button onclick="document.getElementById('raporModalOverlay').style.display='none'" style="padding:9px 18px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--sub);cursor:pointer;font-family:inherit;font-size:13px;">İptal</button>
+      <button onclick="raporAc()" style="padding:9px 18px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;">Raporu Aç →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SİLME ONAY MODAL -->
+<div id="silModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;align-items:center;justify-content:center;">
+  <div style="background:var(--surf);border-radius:16px;padding:28px;width:400px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,.5);">
+    <h3 style="margin-bottom:12px;font-size:16px;font-weight:700;color:var(--red);">🗑️ Kayıt Silinecek</h3>
+    <p id="silModalAd" style="font-size:14px;color:var(--sub);margin-bottom:24px;line-height:1.5;"></p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button onclick="document.getElementById('silModalOverlay').style.display='none'" style="padding:9px 18px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--sub);cursor:pointer;font-family:inherit;font-size:13px;">İptal</button>
+      <button id="silOnayBtn" style="padding:9px 18px;border-radius:8px;border:none;background:var(--red);color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;">Evet, Sil</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
