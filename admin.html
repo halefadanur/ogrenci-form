@@ -248,7 +248,7 @@ async function verileriYukle(){
   let all=[], from=0;
   while(true){
     const to=from+999;
-    const res=await fetch(SUPA_URL+'/rest/v1/ogrenciler?select=id,ad,soyad,gorusme_tarihi,tani,karar,uzman,created_at,tc_no,anne_tel,baba_tel,karar_guncelleme,karar_degisim,yonetici_notu,rehber_notu,updated_at&order=created_at.desc',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,Range:from+'-'+to}});
+    const res=await fetch(SUPA_URL+'/rest/v1/ogrenciler?select=id,ad,soyad,gorusme_tarihi,tani,karar,uzman,created_at,tc_no,anne_tel,baba_tel,karar_guncelleme,karar_degisim,yonetici_notu,rehber_notu&order=created_at.desc',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,Range:from+'-'+to}});
     const data=await res.json();
     if(!data||!data.length) break;
     all=all.concat(data);
