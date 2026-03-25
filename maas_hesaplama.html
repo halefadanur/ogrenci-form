@@ -832,136 +832,192 @@ function exportPDF() {
   const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
   const PW = 297, PH = 210;
 
-  // Koyu arka plan
-  doc.setFillColor(15,17,23);
-  doc.rect(0,0,PW,PH,'F');
+  // Toplamlar
+  let tY=0, tK=0, tKs=0, aktif=0;
+  DATA.forEach((p,i) => {
+    if (p.pasif) return;
+    aktif++;
+    const rv = calc(p, ST[i]);
+    tY  += rv.yatan  || 0;
+    tK  += rv.kalan  || 0;
+    tKs += rv.gunK + rv.yemekK;
+  });
 
-  // Başlık
+  // ── HEADER BANDİ ──────────────────────────────────────────────────────
+  doc.setFillColor(37, 99, 235);   // mavi
+  doc.rect(0, 0, PW, 22, 'F');
+
   doc.setFont('helvetica','bold');
-  doc.setFontSize(12);
-  doc.setTextColor(226,232,240);
-  doc.text('EĞİTİMCİ DİL KONUŞMA MERKEZİ', 14, 13);
+  doc.setFontSize(13);
+  doc.setTextColor(255,255,255);
+  doc.text('EĞİTİMCİ DİL KONUŞMA MERKEZİ', 12, 9);
+
   doc.setFont('helvetica','normal');
-  doc.setFontSize(8);
-  doc.setTextColor(148,163,184);
-  doc.text(`Maaş Bordrosu — ${month}`, 14, 19);
+  doc.setFontSize(8.5);
+  doc.setTextColor(186,210,255);
+  doc.text(`MAAŞ BORDROSU — ${month.toUpperCase()}`, 12, 16);
 
-  // Sağ üst özet
-  let tY=0, tK=0;
-  DATA.forEach((p,i) => { if(p.pasif) return; const rv=calc(p,ST[i]); tY+=rv.yatan||0; tK+=rv.kalan||0; });
-  doc.setFontSize(7.5);
-  doc.setTextColor(34,197,94);
-  doc.text(`Toplam Yatan: ${fmt(tY)} TL`, 180, 11);
-  doc.setTextColor(79,142,247);
-  doc.text(`Toplam Kalan: ${fmt(tK)} TL`, 180, 16);
-  doc.setTextColor(45,212,191);
-  doc.text(`Toplam Maliyet: ${fmt(tY+tK)} TL`, 180, 21);
-
-  // Çizgi
-  doc.setDrawColor(46,51,82);
-  doc.line(14, 22, PW-14, 22);
-
-  // Tablo tanımı
-  const cols = [
-    {h:'#',        w:7},
-    {h:'Ad Soyad', w:34},
-    {h:'Görev',    w:26},
-    {h:'Maaş',     w:16},
-    {h:'Ek1',      w:12},
-    {h:'Ek2',      w:12},
-    {h:'E.Gün',    w:10},
-    {h:'E.Saat',   w:10},
-    {h:'Rapor',    w:10},
-    {h:'Yıllık',   w:10},
-    {h:'Yemek Kst',w:16},
-    {h:'Gün Kst',  w:16},
-    {h:'Avans',    w:14},
-    {h:'YATAN',    w:20},
-    {h:'KALAN',    w:16},
-    {h:'Açıklama', w:0},  // kalan genişlik
+  // Sağ üst özet kutucukları
+  const boxes = [
+    { label:'YATAN',   val: fmt(tY)+' ₺',     x:155, bg:[22,163,74]  },
+    { label:'KALAN',   val: fmt(tK)+' ₺',     x:201, bg:[59,130,246] },
+    { label:'MALİYET', val: fmt(tY+tK)+' ₺',  x:247, bg:[124,58,237] },
   ];
-  const usedW = cols.slice(0,-1).reduce((s,c)=>s+c.w,0);
-  cols[cols.length-1].w = PW - 28 - usedW;
+  boxes.forEach(b => {
+    doc.setFillColor(...b.bg);
+    doc.roundedRect(b.x, 3, 42, 16, 2, 2, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(5.5);
+    doc.setTextColor(200,230,200);
+    doc.text(b.label, b.x+3, 8);
+    doc.setFontSize(7.5);
+    doc.setTextColor(255,255,255);
+    doc.text(b.val, b.x+3, 15, {maxWidth:36});
+  });
 
-  const startX = 14, startY = 25, rowH = 6.5;
+  // ── ÖZET SATIRI ───────────────────────────────────────────────────────
+  doc.setFillColor(241,245,249);
+  doc.rect(0, 22, PW, 8, 'F');
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.setTextColor(71,85,105);
+  doc.text(`Aktif personel: ${aktif}  ·  Toplam kesinti: ${fmt(tKs)} ₺  ·  Oluşturulma: ${new Date().toLocaleString('tr-TR')}`, 12, 27.5);
+
+  // ── TABLO ─────────────────────────────────────────────────────────────
+  // Sütunlar — bordro için kompakt ama okunabilir
+  const cols = [
+    { h:'#',          w:6  },
+    { h:'Ad Soyad',   w:36 },
+    { h:'Görev',      w:28 },
+    { h:'Maaş',       w:18 },
+    { h:'Ek1',        w:14 },
+    { h:'E.Gün',      w:11 },
+    { h:'E.Saat',     w:11 },
+    { h:'Rapor',      w:11 },
+    { h:'Yıllık',     w:11 },
+    { h:'Yemek Kst.', w:18 },
+    { h:'Gün Kst.',   w:18 },
+    { h:'Avans',      w:16 },
+    { h:'YATAN',      w:22 },
+    { h:'KALAN',      w:18 },
+    { h:'Açıklama',   w:0  },
+  ];
+  const usedW = cols.slice(0,-1).reduce((s,c)=>s+c.w, 0);
+  cols[cols.length-1].w = PW - 24 - usedW;
+
+  const SX = 12, SY = 32, RH = 7;
 
   // Başlık satırı
-  doc.setFillColor(34,38,58);
-  doc.rect(startX, startY, PW-28, rowH, 'F');
+  doc.setFillColor(30,41,59);
+  doc.rect(SX, SY, PW-24, RH, 'F');
   doc.setFont('helvetica','bold');
   doc.setFontSize(6);
   doc.setTextColor(148,163,184);
-  let cx = startX + 1;
+  let cx = SX + 2;
   cols.forEach(c => {
-    doc.text(c.h, cx, startY+4.2, {maxWidth:c.w-1});
+    doc.text(c.h, cx, SY + 4.6, {maxWidth: c.w-1});
     cx += c.w;
   });
 
   // Veri satırları
-  let ry = startY + rowH;
+  let ry = SY + RH;
   let rn = 0;
-  DATA.forEach((p,i) => {
+
+  DATA.forEach((p, i) => {
     if (p.pasif) return;
     rn++;
-    const st = ST[i], rv = calc(p,st);
+    const st = ST[i];
+    const rv = calc(p, st);
 
-    if (rn%2===0) { doc.setFillColor(22,25,37); doc.rect(startX,ry,PW-28,rowH,'F'); }
+    // Zebra
+    if (rn % 2 === 0) {
+      doc.setFillColor(248,250,252);
+      doc.rect(SX, ry, PW-24, RH, 'F');
+    }
+
+    // Sol kenar rengi (yatan büyüklüğüne göre)
+    doc.setFillColor(37,99,235);
+    doc.rect(SX, ry, 1.5, RH, 'F');
 
     const cells = [
-      String(rn),
-      `${p.ad} ${p.soyad}`,
-      p.gorev,
-      p.maas ? fmt(p.maas) : 'Saat',
-      (p.ek1||0)>0 ? fmt(p.ek1) : '',
-      (p.ek2||0)>0 ? fmt(p.ek2) : '',
-      st.eksik||'',
-      st.eksikSaat||'',
-      st.rapor||'',
-      st.yillik||'',
-      rv.yemekK>0 ? `-${fmt(rv.yemekK)}` : '',
-      rv.gunK>0   ? `-${fmt(rv.gunK)}`   : '',
-      rv.avans>0  ? fmt(rv.avans) : '',
-      fmt(rv.yatan),
-      rv.kalan!==null ? fmt(rv.kalan) : '',
-      buildAciklama(st,rv),
+      { v: String(rn),                                    color:[100,116,139], bold:false },
+      { v: `${p.ad} ${p.soyad}`,                          color:[15,23,42],    bold:true  },
+      { v: p.gorev,                                        color:[71,85,105],   bold:false },
+      { v: p.maas ? fmt(p.maas) : 'Saat',                 color:[51,65,85],    bold:false },
+      { v: (p.ek1||0)>0 ? fmt(p.ek1) : '',               color:[120,113,108],  bold:false },
+      { v: st.eksik     ? String(st.eksik)     : '',       color:[185,28,28],   bold:false },
+      { v: st.eksikSaat ? String(st.eksikSaat) : '',       color:[185,28,28],   bold:false },
+      { v: st.rapor     ? String(st.rapor)     : '',       color:[185,28,28],   bold:false },
+      { v: st.yillik    ? String(st.yillik)    : '',       color:[101,163,13],  bold:false },
+      { v: rv.yemekK>0  ? `-${fmt(rv.yemekK)}` : '',      color:[185,28,28],   bold:false },
+      { v: rv.gunK>0    ? `-${fmt(rv.gunK)}`   : '',      color:[185,28,28],   bold:false },
+      { v: rv.avans>0   ? fmt(rv.avans)         : '',      color:[234,88,12],   bold:false },
+      { v: fmt(rv.yatan),                                  color:[22,101,52],   bold:true  },
+      { v: rv.kalan!==null ? fmt(rv.kalan) : '',           color:[29,78,216],   bold:true  },
+      { v: buildAciklama(st, rv),                          color:[100,116,139], bold:false },
     ];
 
-    doc.setFont('helvetica','normal');
-    doc.setFontSize(5.8);
-    cx = startX+1;
-    cells.forEach((val,ci) => {
-      if      (ci===13) doc.setTextColor(34,197,94);
-      else if (ci===14) doc.setTextColor(79,142,247);
-      else if (ci===10||ci===11||ci===12) doc.setTextColor(239,100,100);
-      else    doc.setTextColor(200,210,220);
-      doc.text(String(val||''), cx, ry+4.2, {maxWidth:cols[ci].w-1});
+    cx = SX + 2;
+    cells.forEach((cell, ci) => {
+      doc.setFont('helvetica', cell.bold ? 'bold' : 'normal');
+      doc.setFontSize(ci === 1 ? 6.2 : 5.8);
+      doc.setTextColor(...cell.color);
+      doc.text(String(cell.v||''), cx, ry + 4.5, {maxWidth: cols[ci].w - 1});
       cx += cols[ci].w;
     });
 
-    doc.setDrawColor(30,34,53);
-    doc.line(startX, ry+rowH, startX+PW-28, ry+rowH);
-    ry += rowH;
+    // Alt çizgi
+    doc.setDrawColor(226,232,240);
+    doc.setLineWidth(0.2);
+    doc.line(SX, ry+RH, SX+PW-24, ry+RH);
+    ry += RH;
 
-    if (ry > PH-18) {
+    // Yeni sayfa
+    if (ry > PH - 18) {
       doc.addPage();
-      doc.setFillColor(15,17,23);
-      doc.rect(0,0,PW,PH,'F');
+      // Yeni sayfada sade header
+      doc.setFillColor(37,99,235);
+      doc.rect(0,0,PW,10,'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(8);
+      doc.setTextColor(255,255,255);
+      doc.text(`EĞİTİMCİ DİL KONUŞMA — ${month} (devam)`, 12, 7);
+      // Başlık satırını tekrar yaz
       ry = 14;
+      doc.setFillColor(30,41,59);
+      doc.rect(SX, ry, PW-24, RH, 'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(6);
+      doc.setTextColor(148,163,184);
+      cx = SX+2;
+      cols.forEach(c => { doc.text(c.h, cx, ry+4.6, {maxWidth:c.w-1}); cx += c.w; });
+      ry += RH;
+      rn = 0;
     }
   });
 
-  // Toplam satırı
-  doc.setFillColor(20,83,45);
-  doc.rect(startX, ry, PW-28, rowH, 'F');
+  // ── TOPLAM SATIRI ──────────────────────────────────────────────────────
+  doc.setFillColor(30,41,59);
+  doc.rect(SX, ry, PW-24, RH+1, 'F');
   doc.setFont('helvetica','bold');
-  doc.setFontSize(6.5);
+  doc.setFontSize(7);
   doc.setTextColor(255,255,255);
-  doc.text('TOPLAM', startX+1, ry+4.2);
-  const yatanX = startX + cols.slice(0,13).reduce((s,c)=>s+c.w,0) + 1;
-  doc.setTextColor(34,197,94);
-  doc.text(fmt(tY), yatanX, ry+4.2);
-  doc.setTextColor(79,142,247);
-  doc.text(fmt(tK), yatanX+cols[13].w, ry+4.2);
+  doc.text('TOPLAM', SX+2, ry+5);
+
+  const yatanX = SX + cols.slice(0,12).reduce((s,c)=>s+c.w, 0) + 2;
+  doc.setTextColor(134,239,172);
+  doc.text(fmt(tY)+' ₺', yatanX, ry+5);
+  doc.setTextColor(147,197,253);
+  doc.text(fmt(tK)+' ₺', yatanX + cols[12].w, ry+5);
+  doc.setTextColor(196,181,253);
+  doc.text(`Maliyet: ${fmt(tY+tK)} ₺`, yatanX + cols[12].w + cols[13].w, ry+5, {maxWidth:50});
+
+  // ── FOOTER ────────────────────────────────────────────────────────────
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(6);
+  doc.setTextColor(148,163,184);
+  doc.text(`Eğitimci Dil Konuşma Merkezi — ${month} Maaş Bordrosu — ${new Date().toLocaleDateString('tr-TR')}`, SX, PH-4);
+  doc.text(`Sayfa 1`, PW-20, PH-4);
 
   doc.save(`maas_${month.replace(' ','_')}_muhasebe.pdf`);
 }
