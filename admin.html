@@ -483,7 +483,7 @@ async function topluPdf(){
       if(data&&data[0]) kayitlar.push(data[0]);
     }
     if(!kayitlar.length) return;
-    const PDF_URL = 'https://halefadanur.github.io/ogrenci-form/pdf.html';
+    const PDF_URL = 'https://halefadanur.github.io/ogrenci-form/pdf.html?v='+Date.now();
     const yeni = window.open('','_blank');
     yeni.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Toplu PDF</title>
 <style>body{font-family:sans-serif;background:#f0ede8;margin:0}.bar{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:12px 20px;display:flex;gap:10px;align-items:center;position:sticky;top:0;z-index:99}.bar h3{flex:1;font-size:14px;font-weight:700;margin:0}.bar button{padding:8px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}.btnp{background:#fff;color:#764ba2}.btnx{background:rgba(255,255,255,.2);color:#fff}@media print{.bar{display:none!important}}</style>
