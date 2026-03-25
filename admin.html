@@ -157,7 +157,7 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
 
   <div class="filter-bar">
     <div class="search-wrapper">
-      <input class="search-inp" type="text" id="aramaInput" placeholder="Ara..." oninput="filtrele()">
+      <input class="search-inp" type="text" id="aramaInput" placeholder="Ara..." oninput="filtreleDebounce()">
       <button class="tbtn filtre-btn" onclick="document.getElementById('advFilters').classList.toggle('show')">Filtreler <span style="font-size:10px">▼</span></button>
     </div>
     <div id="advFilters" class="adv-filters">
@@ -248,7 +248,7 @@ async function verileriYukle(){
   let all=[], from=0;
   while(true){
     const to=from+999;
-    const res=await fetch(SUPA_URL+'/rest/v1/ogrenciler?order=created_at.desc',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,Range:from+'-'+to}});
+    const res=await fetch(SUPA_URL+'/rest/v1/ogrenciler?select=id,ad,soyad,gorusme_tarihi,tani,karar,uzman,created_at,tc_no,anne_tel,baba_tel,karar_guncelleme,karar_degisim,yonetici_notu,rehber_notu,updated_at&order=created_at.desc',{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,Range:from+'-'+to}});
     const data=await res.json();
     if(!data||!data.length) break;
     all=all.concat(data);
@@ -310,8 +310,23 @@ function uzmanNormalize(u){
   return u.charAt(0).toUpperCase() + u.slice(1);
 }
 
+function trNorm(s){
+  if(!s) return '';
+  return s
+    .replace(/İ/g,'i').replace(/I/g,'i').replace(/ı/g,'i')
+    .replace(/Ğ/g,'g').replace(/ğ/g,'g')
+    .replace(/Ü/g,'u').replace(/ü/g,'u')
+    .replace(/Ş/g,'s').replace(/ş/g,'s')
+    .replace(/Ö/g,'o').replace(/ö/g,'o')
+    .replace(/Ç/g,'c').replace(/ç/g,'c')
+    .toLowerCase();
+}
+
+let _filtreleTimer = null;
+function filtreleDebounce(){ clearTimeout(_filtreleTimer); _filtreleTimer = setTimeout(filtrele, 120); }
+
 function filtrele(){
-  const q=document.getElementById('aramaInput').value.toLowerCase();
+  const q=trNorm(document.getElementById('aramaInput').value);
   const k=document.getElementById('kararSel').value;
   
   filtreliVeriler = tumVeriler.filter(r=>{
@@ -319,7 +334,7 @@ function filtrele(){
     if(k && r.karar!==k) return false;
     if(window._st && !window._st.includes(r.karar)) return false;
     if(q){
-      const t=(r.ad+' '+r.soyad+' '+r.tani+' '+r.karar+' '+uzmanNormalize(r.uzman)).toLowerCase();
+      const t=trNorm((r.ad||'')+' '+(r.soyad||'')+' '+(r.tani||'')+' '+(r.karar||'')+' '+(r.uzman||'')+' '+(r.tc_no||'')+' '+(r.anne_tel||'')+' '+(r.baba_tel||''));
       if(!t.includes(q)) return false;
     }
     return true;
@@ -408,9 +423,14 @@ async function kGuncelle(id,nk,el){
   el.disabled=false;
 }
 
+const SAYFA_BOYUTU = 150;
+let mevcutSayfa = 0;
+
 function tabloDoldur(){
+  mevcutSayfa = 0;
   const tb = document.getElementById('tableBody');
-  tb.innerHTML = filtreliVeriler.map(r=>`
+  const goster = filtreliVeriler.slice(0, SAYFA_BOYUTU);
+  tb.innerHTML = goster.map(r=>`
     <tr>
       <td data-label=""><input type="checkbox" class="rchk" value="${r.id}" onchange="chkUp()"></td>
       <td data-label="Öğrenci"><strong>${r.ad||''} ${r.soyad||''}</strong></td>
@@ -425,6 +445,50 @@ function tabloDoldur(){
       </td>
     </tr>
   `).join('');
+  // Daha fazla göster butonu
+  let moreBtn = document.getElementById('dahaFazlaBtn');
+  if(!moreBtn){
+    moreBtn = document.createElement('div');
+    moreBtn.id = 'dahaFazlaBtn';
+    moreBtn.style.cssText = 'text-align:center;padding:16px;';
+    document.querySelector('.table-wrap').appendChild(moreBtn);
+  }
+  if(filtreliVeriler.length > SAYFA_BOYUTU){
+    moreBtn.innerHTML = '<button onclick="dahaFazlaYukle()" style="background:var(--surf);border:1px solid var(--bd);color:var(--sub);padding:8px 20px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">'+(filtreliVeriler.length - SAYFA_BOYUTU)+' kayıt daha göster</button>';
+  } else {
+    moreBtn.innerHTML = '';
+  }
+}
+
+function dahaFazlaYukle(){
+  mevcutSayfa++;
+  const tb = document.getElementById('tableBody');
+  const baslangic = mevcutSayfa * SAYFA_BOYUTU;
+  const bitis = baslangic + SAYFA_BOYUTU;
+  const yeniSatirlar = filtreliVeriler.slice(baslangic, bitis);
+  tb.innerHTML += yeniSatirlar.map(r=>`
+    <tr>
+      <td data-label=""><input type="checkbox" class="rchk" value="${r.id}" onchange="chkUp()"></td>
+      <td data-label="Öğrenci"><strong>${r.ad||''} ${r.soyad||''}</strong></td>
+      <td data-label="Görüşme">${tFmt(r.gorusme_tarihi)}</td>
+      <td data-label="Tanı">${r.tani?'<span class="badge b-blue">'+r.tani+'</span>':''}</td>
+      <td data-label="Karar">${kSel(r.id, r.karar)}</td>
+      <td data-label="Uzman">${uzmanNormalize(r.uzman)}</td>
+      <td data-label="">
+        <button class="act-btn act-edit" onclick="window.open('https://halefadanur.github.io/ogrenci-form/edit.html?admin=1&id='+r.id)">Düzenle</button>
+        <button class="act-btn act-pdf" style="background:var(--orange-bg);color:var(--orange);margin-bottom:4px;" onclick="notAc('${r.id}','yonetici_notu')">Yönetici Notu</button>
+        <button class="act-btn act-pdf" onclick="notAc('${r.id}','rehber_notu')">Rehber Notu</button>
+      </td>
+    </tr>
+  `).join('');
+  // Butonu güncelle
+  const kalan = filtreliVeriler.length - (mevcutSayfa+1)*SAYFA_BOYUTU;
+  const moreBtn = document.getElementById('dahaFazlaBtn');
+  if(kalan > 0){
+    moreBtn.innerHTML = '<button onclick="dahaFazlaYukle()" style="background:var(--surf);border:1px solid var(--bd);color:var(--sub);padding:8px 20px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">'+kalan+' kayıt daha göster</button>';
+  } else {
+    moreBtn.innerHTML = '';
+  }
 }
 
 let actId=null, actTip=null;
