@@ -692,18 +692,15 @@ async function raporAcOzel() {
     const KEY  = "sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
     const hdrs = { apikey: KEY, Authorization: 'Bearer ' + KEY };
 
-    // Seçili her karar için ayrı sorgu yap, birleştir
-    // Filtre: gorusme_tarihi o aya ait VEYA updated_at o aya ait (ikisini union et)
+    // Her seçili karar için: karar_guncelleme o aya düşen kayıtları çek
     const sonuclar = [];
     const idSet = new Set();
     for(const k of seciliKararlar){
       const enc = encodeURIComponent(k);
-      // 1) Görüşme tarihi o aya ait
-      const url1 = `${SUPA}/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,anne_tel,baba_tel,gorusme_tarihi,sinif,tani,gorusme_not,yonetici_notu,rehber_notu&karar=eq.${enc}&gorusme_tarihi=gte.${baslangic}&gorusme_tarihi=lt.${bitis}&order=gorusme_tarihi.desc`;
-      // 2) updated_at o aya ait (karar bu ay değişmiş olabilir)
-      const url2 = `${SUPA}/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,anne_tel,baba_tel,gorusme_tarihi,sinif,tani,gorusme_not,yonetici_notu,rehber_notu&karar=eq.${enc}&updated_at=gte.${baslangic}&updated_at=lt.${bitis}&order=updated_at.desc`;
-      const [r1,r2] = await Promise.all([fetch(url1,{headers:hdrs}).then(r=>r.json()),fetch(url2,{headers:hdrs}).then(r=>r.json())]);
-      for(const row of [...(r1||[]),...(r2||[])]){
+      const url = `${SUPA}/rest/v1/ogrenciler?select=ad,soyad,karar,karar_degisim,karar_guncelleme,uzman,anne_tel,baba_tel,gorusme_tarihi,sinif,tani,gorusme_not,yonetici_notu,rehber_notu&karar=eq.${enc}&karar_guncelleme=gte.${baslangic}&karar_guncelleme=lt.${bitis}&order=karar_guncelleme.desc`;
+      const res = await fetch(url, {headers:hdrs});
+      const data = await res.json();
+      for(const row of (data||[])){
         const key = (row.ad||'')+'|'+(row.soyad||'')+'|'+(row.gorusme_tarihi||'');
         if(!idSet.has(key)){ idSet.add(key); sonuclar.push(row); }
       }
@@ -718,10 +715,9 @@ async function raporAcOzel() {
     });
 
     const tf = t => t ? t.split('-').reverse().join('.') : '—';
+    const tfts = ts => ts ? new Date(ts).toLocaleDateString('tr-TR') : '—';
     const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-    let tabloHtml = '';
-    let toplamSayac = 0;
     const KARAR_RENK = {
       'KAYDEDİLDİ':'#059669','Kaydedilecek':'#0891B2',
       'Başka Kuruma Gitti':'#DC2626','Eski Kurumuna Devam':'#DC2626',
@@ -731,56 +727,50 @@ async function raporAcOzel() {
       'Takibe Alındı':'#7C3AED','Aile Düşünecek':'#7C3AED','Aile Takip Edecek':'#7C3AED',
     };
 
+    let tabloHtml = '';
+    let toplamSayac = 0;
+
     for(const [karar, kayitlar] of Object.entries(gruplar)){
       toplamSayac += kayitlar.length;
       const renk = KARAR_RENK[karar] || '#4338CA';
       tabloHtml += `
-        <div style="margin-bottom:36px;page-break-inside:avoid;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid ${renk}33;">
-            <span style="width:10px;height:10px;border-radius:50%;background:${renk};display:inline-block;flex-shrink:0;"></span>
+        <div style="margin-bottom:40px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid ${renk}44;">
+            <span style="width:11px;height:11px;border-radius:50%;background:${renk};display:inline-block;flex-shrink:0;"></span>
             <h2 style="font-size:15px;font-weight:700;color:${renk};">${esc(karar)}</h2>
-            <span style="background:${renk}22;color:${renk};padding:1px 10px;border-radius:99px;font-size:12px;font-weight:700;">${kayitlar.length} kişi</span>
+            <span style="background:${renk}22;color:${renk};padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700;">${kayitlar.length} kişi</span>
           </div>
-          <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
-            <thead>
-              <tr style="background:#F8FAFC;">
-                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;white-space:nowrap;">Öğrenci</th>
-                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;white-space:nowrap;">Görüşme</th>
-                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;white-space:nowrap;">Uzman</th>
-                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;white-space:nowrap;">Telefon</th>
-                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;">Tanı / Sınıf</th>
-                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;">Notlar</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${kayitlar.map((r,i) => {
-                const tel = r.anne_tel || r.baba_tel || '—';
-                const not = (r.yonetici_notu||r.gorusme_not||'').slice(0,180);
-                return `<tr style="border-bottom:1px solid #F1F5F9;background:${i%2?'#F8FAFC':'#fff'};">
-                  <td style="padding:9px 10px;font-weight:600;color:#0F172A;">${esc((r.ad||'')+' '+(r.soyad||'')).trim()}</td>
-                  <td style="padding:9px 10px;color:#64748B;white-space:nowrap;">${tf(r.gorusme_tarihi)}</td>
-                  <td style="padding:9px 10px;color:#64748B;white-space:nowrap;">${esc(r.uzman||'—')}</td>
-                  <td style="padding:9px 10px;color:#64748B;white-space:nowrap;font-family:monospace;">${esc(tel)}</td>
-                  <td style="padding:9px 10px;color:#64748B;white-space:nowrap;">${esc((r.tani||'')+(r.sinif?' · '+r.sinif:''))}</td>
-                  <td style="padding:9px 10px;font-size:12px;max-width:280px;">
-                    ${r.gorusme_not ? `<div style="color:#374151;margin-bottom:${(r.yonetici_notu||r.rehber_notu)?'6px':'0'}">${esc((r.gorusme_not||'').slice(0,160))}${(r.gorusme_not||'').length>160?'…':''}</div>` : ''}
-                    ${r.yonetici_notu ? `<div style="background:#FEF3C7;border-left:3px solid #D97706;padding:4px 8px;border-radius:0 5px 5px 0;color:#92400E;margin-bottom:${r.rehber_notu?'4px':'0'}"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:2px;">Yönetici</span>${esc((r.yonetici_notu||'').slice(0,160))}${(r.yonetici_notu||'').length>160?'…':''}</div>` : ''}
-                    ${r.rehber_notu ? `<div style="background:#EFF6FF;border-left:3px solid #3B82F6;padding:4px 8px;border-radius:0 5px 5px 0;color:#1E40AF"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:2px;">Rehber</span>${esc((r.rehber_notu||'').slice(0,160))}${(r.rehber_notu||'').length>160?'…':''}</div>` : ''}
-                    ${!r.gorusme_not && !r.yonetici_notu && !r.rehber_notu ? '<span style="color:#CBD5E1">—</span>' : ''}
-                  </td>
-                </tr>`;
-              }).join('')}
-            </tbody>
-          </table>
+          ${kayitlar.map((r,i) => {
+            const tel = [r.anne_tel, r.baba_tel].filter(Boolean).join(' / ') || '—';
+            const kararDeg = r.karar_degisim ? `<span style="font-size:11px;color:${renk};font-weight:600;background:${renk}15;padding:2px 7px;border-radius:5px;display:inline-block;margin-bottom:6px;">🔄 ${esc(r.karar_degisim)}</span><br>` : '';
+            return `<div style="background:${i%2?'#F8FAFC':'#fff'};border:1px solid #E8ECF0;border-radius:10px;padding:14px 16px;margin-bottom:8px;page-break-inside:avoid;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                <div>
+                  ${kararDeg}
+                  <div style="font-size:15px;font-weight:700;color:#0F172A;">${esc((r.ad||'')+' '+(r.soyad||'')).trim()}</div>
+                  <div style="font-size:12px;color:#64748B;margin-top:3px;">${esc(r.uzman||'—')} · Görüşme: ${tf(r.gorusme_tarihi)} · Karar: ${tfts(r.karar_guncelleme)}</div>
+                </div>
+                <div style="text-align:right;font-size:12px;color:#64748B;">
+                  <div style="font-family:monospace;">${esc(tel)}</div>
+                  <div style="margin-top:2px;">${esc((r.tani||'')+(r.sinif?' · '+r.sinif:''))}</div>
+                </div>
+              </div>
+              ${(r.gorusme_not||r.yonetici_notu||r.rehber_notu) ? `<div style="display:flex;flex-direction:column;gap:6px;">
+                ${r.gorusme_not ? `<div style="background:#F8FAFC;border-left:3px solid #94A3B8;padding:7px 10px;border-radius:0 6px 6px 0;font-size:12.5px;color:#374151;line-height:1.5;"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#94A3B8;display:block;margin-bottom:3px;">Görüşme Notu</span>${esc(r.gorusme_not)}</div>` : ''}
+                ${r.yonetici_notu ? `<div style="background:#FFFBEB;border-left:3px solid #D97706;padding:7px 10px;border-radius:0 6px 6px 0;font-size:12.5px;color:#92400E;line-height:1.5;"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:3px;">Yönetici Notu</span>${esc(r.yonetici_notu)}</div>` : ''}
+                ${r.rehber_notu ? `<div style="background:#EFF6FF;border-left:3px solid #3B82F6;padding:7px 10px;border-radius:0 6px 6px 0;font-size:12.5px;color:#1E40AF;line-height:1.5;"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:3px;">Rehber Notu</span>${esc(r.rehber_notu)}</div>` : ''}
+              </div>` : '<div style="color:#CBD5E1;font-size:12px;">Not yok</div>'}
+            </div>`;
+          }).join('')}
         </div>`;
     }
 
     if(!toplamSayac){
-      tabloHtml = '<div style="text-align:center;padding:60px;color:#94A3B8;font-size:15px;">Bu ay ve bu kararlar için kayıt bulunamadı.</div>';
+      tabloHtml = '<div style="text-align:center;padding:80px;color:#94A3B8;font-size:15px;">⚠️ Bu ay seçilen kararlar için değişiklik bulunamadı.</div>';
     }
 
     const html = `<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">
-<title>Karar Raporu — ${ayAdi}</title>
+<title>Karar Değişim Raporu — ${ayAdi}</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#F9FAFB;color:#111827;}
@@ -788,7 +778,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F9FAFB;color:#11182
 .bar-left h1{font-size:15px;font-weight:700;margin-bottom:2px;}
 .bar-left p{font-size:12px;opacity:.55;}
 .bar button{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;margin-left:8px;}
-.content{max-width:960px;margin:0 auto;padding:28px 24px;}
+.content{max-width:900px;margin:0 auto;padding:28px 24px;}
 .ozet{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px;}
 .ozet-kart{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:14px 20px;flex:1;min-width:120px;}
 .ozet-kart .sayi{font-size:24px;font-weight:700;font-family:monospace;}
@@ -802,7 +792,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#F9FAFB;color:#11182
 </head><body>
 <div class="bar">
   <div class="bar-left">
-    <h1>🎯 Karar Bazlı Rapor</h1>
+    <h1>🎯 Karar Değişim Raporu</h1>
     <p>${ayAdi} · ${seciliKararlar.length} karar türü · ${toplamSayac} öğrenci</p>
   </div>
   <div>
