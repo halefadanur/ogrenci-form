@@ -968,17 +968,32 @@ function exportPDF() {
 </body>
 </html>`;
 
-  // Blob URL oluştur ve yeni sekmede aç
-  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.target   = '_blank';
-  a.rel      = 'noopener';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  // Sayfanın içinde modal olarak göster
+  let modal = document.getElementById('pdfModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'pdfModal';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);display:flex;flex-direction:column;';
+    modal.innerHTML = `
+      <div style="background:#1e293b;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <span style="color:white;font-weight:600;font-size:13px;">📄 Maaş Bordrosu PDF Önizleme</span>
+        <div style="display:flex;gap:8px;">
+          <button onclick="document.getElementById('pdfFrame').contentWindow.print()"
+            style="background:#2563eb;color:white;border:none;padding:7px 16px;border-radius:6px;cursor:pointer;font-weight:600;font-size:12px;">
+            🖨️ Yazdır / PDF Kaydet
+          </button>
+          <button onclick="document.getElementById('pdfModal').remove()"
+            style="background:#475569;color:white;border:none;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;">
+            ✕ Kapat
+          </button>
+        </div>
+      </div>
+      <iframe id="pdfFrame" style="flex:1;border:none;background:white;"></iframe>`;
+    document.body.appendChild(modal);
+  }
+  const frame = document.getElementById('pdfFrame');
+  frame.srcdoc = html;
+  document.getElementById('pdfModal').style.display = 'flex';
 }
   const month = monthLabel();
   const { jsPDF } = window.jspdf;
