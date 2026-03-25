@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maaş Hesaplama Sistemi</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3352;
+  --accent:#4f8ef7;--accent2:#7c3aed;--green:#22c55e;--red:#ef4444;
+  --yellow:#f59e0b;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;}
+
+header{background:linear-gradient(135deg,#1a1d27,#0f1117);border-bottom:1px solid var(--border);
+  padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;gap:12px;flex-wrap:wrap;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo-text{font-size:14px;font-weight:700;}
+.logo-sub{font-size:10px;color:var(--text2);}
+.header-right{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+
+.yemek-wrap{display:flex;align-items:center;gap:6px;}
+.yemek-wrap label{font-size:11px;color:var(--text2);white-space:nowrap;}
+.yemek-wrap input{background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  padding:5px 8px;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:12px;width:82px;text-align:right;}
+.yemek-wrap input:focus{outline:none;border-color:var(--accent);}
+
+select.msel{background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  padding:5px 9px;border-radius:6px;font-family:inherit;font-size:12px;cursor:pointer;}
+
+.btn{padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-family:inherit;
+  font-size:11px;font-weight:600;transition:all .15s;display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.btn-primary{background:var(--accent);color:#fff;} .btn-primary:hover{background:#3b7de8;}
+.btn-success{background:var(--green);color:#fff;}  .btn-success:hover{background:#16a34a;}
+.btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+
+.main{padding:20px 24px;max-width:1920px;margin:0 auto;}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 16px;}
+.stat-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;}
+.stat-value{font-size:19px;font-weight:700;font-family:'IBM Plex Mono',monospace;margin-top:2px;}
+.sv-blue{color:var(--accent);} .sv-green{color:var(--green);}
+.sv-purple{color:#a78bfa;}     .sv-orange{color:var(--yellow);}
+.sv-teal{color:#2dd4bf;}
+
+/* Column toggle panel */
+.col-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:12px 16px;margin-bottom:14px;}
+.col-panel-head{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.col-panel-head span{font-size:12px;font-weight:600;color:var(--text2);}
+.col-panel-head .arrow{font-size:10px;transition:transform .2s;}
+.col-panel-head .arrow.open{transform:rotate(180deg);}
+.col-toggles{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px;}
+.col-toggle{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:20px;cursor:pointer;user-select:none;
+  border:1px solid var(--border);font-size:11px;color:var(--text2);
+  transition:all .15s;background:var(--surface2);
+}
+.col-toggle.active{background:rgba(79,142,247,.15);border-color:var(--accent);color:var(--accent);}
+.col-toggle .dot{width:6px;height:6px;border-radius:50%;background:var(--text3);transition:background .15s;}
+.col-toggle.active .dot{background:var(--accent);}
+
+/* Table */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.table-top{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.table-title{font-size:13px;font-weight:600;}
+.scrollable{overflow-x:auto;}
+
+table{width:100%;border-collapse:collapse;}
+th{background:var(--surface2);padding:9px 11px;text-align:right;font-size:10px;font-weight:600;
+  color:var(--text2);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;
+  border-bottom:1px solid var(--border);}
+th.left,td.left{text-align:left;}
+td{padding:8px 11px;border-bottom:1px solid #1e2235;text-align:right;white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#1e2338;}
+tr.pasif td{opacity:.32;}
+tr.pasif:hover td{background:transparent;}
+
+.name-cell{font-weight:600;font-size:12px;}
+.role-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:#1e2338;color:var(--text2);display:inline-block;}
+.tag{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600;}
+.tag-saat{background:rgba(124,58,237,.2);color:#a78bfa;border:1px solid rgba(124,58,237,.3);}
+.tag-ek{background:rgba(245,158,11,.15);color:var(--yellow);border:1px solid rgba(245,158,11,.3);}
+.tag-pasif{background:rgba(100,116,139,.2);color:var(--text3);border:1px solid rgba(100,116,139,.3);}
+
+.inp{background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  padding:4px 7px;border-radius:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;
+  text-align:right;transition:border-color .15s;}
+.inp:focus{outline:none;border-color:var(--accent);background:#1e2338;}
+.inp-sm{width:60px;} .inp-md{width:72px;}
+
+.money{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+.m-yatan{color:var(--green);font-weight:700;}
+.m-kalan{color:var(--accent);font-weight:700;}
+.m-red{color:var(--red);}
+.m-dim{color:var(--text3);}
+.m-ek{color:var(--yellow);}
+
+.act-btn{background:transparent;border:none;cursor:pointer;padding:3px 5px;border-radius:4px;
+  font-size:11px;transition:background .15s;color:var(--text2);}
+.act-btn:hover{background:var(--surface2);color:var(--text);}
+.act-btn.del:hover{color:var(--red);}
+.act-btn.warn:hover{color:var(--yellow);}
+
+/* Export */
+.export-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:16px 18px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.export-info{font-size:11px;color:var(--text2);}
+.export-info strong{color:var(--text);}
+.export-btns{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:400px;max-width:95vw;}
+.modal h3{font-size:15px;margin-bottom:14px;}
+.mf{margin-bottom:12px;}
+.ml{font-size:10px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;}
+.mi{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  padding:8px 11px;border-radius:7px;font-family:inherit;font-size:12px;}
+.mi:focus{outline:none;border-color:var(--accent);}
+.modal-btns{display:flex;gap:8px;margin-top:16px;justify-content:flex-end;}
+
+.col-hidden{display:none;}
+
+/* Geçmiş modal */
+.hist-list{max-height:360px;overflow-y:auto;margin-top:12px;}
+.hist-item{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface2);margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
+.hist-item:hover{border-color:var(--accent);}
+.hist-item.active{border-color:var(--green);background:rgba(34,197,94,.07);}
+.hist-month{font-weight:600;font-size:13px;}
+.hist-meta{font-size:10px;color:var(--text3);margin-top:2px;}
+.hist-totals{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+.hist-totals .yt{color:var(--green);}
+.hist-totals .kl{color:var(--accent);}
+.hist-actions{display:flex;gap:6px;margin-left:12px;}
+.save-indicator{font-size:10px;color:var(--green);display:none;align-items:center;gap:4px;}
+.save-indicator.show{display:flex;}
+</style>
+</head>
+<body>
+
+<!-- GİRİŞ EKRANI -->
+<div id="loginWrap" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;
+  align-items:center;justify-content:center;flex-direction:column;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:36px 40px;width:360px;max-width:95vw;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+      <div style="width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+        border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;">₺</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;">Maaş Hesaplama</div>
+        <div style="font-size:11px;color:var(--text2);">Eğitimci Dil Konuşma Merkezi</div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;color:var(--text2);text-transform:uppercase;margin-bottom:5px;">Email</div>
+      <input id="loginEmail" type="email" placeholder="ornek@mail.com"
+        style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);
+        padding:10px 12px;border-radius:8px;font-family:inherit;font-size:13px;"
+        onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()" />
+    </div>
+    <div style="margin-bottom:20px;">
+      <div style="font-size:10px;color:var(--text2);text-transform:uppercase;margin-bottom:5px;">Şifre</div>
+      <input id="loginPass" type="password" placeholder="••••••••"
+        style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);
+        padding:10px 12px;border-radius:8px;font-family:inherit;font-size:13px;"
+        onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <div id="loginErr" style="color:var(--red);font-size:11px;margin-bottom:12px;min-height:16px;"></div>
+    <button id="loginBtn" onclick="doLogin()"
+      style="width:100%;background:var(--accent);color:white;border:none;padding:11px;
+      border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">
+      Giriş Yap
+    </button>
+  </div>
+</div>
+
+<!-- UYGULAMA -->
+<div id="appWrap" style="display:none;">
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">₺</div>
+    <div>
+      <div class="logo-text">Maaş Hesaplama Sistemi</div>
+      <div class="logo-sub">Eğitimci Dil Konuşma Merkezi</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="yemek-wrap">
+      <label>Aylık Yemek ₺</label>
+      <input type="number" id="yemekInput" value="2000" min="0" onchange="YEMEK=parseFloat(this.value)||2000;render();" />
+    </div>
+    <select class="msel" id="monthSel"></select>
+    <button class="btn btn-outline" onclick="openAdd()">＋ Personel</button>
+    <button class="btn btn-success" onclick="saveMonth()">💾 Kaydet</button>
+    <button class="btn btn-outline" onclick="openHistory()">🕐 Geçmiş</button>
+    <div class="save-indicator" id="saveIndicator">✓ Kaydedildi</div>
+    <div style="font-size:10px;color:var(--text3);display:flex;align-items:center;gap:6px;margin-left:4px;">
+      <span id="userEmail"></span>
+      <button class="act-btn del" onclick="signOut()" title="Çıkış Yap" style="font-size:11px;padding:3px 7px;border:1px solid var(--border);border-radius:5px;">Çıkış</button>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Aktif / Toplam</div>
+      <div class="stat-value sv-blue" id="sPersonel">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Toplam Yatan</div>
+      <div class="stat-value sv-green" id="sYatan">0 ₺</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Toplam Kalan</div>
+      <div class="stat-value sv-purple" id="sKalan">0 ₺</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Toplam Kesinti</div>
+      <div class="stat-value sv-orange" id="sKesinti">0 ₺</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(45,212,191,.3);">
+      <div class="stat-label">Toplam Maliyet</div>
+      <div class="stat-value sv-teal" id="sMaliyet">0 ₺</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:3px;">Yatan + Kalan</div>
+    </div>
+  </div>
+
+  <!-- COLUMN TOGGLE PANEL -->
+  <div class="col-panel">
+    <div class="col-panel-head" onclick="toggleColPanel()">
+      <span>🔧 Sütunları Göster / Gizle</span>
+      <span class="arrow" id="colArrow">▼</span>
+    </div>
+    <div class="col-toggles" id="colToggles" style="display:none;"></div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="table-top">
+      <div class="table-title">Personel Maaş Tablosu</div>
+      <div style="font-size:10px;color:var(--text3)">
+        <span class="tag tag-saat">SAAT</span> saat ücretli &nbsp;
+        <span class="tag tag-ek">EK</span> ek ödemeli &nbsp;
+        <span class="tag tag-pasif">PASİF</span> işten çıktı
+      </div>
+    </div>
+    <div class="scrollable">
+      <table id="mainTable">
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- EXPORT -->
+  <div class="export-panel">
+    <div class="export-info">
+      <strong>Excel Dışa Aktarım</strong> — Pasif personel dahil edilmez
+    </div>
+    <div class="export-btns">
+      <button class="btn btn-success" onclick="exportXLSX('banka')">⬇ Banka (.xlsx)</button>
+      <button class="btn btn-primary" onclick="exportXLSX('muhasebe')">⬇ Muhasebe (.xlsx)</button>
+      <button class="btn" onclick="exportPDF()" style="background:#dc2626;color:white;">⬇ Muhasebe (.pdf)</button>
+    </div>
+  </div>
+</div>
+
+<!-- GEÇMİŞ MODAL -->
+<div class="modal-overlay" id="histModal">
+  <div class="modal" style="width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <h3 style="margin:0">📅 Kayıtlı Aylar</h3>
+      <button class="act-btn del" onclick="closeHistory()" style="font-size:16px">✕</button>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Bir aya tıklayarak yükleyebilir, üzerine kaydedebilir veya silebilirsiniz.</div>
+    <div class="hist-list" id="histList"></div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;">
+      <button class="btn btn-outline" onclick="closeHistory()">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- TIP MODAL -->
+<div class="modal-overlay" id="tipModal">
+  <div class="modal" style="width:360px">
+    <h3 id="tipModalTitle"></h3>
+    <div class="mf">
+      <div class="ml" style="font-size:11px;color:var(--text2);line-height:1.5" id="tipInfo"></div>
+    </div>
+    <div class="mf" id="tipMaasRow">
+      <div class="ml">Aylık Maaş (₺)</div>
+      <input class="mi" id="tipMaasInput" type="number" min="1" placeholder="örn. 38000"
+        onkeydown="if(event.key==='Enter')confirmTip()" />
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeTipModal()">İptal</button>
+      <button class="btn" id="tipConfirmBtn" onclick="confirmTip()" style="color:white">Onayla</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h3>Yeni Personel Ekle</h3>
+    <div class="mf"><div class="ml">Ad Soyad *</div><input class="mi" id="mAd" placeholder="Ad Soyad" /></div>
+    <div class="mf"><div class="ml">Görev</div><input class="mi" id="mGorev" placeholder="Öğretmen, DKT..." /></div>
+    <div class="mf"><div class="ml">Hesap No</div><input class="mi" id="mHesap" /></div>
+    <div class="mf"><div class="ml">T.C. No</div><input class="mi" id="mTC" /></div>
+    <div class="mf"><div class="ml">Maaş (boş = saat ücretli)</div><input class="mi" id="mMaas" type="number" placeholder="0" /></div>
+    <div class="mf"><div class="ml">Ek1</div><input class="mi" id="mEk1" type="number" placeholder="0" /></div>
+    <div class="mf"><div class="ml">Ek2</div><input class="mi" id="mEk2" type="number" placeholder="0" /></div>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeAdd()">İptal</button>
+      <button class="btn btn-primary" onclick="addPerson()">Ekle</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /appWrap -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+let YEMEK = 2000;
+const IS_GUNU = 20;
+
+const DATA = [
+  {gorev:'Diğer',                 hesapNo:'27150015', tc:'17278746394', ad:'ARZU',       soyad:'ÖZGÜR',        maas:28076, ek1:3000, ek2:0},
+  {gorev:'Özel Eğitim Öğretmeni', hesapNo:'32642130', tc:'57787625322', ad:'AYNUR',      soyad:'NAZIMOĞLU',    maas:43500, ek1:0,    ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'27266992', tc:'36208119404', ad:'AYSUN',      soyad:'ÇİÇEK',        maas:37000, ek1:0,    ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'27270176', tc:'52228460470', ad:'AYŞE NUR',   soyad:'ERCAN',        maas:38000, ek1:0,    ek2:0},
+  {gorev:'Rehber Öğretmen',       hesapNo:'27179211', tc:'37315315390', ad:'BÜŞRA NUR',  soyad:'ATMACA',       maas:38000, ek1:0,    ek2:0},
+  {gorev:'Diğer',                 hesapNo:'14308502', tc:'44272106152', ad:'ÇAĞLAR',     soyad:'KAYA',         maas:28076, ek1:5000, ek2:0},
+  {gorev:'DKT',                   hesapNo:'27177464', tc:'13870849044', ad:'ÇİĞDEM',     soyad:'ŞEN',          maas:null,  ek1:0,    ek2:0},
+  {gorev:'Özel Eğitim Öğretmeni', hesapNo:'27177154', tc:'12643908902', ad:'EBRU',       soyad:'HOCAOĞLU',     maas:43500, ek1:6500, ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'27167634', tc:'14362662516', ad:'ELİF',       soyad:'YAĞIZ',        maas:38000, ek1:0,    ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'27091882', tc:'17374974776', ad:'EMRİYE',     soyad:'ÖZİL',         maas:37200, ek1:0,    ek2:0},
+  {gorev:'Rehber Öğretmen',       hesapNo:'27143402', tc:'12054114008', ad:'ESMER',      soyad:'KERİM',        maas:43500, ek1:0,    ek2:0},
+  {gorev:'Müdür',                 hesapNo:'42044878', tc:'60184239160', ad:'HALEF',      soyad:'ADANUR',       maas:50000, ek1:0,    ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'27201506', tc:'14236835664', ad:'HAZEL',      soyad:'YILDIZ',       maas:38000, ek1:0,    ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'13626840', tc:'29944311676', ad:'HİLAL',      soyad:'AKTAŞ',        maas:37200, ek1:0,    ek2:0},
+  {gorev:'Diğer',                 hesapNo:'34745041', tc:'65365063510', ad:'KADER',      soyad:'USLU',         maas:28076, ek1:2000, ek2:0},
+  {gorev:'Diğer',                 hesapNo:'13760735', tc:'17608375546', ad:'MEHMET EMİN',soyad:'TUNÇ',         maas:28076, ek1:2000, ek2:0},
+  {gorev:'Özel Eğitim Öğretmeni', hesapNo:'27269617', tc:'16923018640', ad:'MİRAY',      soyad:'MİRZA',        maas:42655, ek1:0,    ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'27280218', tc:'10537923178', ad:'MUSTAFA',    soyad:'GÜL',          maas:38000, ek1:0,    ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'27330723', tc:'12226895926', ad:'NAGİHAN',    soyad:'SARIKAYA',     maas:null,  ek1:0,    ek2:0},
+  {gorev:'Diğer',                 hesapNo:'27145424', tc:'44164838390', ad:'NECMİYE',    soyad:'ŞEN',          maas:28076, ek1:8000, ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'11372370', tc:'61402130962', ad:'RANA',       soyad:'ALAN',         maas:37200, ek1:0,    ek2:0},
+  {gorev:'Diğer',                 hesapNo:'77739854', tc:'60454536418', ad:'SADIK',      soyad:'MİRZAOĞLU',    maas:28076, ek1:8000, ek2:0},
+  {gorev:'Özel Eğitim Öğretmeni', hesapNo:'27269652', tc:'12054114244', ad:'SEBİNE',     soyad:'KERİM',        maas:43500, ek1:0,    ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'53713049', tc:'16825730350', ad:'SEMİH BURAK',soyad:'AKAN',         maas:43500, ek1:0,    ek2:0},
+  {gorev:'DKT',                   hesapNo:'27137361', tc:'25393735490', ad:'SENANUR',    soyad:'SAÇLIOĞLU',    maas:26000, ek1:0,    ek2:0},
+  {gorev:'Diğer',                 hesapNo:'27240028', tc:'49831713994', ad:'SERPİL',     soyad:'NEBİ',         maas:28076, ek1:5500, ek2:17500},
+  {gorev:'Uzman Öğretici',        hesapNo:'69865857', tc:'28930231592', ad:'TUĞÇE',      soyad:'PAKAKİ',       maas:38000, ek1:0,    ek2:0},
+  {gorev:'Uzman Öğretici',        hesapNo:'27269416', tc:'15175712986', ad:'ZEYNEP',     soyad:'ULUÇAY',       maas:null,  ek1:0,    ek2:0},
+];
+
+// Per-person input state
+const ST = {};
+DATA.forEach((_,i) => { ST[i] = {eksik:0, eksikSaat:0, rapor:0, yillik:0, saat1:0, saat2:0, avans:0}; });
+
+// ─── COLUMN DEFINITIONS ────────────────────────────────────────────────────
+// id, label, visible by default
+const COLS = [
+  {id:'no',      label:'#',           def:true,  fixed:true},
+  {id:'ad',      label:'Ad Soyad',    def:true,  fixed:true},
+  {id:'gorev',   label:'Görev',       def:true},
+  {id:'hesap',   label:'Hesap No',    def:false},
+  {id:'tc',      label:'T.C.',        def:false},
+  {id:'maas',    label:'Maaş (R)',    def:true},
+  {id:'ek1',     label:'Ek1',         def:true},
+  {id:'ek2',     label:'Ek2',         def:true},
+  {id:'eksik',      label:'Eksik Gün',   def:true},
+  {id:'eksikSaat',  label:'Eksik Saat',  def:true},
+  {id:'rapor',      label:'Raporlu',     def:true},
+  {id:'yillik',  label:'Yıllık İzin', def:true},
+  {id:'saat1',   label:'Saat Ücr.1',  def:true},
+  {id:'saat2',   label:'Saat Ücr.2',  def:true},
+  {id:'yemek',   label:'Yemek',       def:true},
+  {id:'yemekk',  label:'Yemek Kst.',  def:true},
+  {id:'gunk',    label:'Gün Kst.',    def:true},
+  {id:'toplamk', label:'Toplam Kst.', def:false},
+  {id:'avans',   label:'Avans',       def:true},
+  {id:'yatan',   label:'YATAN',       def:true,  fixed:true},
+  {id:'kalan',   label:'KALAN',       def:true,  fixed:true},
+  {id:'aciklama',label:'Açıklama',    def:true},
+  {id:'actions', label:'',            def:true,  fixed:true},
+];
+
+const colVis = {};
+COLS.forEach(c => { colVis[c.id] = c.def; });
+
+// ─── HESAPLAMA ────────────────────────────────────────────────────────────
+function calc(p, st) {
+  const eksik     = +st.eksik     || 0;
+  const eksikSaat = +st.eksikSaat || 0;
+  const rapor     = +st.rapor     || 0;
+  const yillik    = +st.yillik    || 0;
+  const saat1     = +st.saat1     || 0;
+  const saat2     = +st.saat2     || 0;
+  const hasEk1 = (p.ek1 || 0) > 0;
+  const hasEk2 = (p.ek2 || 0) > 0;
+
+  // Yemek kesintisi için sadece TAM günler sayılır (Math.floor)
+  // Eksik saat → yemek kesimine GIRMEZ
+  const eksikTam  = Math.floor(eksik);   // 2.5 gün → 2 tam gün
+  const raporTam  = Math.floor(rapor);
+  const yillikTam = Math.floor(yillik);
+
+  let yatan = 0, kalan = null, gunK = 0, yemekK = 0;
+
+  if (!p.maas) {
+    // ── Saat ücretli ──────────────────────────────────────────────────────
+    // Yemek: sabit 100₺/gün × (çalışılan tam gün sayısı)
+    // Çalışılan = IS_GUNU - eksikTam - raporTam - yillikTam
+    // Yani kesinti = (eksikTam + raporTam + yillikTam) × 100
+    const GUNLUK_YEMEK_SAAT = 100;
+    yemekK = Math.min((eksikTam + raporTam + yillikTam) * GUNLUK_YEMEK_SAAT, IS_GUNU * GUNLUK_YEMEK_SAAT);
+    const yemekKazanilan = Math.max(0, IS_GUNU * GUNLUK_YEMEK_SAAT - yemekK);
+
+    const saatlikUcret1 = saat1 / (IS_GUNU * 8);
+    gunK = (eksik + rapor) * (saat1 / 8) + eksikSaat * saatlikUcret1;
+    const netSaat1 = Math.max(0, saat1 - gunK + yemekKazanilan);
+
+    if (saat2 > 0) {
+      const saatlikUcret2 = saat2 / (IS_GUNU * 8);
+      const gunK2 = (eksik + rapor) * (saat2 / 8) + eksikSaat * saatlikUcret2;
+      const netSaat2 = Math.max(0, saat2 - gunK2 + yemekKazanilan);
+      kalan = r2(netSaat1 - netSaat2);
+      yatan = r2(netSaat2);
+    } else {
+      yatan = r2(netSaat1);
+    }
+
+  } else {
+    // ── Aylıklı ───────────────────────────────────────────────────────────
+    const maas  = p.maas;
+    const ek1   = p.ek1 || 0;
+    const ek2   = p.ek2 || 0;
+    const taban = hasEk1 ? maas + ek1 : maas;
+
+    const gunluk  = taban / 30;
+    const saatlik = gunluk / 8;
+
+    // Gün kesintisi: tüm eksik (gün + yarım gün) + raporlu → tam değer üzerinden
+    gunK = (eksik + rapor) * gunluk + eksikSaat * saatlik;
+
+    // Yemek kesintisi: sadece TAM günler (eksikTam + raporTam + yillikTam)
+    yemekK = Math.min((eksikTam + raporTam + yillikTam) * (YEMEK / IS_GUNU), YEMEK);
+
+    const net = taban - gunK + (YEMEK - yemekK);
+
+    if (hasEk2) {
+      yatan = r2(Math.max(0, net));
+      kalan = ek2;
+    } else if (hasEk1) {
+      const pureGunluk  = maas / 30;
+      const pureSaatlik = pureGunluk / 8;
+      const pureNet = maas - (eksik + rapor) * pureGunluk - eksikSaat * pureSaatlik + (YEMEK - yemekK);
+      yatan = r2(Math.max(0, pureNet));
+      kalan = r2(Math.max(0, net - pureNet));
+    } else {
+      yatan = r2(Math.max(0, net));
+    }
+  }
+
+  const avans    = +st.avans || 0;
+  const yatanNet = r2(Math.max(0, yatan - avans));
+  return {yatan: yatanNet, yatanBrut: r2(yatan), kalan, gunK: r2(gunK), yemekK: r2(yemekK), avans};
+}
+
+function r2(n) { return Math.round((n||0)*100)/100; }
+function fmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return n.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function buildAciklama(st, rv) {
+  const parts = [];
+  if (+st.eksik)     parts.push(`Eksik gün: ${st.eksik}`);
+  if (+st.eksikSaat) parts.push(`Eksik saat: ${st.eksikSaat}`);
+  if (+st.rapor)     parts.push(`Raporlu: ${st.rapor} gün`);
+  if (+st.yillik)    parts.push(`Yıllık izin: ${st.yillik} gün`);
+  if (+st.avans)     parts.push(`Avans: ${fmt(+st.avans)} ₺`);
+  if (rv.yemekK > 0) parts.push(`Yemek kst: -${fmt(rv.yemekK)} ₺`);
+  if (rv.gunK  > 0)  parts.push(`Gün kst: -${fmt(rv.gunK)} ₺`);
+  return parts.length ? parts.join(' | ') : 'Tam ay';
+}
+
+// ─── COLUMN PANEL ─────────────────────────────────────────────────────────
+let colPanelOpen = false;
+
+function toggleColPanel() {
+  colPanelOpen = !colPanelOpen;
+  document.getElementById('colToggles').style.display = colPanelOpen ? 'flex' : 'none';
+  document.getElementById('colArrow').classList.toggle('open', colPanelOpen);
+}
+
+function buildColPanel() {
+  const wrap = document.getElementById('colToggles');
+  wrap.innerHTML = '';
+  COLS.forEach(c => {
+    if (c.fixed) return; // fixed columns always shown
+    const btn = document.createElement('div');
+    btn.className = 'col-toggle' + (colVis[c.id] ? ' active' : '');
+    btn.innerHTML = `<span class="dot"></span>${c.label}`;
+    btn.onclick = () => {
+      colVis[c.id] = !colVis[c.id];
+      btn.classList.toggle('active', colVis[c.id]);
+      applyColVis();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function applyColVis() {
+  COLS.forEach((c, idx) => {
+    if (c.fixed) return;
+    const hidden = !colVis[c.id];
+    // th
+    const ths = document.querySelectorAll(`#mainTable thead tr th`);
+    if (ths[idx]) ths[idx].classList.toggle('col-hidden', hidden);
+    // all tds in that column
+    document.querySelectorAll(`#mainTable tbody tr td:nth-child(${idx+1})`).forEach(td => {
+      td.classList.toggle('col-hidden', hidden);
+    });
+  });
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────
+function render() {
+  renderHead();
+  renderBody();
+  applyColVis();
+  updateStats();
+}
+
+function renderHead() {
+  document.getElementById('thead').innerHTML = '<tr>' +
+    COLS.map(c => `<th class="${c.id==='no'||c.id==='ad'||c.id==='gorev'||c.id==='hesap'||c.id==='tc'?'left':''}">${c.label}</th>`).join('') +
+    '</tr>';
+}
+
+function renderBody() {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+
+  DATA.forEach((p, i) => {
+    const st = ST[i];
+    const isSaatli = !p.maas;
+    const hasEk = (p.ek1||0) > 0 || (p.ek2||0) > 0;
+    const rv = calc(p, st);
+
+    const tr = document.createElement('tr');
+    if (p.pasif) tr.className = 'pasif';
+
+    const saatDis = isSaatli ? '' : 'disabled style="opacity:.3"';
+    const tags = p.pasif
+      ? `<span class="tag tag-pasif">PASİF</span>`
+      : `${isSaatli ? '<span class="tag tag-saat">SAAT</span>' : ''}${hasEk ? ' <span class="tag tag-ek">EK</span>' : ''}`;
+
+    tr.innerHTML = [
+      // no
+      `<td class="left" style="color:var(--text3);font-family:'IBM Plex Mono',monospace">${String(i+1).padStart(2,'0')}</td>`,
+      // ad soyad
+      `<td class="left"><div class="name-cell">${p.ad} ${p.soyad}</div><div style="margin-top:2px">${tags}</div></td>`,
+      // gorev
+      `<td class="left"><span class="role-badge">${p.gorev}</span></td>`,
+      // hesap
+      `<td class="left" style="font-family:'IBM Plex Mono',monospace;font-size:11px">${p.hesapNo}</td>`,
+      // tc
+      `<td class="left" style="font-family:'IBM Plex Mono',monospace;font-size:11px">${p.tc}</td>`,
+      // maas
+      `<td class="money ${isSaatli?'m-dim':''}">${isSaatli ? '—' : fmt(p.maas)}</td>`,
+      // ek1
+      `<td class="money m-ek">${(p.ek1||0)>0 ? fmt(p.ek1) : '—'}</td>`,
+      // ek2
+      `<td class="money m-ek">${(p.ek2||0)>0 ? fmt(p.ek2) : '—'}</td>`,
+      // eksik
+      `<td><input class="inp inp-sm" type="number" min="0" step=".5" value="${st.eksik||''}" placeholder="0" onchange="updateST(${i},'eksik',this.value)"></td>`,
+      // eksik saat
+      `<td><input class="inp inp-sm" type="number" min="0" step="1" value="${st.eksikSaat||''}" placeholder="0" onchange="updateST(${i},'eksikSaat',this.value)" title="Eksik saat (maaş/30/8 × saat)"></td>`,
+      // rapor
+      `<td><input class="inp inp-sm" type="number" min="0" step=".5" value="${st.rapor||''}" placeholder="0" onchange="updateST(${i},'rapor',this.value)"></td>`,
+      // yillik
+      `<td><input class="inp inp-sm" type="number" min="0" step=".5" value="${st.yillik||''}" placeholder="0" onchange="updateST(${i},'yillik',this.value)"></td>`,
+      // saat1
+      `<td><input class="inp inp-md" type="number" min="0" value="${st.saat1||''}" placeholder="${isSaatli?'Gir':'—'}" ${saatDis} onchange="updateST(${i},'saat1',this.value)"></td>`,
+      // saat2
+      `<td><input class="inp inp-md" type="number" min="0" value="${st.saat2||''}" placeholder="${isSaatli?'Gir':'—'}" ${saatDis} onchange="updateST(${i},'saat2',this.value)"></td>`,
+      // yemek
+      `<td class="money">${fmt(YEMEK)}</td>`,
+      // yemek kesinti
+      `<td class="money m-red">${rv.yemekK>0 ? '-'+fmt(rv.yemekK) : '—'}</td>`,
+      // gun kesinti
+      `<td class="money m-red">${rv.gunK>0 ? '-'+fmt(rv.gunK) : '—'}</td>`,
+      // toplam kesinti
+      `<td class="money m-red">${(rv.gunK+rv.yemekK)>0 ? '-'+fmt(rv.gunK+rv.yemekK) : '—'}</td>`,
+      // avans
+      `<td><input class="inp inp-md" type="number" min="0" value="${st.avans||''}" placeholder="0" onchange="updateST(${i},'avans',this.value)" style="border-color:rgba(239,68,68,.4)"></td>`,
+      // yatan
+      `<td class="money m-yatan">${fmt(rv.yatan)}${rv.avans>0?`<br><span style="font-size:9px;color:var(--text3)">brüt: ${fmt(rv.yatanBrut)}</span>`:''}${rv.yatan===0&&rv.avans>0?'<br><span style="font-size:9px;color:var(--red)">avans aşıyor!</span>':''}</td>`,
+      // kalan
+      `<td class="money m-kalan">${rv.kalan!==null ? fmt(rv.kalan) : '—'}</td>`,
+      // aciklama
+      `<td class="left" style="min-width:220px;max-width:320px">
+        <div style="font-size:10px;color:var(--text2);line-height:1.6;white-space:normal" id="aciklama_${i}">${buildAciklama(st, rv)}</div>
+      </td>`,
+      // actions
+      `<td>
+        <button class="act-btn warn" title="${isSaatli?'Aylıklıya çevir':'Saat ücretliye çevir'}" onclick="toggleTip(${i})">${isSaatli?'↔₺/ay':'↔₺/saat'}</button>
+        <button class="act-btn ${p.pasif?'':'warn'}" title="${p.pasif?'Aktifleştir':'Pasifleştir'}" onclick="togglePasif(${i})">${p.pasif?'▶':'⏸'}</button>
+        <button class="act-btn del" title="Sil" onclick="delPerson(${i})">✕</button>
+      </td>`,
+    ].join('');
+
+    tbody.appendChild(tr);
+  });
+}
+
+function updateST(i, field, val) {
+  ST[i][field] = parseFloat(val) || 0;
+  // Recompute just this row's calculated cells
+  const tr = document.getElementById('tbody').rows[i];
+  if (!tr) return;
+  const rv = calc(DATA[i], ST[i]);
+  // col indices (0-based): no=0,ad=1,gorev=2,hesap=3,tc=4,maas=5,ek1=6,ek2=7,
+  //   eksik=8,eksikSaat=9,rapor=10,yillik=11,saat1=12,saat2=13,
+  //   yemek=14,yemekk=15,gunk=16,toplamk=17,avans=18,yatan=19,kalan=20,aciklama=21
+  const ci = {yemekk:15, gunk:16, toplamk:17, yatan:19, kalan:20};
+  tr.cells[ci.yemekk].innerHTML = rv.yemekK>0 ? `<span class="money m-red">-${fmt(rv.yemekK)}</span>` : '—';
+  tr.cells[ci.gunk].innerHTML   = rv.gunK>0   ? `<span class="money m-red">-${fmt(rv.gunK)}</span>`   : '—';
+  tr.cells[ci.toplamk].innerHTML= (rv.gunK+rv.yemekK)>0 ? `<span class="money m-red">-${fmt(rv.gunK+rv.yemekK)}</span>` : '—';
+  const avansWarn = rv.yatan===0 && rv.avans>0 ? '<br><span style="font-size:9px;color:var(--red)">avans aşıyor!</span>' : '';
+  const brutInfo  = rv.avans>0 ? `<br><span style="font-size:9px;color:var(--text3)">brüt: ${fmt(rv.yatanBrut)}</span>` : '';
+  tr.cells[ci.yatan].innerHTML  = `<span class="money m-yatan">${fmt(rv.yatan)}</span>${brutInfo}${avansWarn}`;
+  tr.cells[ci.kalan].innerHTML  = rv.kalan!==null ? `<span class="money m-kalan">${fmt(rv.kalan)}</span>` : '—';
+  // aciklama güncelle
+  const acEl = document.getElementById(`aciklama_${i}`);
+  if (acEl) acEl.textContent = buildAciklama(ST[i], rv);
+  updateStats();
+}
+
+function updateStats() {
+  let tY=0, tK=0, tKs=0;
+  DATA.forEach((p,i) => {
+    if (p.pasif) return;
+    const rv = calc(p, ST[i]);
+    tY  += rv.yatan || 0;
+    tK  += rv.kalan || 0;
+    tKs += rv.gunK + rv.yemekK;
+  });
+  const aktif = DATA.filter(p => !p.pasif).length;
+  document.getElementById('sPersonel').textContent = `${aktif} / ${DATA.length}`;
+  document.getElementById('sYatan').textContent    = fmt(tY) + ' ₺';
+  document.getElementById('sKalan').textContent    = fmt(tK) + ' ₺';
+  document.getElementById('sKesinti').textContent  = fmt(tKs) + ' ₺';
+  document.getElementById('sMaliyet').textContent  = fmt(tY + tK) + ' ₺';
+}
+
+// ─── TOGGLE TIP / PASİF ───────────────────────────────────────────────────
+let tipModalIdx = null;
+
+function toggleTip(i) {
+  const p = DATA[i];
+  tipModalIdx = i;
+  if (!p.maas) {
+    // Saat ücretli → aylıklıya çevir
+    document.getElementById('tipModalTitle').textContent = `${p.ad} ${p.soyad} — Aylıklıya Çevir`;
+    document.getElementById('tipMaasRow').style.display = '';
+    document.getElementById('tipMaasInput').value = '';
+    document.getElementById('tipInfo').textContent = 'Aylık maaş tutarını girin. Saat ücreti bilgileri sıfırlanır.';
+    document.getElementById('tipConfirmBtn').textContent = '✓ Aylıklıya Çevir';
+    document.getElementById('tipConfirmBtn').style.background = 'var(--green)';
+  } else {
+    // Aylıklı → saat ücretliye çevir
+    document.getElementById('tipModalTitle').textContent = `${p.ad} ${p.soyad} — Saat Ücretliye Çevir`;
+    document.getElementById('tipMaasRow').style.display = 'none';
+    document.getElementById('tipInfo').textContent = `Mevcut maaş: ${fmt(p.maas)} ₺ silinecek. Saat ücreti alanlarını doldurun.`;
+    document.getElementById('tipConfirmBtn').textContent = '✓ Saat Ücretliye Çevir';
+    document.getElementById('tipConfirmBtn').style.background = 'var(--accent2)';
+  }
+  document.getElementById('tipModal').classList.add('open');
+}
+
+function confirmTip() {
+  const i = tipModalIdx;
+  const p = DATA[i];
+  if (!p.maas) {
+    const v = parseFloat(document.getElementById('tipMaasInput').value);
+    if (!v || v <= 0) { document.getElementById('tipMaasInput').focus(); return; }
+    p.maas = v;
+    ST[i].saat1 = 0; ST[i].saat2 = 0;
+  } else {
+    p.maas = null;
+  }
+  closeTipModal();
+  render();
+}
+
+function closeTipModal() {
+  document.getElementById('tipModal').classList.remove('open');
+  tipModalIdx = null;
+}
+
+function togglePasif(i) { DATA[i].pasif = !DATA[i].pasif; render(); }
+
+// ─── ADD / DELETE ─────────────────────────────────────────────────────────
+function openAdd()  { document.getElementById('addModal').classList.add('open'); }
+function closeAdd() { document.getElementById('addModal').classList.remove('open'); }
+
+function addPerson() {
+  const adFull = document.getElementById('mAd').value.trim();
+  if (!adFull) return alert('Ad Soyad zorunludur.');
+  const parts = adFull.split(' '); const soyad = parts.pop(); const ad = parts.join(' ') || soyad;
+  DATA.push({
+    gorev: document.getElementById('mGorev').value.trim() || '—',
+    hesapNo: document.getElementById('mHesap').value.trim(),
+    tc: document.getElementById('mTC').value.trim(),
+    ad, soyad,
+    maas: parseFloat(document.getElementById('mMaas').value) || null,
+    ek1:  parseFloat(document.getElementById('mEk1').value)  || 0,
+    ek2:  parseFloat(document.getElementById('mEk2').value)  || 0,
+  });
+  ST[DATA.length-1] = {eksik:0,eksikSaat:0,rapor:0,yillik:0,saat1:0,saat2:0,avans:0};
+  ['mAd','mGorev','mHesap','mTC','mMaas','mEk1','mEk2'].forEach(id => document.getElementById(id).value='');
+  closeAdd(); render();
+}
+
+function delPerson(i) {
+  if (!confirm(`${DATA[i].ad} ${DATA[i].soyad} silinsin mi?`)) return;
+  DATA.splice(i,1);
+  const ns = {};
+  DATA.forEach((_,ni) => { ns[ni] = ST[ni] || {eksik:0,eksikSaat:0,rapor:0,yillik:0,saat1:0,saat2:0,avans:0}; });
+  Object.keys(ST).forEach(k=>delete ST[k]); Object.assign(ST,ns);
+  render();
+}
+
+// ─── MONTH SELECT ─────────────────────────────────────────────────────────
+function initMonths() {
+  const sel = document.getElementById('monthSel');
+  sel.onchange = onMonthChange;
+  const now = new Date();
+  const months = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  // Son 2 yıl + bu yıl + gelecek yıl
+  for (let y = now.getFullYear() + 1; y >= now.getFullYear() - 1; y--) {
+    const startM = (y === now.getFullYear() + 1) ? now.getMonth() : 11;
+    const endM   = (y === now.getFullYear() - 1) ? now.getMonth() : 0;
+    for (let m = startM; m >= endM; m--) {
+      const o = document.createElement('option');
+      o.value = `${y}-${m}`;
+      o.textContent = `${months[m]} ${y}`;
+      if (y === now.getFullYear() && m === now.getMonth()) o.selected = true;
+      sel.appendChild(o);
+    }
+  }
+}
+function monthLabel() {
+  const s = document.getElementById('monthSel');
+  return s.options[s.selectedIndex].text;
+}
+
+// ─── EXCEL EXPORT ─────────────────────────────────────────────────────────
+function exportXLSX(type) {
+  const month = monthLabel();
+  const wb = XLSX.utils.book_new();
+
+  if (type === 'banka') {
+    // Orijinal banka standardı
+    const rows = [['Personel Banka Hesap No','Personel TC Kimlik Numarası','Personel Adı','Personel Soyadı','Net Ödeme Tutarı','Ödeme Tipi','Dönem']];
+    DATA.forEach((p,i) => {
+      if (p.pasif) return;
+      const rv = calc(p, ST[i]);
+      rows.push([p.hesapNo, p.tc, p.ad, p.soyad, r2(rv.yatan), 'MAAŞ', month]);
+      if (rv.kalan !== null && rv.kalan > 0)
+        rows.push([p.hesapNo, p.tc, p.ad, p.soyad, r2(rv.kalan), 'EK ÖDEME', month]);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:22},{wch:16},{wch:14},{wch:18},{wch:16},{wch:12},{wch:16}];
+    styleHeader(ws, rows[0].length);
+    XLSX.utils.book_append_sheet(wb, ws, 'Banka');
+
+  } else {
+    const rows = [['GÖREV','ADI','SOYADI','HESAP NO','T.C.','MAAŞ','EK1','EK2',
+      'EKSİK GÜN','EKSİK SAAT','RAPORLU GÜN','YILLIK İZİN','SAAT ÜCR.1','SAAT ÜCR.2',
+      'YEMEK','YEMEK KESİNTİ','GÜN KESİNTİ','TOPLAM KESİNTİ','AVANS','YATAN (NET)','KALAN','AÇIKLAMA']];
+    DATA.forEach((p,i) => {
+      if (p.pasif) return;
+      const st = ST[i]; const rv = calc(p, st);
+      rows.push([
+        p.gorev, p.ad, p.soyad, p.hesapNo, p.tc,
+        p.maas||'', p.ek1||'', p.ek2||'',
+        st.eksik||0, st.eksikSaat||0, st.rapor||0, st.yillik||0,
+        st.saat1||'', st.saat2||'',
+        YEMEK, rv.yemekK||0, rv.gunK||0, r2(rv.gunK+rv.yemekK),
+        rv.avans||0,
+        r2(rv.yatan), rv.kalan!==null ? r2(rv.kalan) : '',
+        buildAciklama(st, rv)
+      ]);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:22},{wch:14},{wch:16},{wch:12},{wch:14},{wch:10},{wch:10},{wch:10},
+                  {wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:13},{wch:12},{wch:14},{wch:10},{wch:14},{wch:12},{wch:40}];
+    styleHeader(ws, rows[0].length);
+    XLSX.utils.book_append_sheet(wb, ws, 'Muhasebe');
+  }
+
+  XLSX.writeFile(wb, `maas_${month.replace(' ','_')}_${type}.xlsx`);
+}
+
+// ─── PDF EXPORT (Muhasebe) ────────────────────────────────────────────────
+function exportPDF() {
+  const month = monthLabel();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+  const PW = 297, PH = 210;
+
+  // Koyu arka plan
+  doc.setFillColor(15,17,23);
+  doc.rect(0,0,PW,PH,'F');
+
+  // Başlık
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.setTextColor(226,232,240);
+  doc.text('EĞİTİMCİ DİL KONUŞMA MERKEZİ', 14, 13);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.setTextColor(148,163,184);
+  doc.text(`Maaş Bordrosu — ${month}`, 14, 19);
+
+  // Sağ üst özet
+  let tY=0, tK=0;
+  DATA.forEach((p,i) => { if(p.pasif) return; const rv=calc(p,ST[i]); tY+=rv.yatan||0; tK+=rv.kalan||0; });
+  doc.setFontSize(7.5);
+  doc.setTextColor(34,197,94);
+  doc.text(`Toplam Yatan: ${fmt(tY)} TL`, 180, 11);
+  doc.setTextColor(79,142,247);
+  doc.text(`Toplam Kalan: ${fmt(tK)} TL`, 180, 16);
+  doc.setTextColor(45,212,191);
+  doc.text(`Toplam Maliyet: ${fmt(tY+tK)} TL`, 180, 21);
+
+  // Çizgi
+  doc.setDrawColor(46,51,82);
+  doc.line(14, 22, PW-14, 22);
+
+  // Tablo tanımı
+  const cols = [
+    {h:'#',        w:7},
+    {h:'Ad Soyad', w:34},
+    {h:'Görev',    w:26},
+    {h:'Maaş',     w:16},
+    {h:'Ek1',      w:12},
+    {h:'Ek2',      w:12},
+    {h:'E.Gün',    w:10},
+    {h:'E.Saat',   w:10},
+    {h:'Rapor',    w:10},
+    {h:'Yıllık',   w:10},
+    {h:'Yemek Kst',w:16},
+    {h:'Gün Kst',  w:16},
+    {h:'Avans',    w:14},
+    {h:'YATAN',    w:20},
+    {h:'KALAN',    w:16},
+    {h:'Açıklama', w:0},  // kalan genişlik
+  ];
+  const usedW = cols.slice(0,-1).reduce((s,c)=>s+c.w,0);
+  cols[cols.length-1].w = PW - 28 - usedW;
+
+  const startX = 14, startY = 25, rowH = 6.5;
+
+  // Başlık satırı
+  doc.setFillColor(34,38,58);
+  doc.rect(startX, startY, PW-28, rowH, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(6);
+  doc.setTextColor(148,163,184);
+  let cx = startX + 1;
+  cols.forEach(c => {
+    doc.text(c.h, cx, startY+4.2, {maxWidth:c.w-1});
+    cx += c.w;
+  });
+
+  // Veri satırları
+  let ry = startY + rowH;
+  let rn = 0;
+  DATA.forEach((p,i) => {
+    if (p.pasif) return;
+    rn++;
+    const st = ST[i], rv = calc(p,st);
+
+    if (rn%2===0) { doc.setFillColor(22,25,37); doc.rect(startX,ry,PW-28,rowH,'F'); }
+
+    const cells = [
+      String(rn),
+      `${p.ad} ${p.soyad}`,
+      p.gorev,
+      p.maas ? fmt(p.maas) : 'Saat',
+      (p.ek1||0)>0 ? fmt(p.ek1) : '',
+      (p.ek2||0)>0 ? fmt(p.ek2) : '',
+      st.eksik||'',
+      st.eksikSaat||'',
+      st.rapor||'',
+      st.yillik||'',
+      rv.yemekK>0 ? `-${fmt(rv.yemekK)}` : '',
+      rv.gunK>0   ? `-${fmt(rv.gunK)}`   : '',
+      rv.avans>0  ? fmt(rv.avans) : '',
+      fmt(rv.yatan),
+      rv.kalan!==null ? fmt(rv.kalan) : '',
+      buildAciklama(st,rv),
+    ];
+
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(5.8);
+    cx = startX+1;
+    cells.forEach((val,ci) => {
+      if      (ci===13) doc.setTextColor(34,197,94);
+      else if (ci===14) doc.setTextColor(79,142,247);
+      else if (ci===10||ci===11||ci===12) doc.setTextColor(239,100,100);
+      else    doc.setTextColor(200,210,220);
+      doc.text(String(val||''), cx, ry+4.2, {maxWidth:cols[ci].w-1});
+      cx += cols[ci].w;
+    });
+
+    doc.setDrawColor(30,34,53);
+    doc.line(startX, ry+rowH, startX+PW-28, ry+rowH);
+    ry += rowH;
+
+    if (ry > PH-18) {
+      doc.addPage();
+      doc.setFillColor(15,17,23);
+      doc.rect(0,0,PW,PH,'F');
+      ry = 14;
+    }
+  });
+
+  // Toplam satırı
+  doc.setFillColor(20,83,45);
+  doc.rect(startX, ry, PW-28, rowH, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(6.5);
+  doc.setTextColor(255,255,255);
+  doc.text('TOPLAM', startX+1, ry+4.2);
+  const yatanX = startX + cols.slice(0,13).reduce((s,c)=>s+c.w,0) + 1;
+  doc.setTextColor(34,197,94);
+  doc.text(fmt(tY), yatanX, ry+4.2);
+  doc.setTextColor(79,142,247);
+  doc.text(fmt(tK), yatanX+cols[13].w, ry+4.2);
+
+  doc.save(`maas_${month.replace(' ','_')}_muhasebe.pdf`);
+}
+
+function styleHeader(ws, colCount) {
+  for (let c = 0; c < colCount; c++) {
+    const addr = XLSX.utils.encode_cell({r:0,c});
+    if (ws[addr]) ws[addr].s = {font:{bold:true,color:{rgb:'E2E8F0'}},
+      fill:{patternType:'solid',fgColor:{rgb:'22263A'}},alignment:{horizontal:'center'}};
+  }
+}
+
+// ─── SUPABASE ─────────────────────────────────────────────────────────────
+const SB_URL = 'https://zciraijmwxcwhryidlki.supabase.co';
+const SB_KEY = 'sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou';
+
+async function sbFetch(path, opts = {}) {
+  const session = JSON.parse(localStorage.getItem('sb_session') || 'null');
+  const token = session?.access_token || SB_KEY;
+  const res = await fetch(SB_URL + path, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + token,
+      ...(opts.headers || {}),
+    },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || err.error_description || res.status);
+  }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+// ─── AUTH ──────────────────────────────────────────────────────────────────
+async function signIn(email, password) {
+  const data = await sbFetch('/auth/v1/token?grant_type=password', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+  localStorage.setItem('sb_session', JSON.stringify(data));
+  return data;
+}
+
+async function signOut() {
+  try {
+    const session = JSON.parse(localStorage.getItem('sb_session') || 'null');
+    if (session?.access_token) {
+      await sbFetch('/auth/v1/logout', { method: 'POST' });
+    }
+  } catch {}
+  localStorage.removeItem('sb_session');
+  showLogin();
+}
+
+function getSession() {
+  try { return JSON.parse(localStorage.getItem('sb_session')); }
+  catch { return null; }
+}
+
+function getUserId() {
+  const s = getSession();
+  return s?.user?.id || null;
+}
+
+// Token yenileme
+async function refreshToken() {
+  const s = getSession();
+  if (!s?.refresh_token) return null;
+  try {
+    const data = await sbFetch('/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      body: JSON.stringify({ refresh_token: s.refresh_token }),
+    });
+    localStorage.setItem('sb_session', JSON.stringify(data));
+    return data;
+  } catch { return null; }
+}
+
+// ─── SUPABASE STORAGE ──────────────────────────────────────────────────────
+async function saveMonth() {
+  const uid = getUserId();
+  if (!uid) return showLogin();
+
+  const ay = monthLabel();
+  const stSnap = {};
+  Object.keys(ST).forEach(k => { stSnap[k] = {...ST[k]}; });
+  const dataSnap = DATA.map(p => ({...p}));
+
+  const payload = {
+    user_id: uid,
+    ay,
+    yemek: YEMEK,
+    data: dataSnap,
+    state: stSnap,
+  };
+
+  setSaveState('saving');
+  try {
+    await sbFetch('/rest/v1/maas_bordro', {
+      method: 'POST',
+      headers: {
+        'Prefer': 'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify(payload),
+    });
+    setSaveState('saved');
+  } catch (e) {
+    if (e.message.includes('JWT') || e.message.includes('401')) {
+      const ok = await refreshToken();
+      if (ok) return saveMonth();
+      return showLogin();
+    }
+    setSaveState('error', e.message);
+  }
+}
+
+async function loadMonth(key) {
+  const uid = getUserId();
+  if (!uid) return showLogin();
+
+  try {
+    const rows = await sbFetch(
+      `/rest/v1/maas_bordro?user_id=eq.${uid}&ay=eq.${encodeURIComponent(key)}&select=*`
+    );
+    if (!rows || !rows.length) { closeHistory(); return; }
+    applySnap(rows[0]);
+    closeHistory();
+    render();
+  } catch (e) {
+    if (e.message.includes('JWT') || e.message.includes('401')) {
+      const ok = await refreshToken();
+      if (ok) return loadMonth(key);
+      return showLogin();
+    }
+    alert('Yükleme hatası: ' + e.message);
+  }
+}
+
+async function deleteMonth(key, e) {
+  e.stopPropagation();
+  if (!confirm(`"${key}" kaydı silinsin mi?`)) return;
+  const uid = getUserId();
+  try {
+    await sbFetch(
+      `/rest/v1/maas_bordro?user_id=eq.${uid}&ay=eq.${encodeURIComponent(key)}`,
+      { method: 'DELETE' }
+    );
+    renderHistList();
+  } catch (err) { alert('Silme hatası: ' + err.message); }
+}
+
+async function openHistory() {
+  document.getElementById('histModal').classList.add('open');
+  await renderHistList();
+}
+function closeHistory() {
+  document.getElementById('histModal').classList.remove('open');
+}
+
+async function renderHistList() {
+  const uid = getUserId();
+  const list = document.getElementById('histList');
+  list.innerHTML = '<div style="text-align:center;color:var(--text3);padding:20px;font-size:12px;">Yükleniyor...</div>';
+
+  try {
+    const rows = await sbFetch(
+      `/rest/v1/maas_bordro?user_id=eq.${uid}&select=ay,yemek,data,state,saved_at&order=saved_at.desc`
+    );
+
+    if (!rows || !rows.length) {
+      list.innerHTML = '<div style="text-align:center;color:var(--text3);padding:24px;font-size:12px;">Henüz kayıtlı ay yok.<br>💾 Kaydet butonuna basın.</div>';
+      return;
+    }
+
+    const current = monthLabel();
+    list.innerHTML = rows.map(row => {
+      let tY=0, tK=0, aktif=0;
+      (row.data || []).forEach((p, i) => {
+        if (p.pasif) return;
+        aktif++;
+        const st = (row.state || {})[i] || {};
+        const rv = calcFromSnap(p, st, row.yemek || 2000);
+        tY += rv.yatan || 0;
+        tK += rv.kalan || 0;
+      });
+      const savedDate = new Date(row.saved_at).toLocaleString('tr-TR',
+        {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const isActive = row.ay === current;
+      return `<div class="hist-item ${isActive?'active':''}" onclick="loadMonth('${row.ay}')">
+        <div style="flex:1">
+          <div class="hist-month">${row.ay}${isActive?' <span style="font-size:9px;color:var(--green)">● aktif</span>':''}</div>
+          <div class="hist-meta">${aktif} personel · ${savedDate}</div>
+        </div>
+        <div class="hist-totals">
+          <div class="yt">↓ ${fmt(tY)} ₺</div>
+          <div class="kl">+ ${fmt(tK)} ₺</div>
+          <div style="color:var(--text3);font-size:10px;margin-top:2px;">= ${fmt(tY+tK)} ₺</div>
+        </div>
+        <div class="hist-actions">
+          <button class="act-btn del" title="Sil" onclick="deleteMonth('${row.ay}',event)">🗑</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    list.innerHTML = `<div style="color:var(--red);padding:16px;font-size:12px;">Hata: ${e.message}</div>`;
+  }
+}
+
+function applySnap(snap) {
+  DATA.length = 0;
+  (snap.data || []).forEach(p => DATA.push({...p}));
+  Object.keys(ST).forEach(k => delete ST[k]);
+  Object.keys(snap.state || {}).forEach(k => { ST[k] = {...snap.state[k]}; });
+  YEMEK = snap.yemek || 2000;
+  document.getElementById('yemekInput').value = YEMEK;
+  const sel = document.getElementById('monthSel');
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].text === snap.ay) { sel.selectedIndex = i; break; }
+  }
+}
+
+function calcFromSnap(p, st, yemek) {
+  const _Y = YEMEK; YEMEK = yemek;
+  const rv = calc(p, st);
+  YEMEK = _Y; return rv;
+}
+
+async function onMonthChange() {
+  const uid = getUserId();
+  if (!uid) return;
+  const key = monthLabel();
+  try {
+    const rows = await sbFetch(
+      `/rest/v1/maas_bordro?user_id=eq.${uid}&ay=eq.${encodeURIComponent(key)}&select=*`
+    );
+    if (rows && rows.length) {
+      applySnap(rows[0]);
+      render();
+    } else {
+      Object.keys(ST).forEach(k => {
+        ST[k] = {eksik:0, eksikSaat:0, rapor:0, yillik:0, saat1:0, saat2:0, avans:0};
+      });
+      render();
+    }
+  } catch { render(); }
+}
+
+function setSaveState(state, msg) {
+  const ind = document.getElementById('saveIndicator');
+  ind.classList.add('show');
+  if (state === 'saving') {
+    ind.textContent = '⏳ Kaydediliyor...';
+    ind.style.color = 'var(--text2)';
+  } else if (state === 'saved') {
+    ind.textContent = '✓ Kaydedildi';
+    ind.style.color = 'var(--green)';
+    setTimeout(() => ind.classList.remove('show'), 2500);
+  } else {
+    ind.textContent = '✗ Hata: ' + (msg||'');
+    ind.style.color = 'var(--red)';
+    setTimeout(() => ind.classList.remove('show'), 4000);
+  }
+}
+
+// ─── GİRİŞ EKRANI ──────────────────────────────────────────────────────────
+function showLogin() {
+  document.getElementById('appWrap').style.display = 'none';
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('loginErr').textContent = '';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+function showApp(email) {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'block';
+  document.getElementById('userEmail').textContent = email;
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const btn   = document.getElementById('loginBtn');
+  const err   = document.getElementById('loginErr');
+  if (!email || !pass) { err.textContent = 'Email ve şifre gerekli.'; return; }
+  btn.textContent = 'Giriş yapılıyor...'; btn.disabled = true;
+  err.textContent = '';
+  try {
+    const data = await signIn(email, pass);
+    showApp(data.user.email);
+    await initApp();
+  } catch (e) {
+    err.textContent = 'Hata: ' + (e.message.includes('Invalid') ? 'Email veya şifre yanlış.' : e.message);
+  } finally {
+    btn.textContent = 'Giriş Yap'; btn.disabled = false;
+  }
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────
+async function initApp() {
+  initMonths();
+  buildColPanel();
+  // Mevcut ayın kaydını yükle
+  const uid = getUserId();
+  if (!uid) return;
+  const key = monthLabel();
+  try {
+    const rows = await sbFetch(
+      `/rest/v1/maas_bordro?user_id=eq.${uid}&ay=eq.${encodeURIComponent(key)}&select=*`
+    );
+    if (rows && rows.length) applySnap(rows[0]);
+  } catch {}
+  render();
+}
+
+// Sayfa yüklenince oturum kontrolü
+(async () => {
+  const session = getSession();
+  if (session?.access_token) {
+    // Token geçerli mi kontrol et
+    try {
+      await sbFetch('/auth/v1/user');
+      showApp(session.user.email);
+      await initApp();
+    } catch {
+      // Token süresi dolmuş, yenilemeyi dene
+      const refreshed = await refreshToken();
+      if (refreshed) {
+        showApp(refreshed.user.email);
+        await initApp();
+      } else {
+        showLogin();
+      }
+    }
+  } else {
+    showLogin();
+  }
+})();
+
+</script>
+</body>
+</html>
