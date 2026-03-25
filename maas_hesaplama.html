@@ -381,7 +381,7 @@ const DATA = [
 
 // Per-person input state
 const ST = {};
-DATA.forEach((_,i) => { ST[i] = {eksik:0, eksikSaat:0, rapor:0, yillik:0, saat1:0, saat2:0, avans:0}; });
+DATA.forEach((_,i) => { ST[i] = {eksik:0, eksikSaat:0, rapor:0, yillik:0, saat1:0, saat2:0, calSaat:0, avans:0}; });
 
 // ─── COLUMN DEFINITIONS ────────────────────────────────────────────────────
 // id, label, visible by default
@@ -395,11 +395,12 @@ const COLS = [
   {id:'ek1',     label:'Ek1',         def:true},
   {id:'ek2',     label:'Ek2',         def:true},
   {id:'eksik',      label:'Eksik Gün',   def:true},
-  {id:'eksikSaat',  label:'Çal. Saat',   def:true},
+  {id:'eksikSaat',  label:'Eksik Saat',   def:true},
   {id:'rapor',      label:'Raporlu',     def:true},
   {id:'yillik',  label:'Yıllık İzin', def:true},
   {id:'saat1',   label:'Saatlik Ücr.', def:true},
-  {id:'saat2',   label:'Çalışılan Saat',def:true},
+  {id:'saat2',   label:'Saat Ücr.2',   def:true},
+  {id:'calSaat',  label:'Çal. Saat',    def:true},
   {id:'yemek',   label:'Yemek',       def:true},
   {id:'yemekk',  label:'Yemek Kst.',  def:true},
   {id:'gunk',    label:'Gün Kst.',    def:true},
@@ -435,37 +436,30 @@ function calc(p, st) {
 
   if (!p.maas) {
     // ── Saat ücretli ──────────────────────────────────────────────────────
-    // saat1 = saatlik ücret1 (₺/saat) → YATAN
-    // saat2 = saatlik ücret2 (₺/saat) → KALAN hesabı için
-    // eksikSaat alanı = çalışılan toplam saat (bu ay)
-    // eksik = eksik tam gün (ücret kesilir, yemek kesilmez yarım günde)
-    // rapor = raporlu gün (ücret kesilir, yemek kesilir tam günde)
-    // yillik = yıllık izin (ücret kesilmez, yemek kesilir tam günde)
-    //
-    // Ücret kesintisi: (eksik gün × 8 + eksik saat alanı dışı) × saatlik
-    // NOT: eksikSaat burada çalışılan saat olarak kullanılıyor
-    const calisilanSaat = eksikSaat; // input alanı "Çalışılan Saat" olarak kullanılıyor
-    const brutMaas1 = saat1 * calisilanSaat;
-    const brutMaas2 = saat2 * calisilanSaat;
+    // saat1     = saatlik ücret1 (₺/saat)
+    // saat2     = saatlik ücret2 (₺/saat)
+    // calSaat   = çalışılan toplam saat
+    // YATAN     = (saat1 × calSaat) + yemek
+    // KALAN     = (saat2 - saat1) × calSaat  [yemek hariç]
+    const calSaat = +st.calSaat || 0;
+    const ucret1Toplam = saat1 * calSaat;
+    const ucret2Toplam = saat2 * calSaat;
 
-    // Ücret kesintisi: eksik tam gün + raporlu günler (saatten hesap)
-    // Yıllık izinden ücret kesilmez
-    gunK = (eksik * 8 + rapor * 8) * saat1;
-
-    // Yemek: sadece TAM eksik gün + TAM rapor gün + TAM yıllık izin → 100₺ kesilir
-    // Yarım gün ve saatten yemek kesilmez
+    // Yemek: çalışılan saat / 8 × 100, eksik/rapor/yıllık TAM günlerde kesilir
     yemekK = (eksikTam + raporTam + yillikTam) * 100;
-    const yemekNet = Math.max(0, (Math.floor(calisilanSaat / 8) * 100) - yemekK);
+    const yemekNet = Math.max(0, Math.floor(calSaat / 8) * 100 - yemekK);
 
-    const net1 = r2(Math.max(0, brutMaas1 - gunK + yemekNet));
+    // Ücret kesintisi: eksik gün ve raporlu günler için (yıllık izinden kesilmez)
+    gunK = (eksik * 8 + eksikSaat + rapor * 8) * saat1;
+
+    yatan = r2(Math.max(0, ucret1Toplam - gunK + yemekNet));
 
     if (saat2 > 0) {
-      const gunK2 = (eksik * 8 + rapor * 8) * saat2;
-      const net2 = r2(Math.max(0, brutMaas2 - gunK2 + yemekNet));
-      yatan = r2(net2);
-      kalan = r2(net1 - net2);
+      const gunK2 = (eksik * 8 + eksikSaat + rapor * 8) * saat2;
+      const ucret2Net = ucret2Toplam - gunK2; // yemek hariç
+      const ucret1Net = ucret1Toplam - gunK;  // yemek hariç
+      kalan = r2(Math.max(0, ucret2Net - ucret1Net));
     } else {
-      yatan = net1;
       kalan = null;
     }
 
@@ -625,6 +619,8 @@ function renderBody() {
       `<td><input class="inp inp-md" type="number" min="0" value="${st.saat1||''}" placeholder="${isSaatli?'₺/s':'—'}" ${saatDis} onchange="updateST(${i},'saat1',this.value)" title="Saatlik ücret (₺)"></td>`,
       // saat2
       `<td><input class="inp inp-md" type="number" min="0" value="${st.saat2||''}" placeholder="${isSaatli?'₺/s2':'—'}" ${saatDis} onchange="updateST(${i},'saat2',this.value)" title="Saatlik ücret 2"></td>`,
+      // calSaat
+      `<td><input class="inp inp-md" type="number" min="0" value="${st.calSaat||''}" placeholder="${isSaatli?'Saat':'—'}" ${saatDis} onchange="updateST(${i},'calSaat',this.value)" title="Çalışılan saat"></td>`,
       // yemek
       `<td class="money">${fmt(YEMEK)}</td>`,
       // yemek kesinti
@@ -662,9 +658,9 @@ function updateST(i, field, val) {
   if (!tr) return;
   const rv = calc(DATA[i], ST[i]);
   // col indices (0-based): no=0,ad=1,gorev=2,hesap=3,tc=4,maas=5,ek1=6,ek2=7,
-  //   eksik=8,eksikSaat=9,rapor=10,yillik=11,saat1=12,saat2=13,
-  //   yemek=14,yemekk=15,gunk=16,toplamk=17,avans=18,yatan=19,kalan=20,aciklama=21
-  const ci = {yemekk:15, gunk:16, toplamk:17, yatan:19, kalan:20};
+  //   eksik=8,eksikSaat=9,rapor=10,yillik=11,saat1=12,saat2=13,calSaat=14
+  //   yemek=15,yemekk=16,gunk=17,toplamk=18,avans=19,yatan=20,kalan=21,aciklama=22
+  const ci = {yemekk:16, gunk:17, toplamk:18, yatan:20, kalan:21};
   tr.cells[ci.yemekk].innerHTML = rv.yemekK>0 ? `<span class="money m-red">-${fmt(rv.yemekK)}</span>` : '—';
   tr.cells[ci.gunk].innerHTML   = rv.gunK>0   ? `<span class="money m-red">-${fmt(rv.gunK)}</span>`   : '—';
   tr.cells[ci.toplamk].innerHTML= (rv.gunK+rv.yemekK)>0 ? `<span class="money m-red">-${fmt(rv.gunK+rv.yemekK)}</span>` : '—';
@@ -828,7 +824,7 @@ function exportXLSX(type) {
         p.gorev, p.ad, p.soyad, p.hesapNo, p.tc,
         p.maas||'',
         st.eksik||0, st.eksikSaat||0, st.rapor||0, st.yillik||0,
-        st.saat1||'', st.saat2||'',
+        st.saat1||'', st.saat2||'', st.calSaat||0,
         YEMEK, rv.yemekK||0, rv.gunK||0, r2(rv.gunK+rv.yemekK),
         rv.avans||0,
         r2(rv.yatan), buildAciklama(st, rv)
@@ -870,6 +866,7 @@ function exportPDF() {
       + '<td style="color:#dc2626">' + (st.eksikSaat||'') + '</td>'
       + '<td style="color:#dc2626">' + (st.rapor||'') + '</td>'
       + '<td style="color:#d97706">' + (st.yillik||'') + '</td>'
+      + '<td>' + (st.calSaat||'') + '</td>'
       + '<td style="color:#dc2626">' + (rv.yemekK>0 ? '-'+fmt(rv.yemekK) : '') + '</td>'
       + '<td style="color:#dc2626">' + (rv.gunK>0 ? '-'+fmt(rv.gunK) : '') + '</td>'
       + '<td style="color:#ea580c">' + (rv.avans>0 ? fmt(rv.avans) : '') + '</td>'
@@ -917,7 +914,7 @@ function exportPDF() {
     + '<button onclick="window.print()">Yazdir / PDF Kaydet</button></div>'
     + '<table><thead><tr>'
     + '<th>#</th><th>Ad Soyad</th><th>Gorev</th><th>Maas</th>'
-    + '<th>E.Gun</th><th>E.Saat</th><th>Rapor</th><th>Yillik</th>'
+    + '<th>E.Gun</th><th>E.Saat</th><th>Rapor</th><th>Yillik</th><th>Cal.Saat</th>'
     + '<th>Yemek Kst.</th><th>Gun Kst.</th><th>Avans</th><th>YATAN</th><th>Aciklama</th>'
     + '</tr></thead><tbody>' + rows
     + '<tr class="tot"><td colspan="11">TOPLAM - ' + aktif + ' personel</td>'
@@ -1174,7 +1171,7 @@ async function onMonthChange() {
       render();
     } else {
       Object.keys(ST).forEach(k => {
-        ST[k] = {eksik:0, eksikSaat:0, rapor:0, yillik:0, saat1:0, saat2:0, avans:0};
+        ST[k] = {eksik:0, eksikSaat:0, rapor:0, yillik:0, saat1:0, saat2:0, calSaat:0, avans:0};
       });
       render();
     }
