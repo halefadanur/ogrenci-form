@@ -834,99 +834,99 @@ function exportXLSX(type) {
 
 // ─── PDF EXPORT ──────────────────────────────────────────────────────────
 function exportPDF() {
-  const month = monthLabel();
-  let tY=0, tK=0, tKs=0, aktif=0;
-  DATA.forEach((p,i) => {
+  var month = monthLabel();
+  var tY=0, tK=0, tKs=0, aktif=0;
+  DATA.forEach(function(p,i) {
     if (p.pasif) return;
     aktif++;
-    const rv = calc(p, ST[i]);
+    var rv = calc(p, ST[i]);
     tY  += rv.yatan  || 0;
     tK  += rv.kalan  || 0;
     tKs += rv.gunK + rv.yemekK;
   });
 
-  let rows = '';
-  let rn = 0;
-  DATA.forEach((p,i) => {
+  var rows = '';
+  var rn = 0;
+  DATA.forEach(function(p,i) {
     if (p.pasif) return;
     rn++;
-    const st = ST[i], rv = calc(p, st);
-    const bg = rn%2===0 ? '#f8fafc' : '#ffffff';
-    rows += `<tr style="background:${bg}">
-      <td style="text-align:center;color:#94a3b8">${rn}</td>
-      <td><b>${p.ad} ${p.soyad}</b></td>
-      <td>${p.gorev}</td>
-      <td>${p.maas ? fmt(p.maas) : 'Saat'}</td>
-      <td>${(p.ek1||0)>0?fmt(p.ek1):''}</td>
-      <td>${(p.ek2||0)>0?fmt(p.ek2):''}</td>
-      <td style="color:#dc2626">${st.eksik||''}</td>
-      <td style="color:#dc2626">${st.eksikSaat||''}</td>
-      <td style="color:#dc2626">${st.rapor||''}</td>
-      <td style="color:#d97706">${st.yillik||''}</td>
-      <td style="color:#dc2626">${rv.yemekK>0?'-'+fmt(rv.yemekK):''}</td>
-      <td style="color:#dc2626">${rv.gunK>0?'-'+fmt(rv.gunK):''}</td>
-      <td style="color:#ea580c">${rv.avans>0?fmt(rv.avans):''}</td>
-      <td style="color:#166534;font-weight:700">${fmt(rv.yatan)}</td>
-      <td style="color:#1d4ed8;font-weight:700">${rv.kalan!==null?fmt(rv.kalan):''}</td>
-      <td style="font-size:9px;color:#64748b">${buildAciklama(st,rv)}</td>
-    </tr>`;
+    var st = ST[i], rv = calc(p, st);
+    var bg = rn%2===0 ? '#f8fafc' : '#ffffff';
+    rows += '<tr style="background:' + bg + '">'
+      + '<td style="text-align:center;color:#94a3b8">' + rn + '</td>'
+      + '<td><b>' + p.ad + ' ' + p.soyad + '</b></td>'
+      + '<td>' + p.gorev + '</td>'
+      + '<td>' + (p.maas ? fmt(p.maas) : '<i style="color:#94a3b8">Saat</i>') + '</td>'
+      + '<td>' + ((p.ek1||0)>0 ? fmt(p.ek1) : '') + '</td>'
+      + '<td>' + ((p.ek2||0)>0 ? fmt(p.ek2) : '') + '</td>'
+      + '<td style="color:#dc2626">' + (st.eksik||'') + '</td>'
+      + '<td style="color:#dc2626">' + (st.eksikSaat||'') + '</td>'
+      + '<td style="color:#dc2626">' + (st.rapor||'') + '</td>'
+      + '<td style="color:#d97706">' + (st.yillik||'') + '</td>'
+      + '<td style="color:#dc2626">' + (rv.yemekK>0 ? '-'+fmt(rv.yemekK) : '') + '</td>'
+      + '<td style="color:#dc2626">' + (rv.gunK>0   ? '-'+fmt(rv.gunK)   : '') + '</td>'
+      + '<td style="color:#ea580c">' + (rv.avans>0  ? fmt(rv.avans)      : '') + '</td>'
+      + '<td style="color:#166534;font-weight:700">' + fmt(rv.yatan) + '</td>'
+      + '<td style="color:#1d4ed8;font-weight:700">' + (rv.kalan!==null ? fmt(rv.kalan) : '') + '</td>'
+      + '<td style="font-size:9px;color:#64748b">' + buildAciklama(st,rv) + '</td>'
+      + '</tr>';
   });
 
-  const html = `<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">
-<title>Maaş Bordrosu ${month}</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;font-size:10px;color:#1e293b;background:#fff}
-.hdr{background:#1e40af;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
-.hdr h1{font-size:13px;margin-bottom:2px}
-.hdr p{font-size:8px;opacity:.8}
-.kutu{text-align:right;margin-left:14px}
-.kutu .lb{font-size:7px;opacity:.7}
-.kutu .vl{font-size:11px;font-weight:700}
-.ozet{background:#f1f5f9;padding:4px 14px;font-size:8px;color:#475569;border-bottom:1px solid #e2e8f0}
-.pbar{background:#fef9c3;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#92400e}
-.pbar button{background:#1e40af;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:600}
-table{width:100%;border-collapse:collapse}
-thead tr{background:#1e293b}
-thead th{color:#94a3b8;padding:5px 3px;text-align:left;font-size:7.5px;white-space:nowrap}
-tbody td{padding:3px 3px;border-bottom:1px solid #e2e8f0;vertical-align:middle}
-.tot{background:#1e293b!important}
-.tot td{color:#fff;font-weight:700;padding:5px 3px;border:none}
-.ft{padding:4px 14px;font-size:7.5px;color:#94a3b8;display:flex;justify-content:space-between;margin-top:4px}
-@media print{
-  @page{size:A4 landscape;margin:7mm}
-  .pbar{display:none!important}
-  thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .tot{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-}
-</style></head><body>
-<div class="hdr">
-  <div><h1>EĞİTİMCİ DİL KONUŞMA MERKEZİ</h1><p>MAAŞ BORDROSU — ${month.toUpperCase()}</p></div>
-  <div style="display:flex">
-    <div class="kutu"><div class="lb">TOPLAM YATAN</div><div class="vl" style="color:#86efac">${fmt(tY)} ₺</div></div>
-    <div class="kutu"><div class="lb">TOPLAM KALAN</div><div class="vl" style="color:#93c5fd">${fmt(tK)} ₺</div></div>
-    <div class="kutu"><div class="lb">MALİYET</div><div class="vl" style="color:#d8b4fe">${fmt(tY+tK)} ₺</div></div>
-  </div>
-</div>
-<div class="ozet">Aktif: ${aktif} personel &nbsp;·&nbsp; Kesinti: ${fmt(tKs)} ₺ &nbsp;·&nbsp; ${new Date().toLocaleString('tr-TR')}</div>
-<div class="pbar">
-  <span>Yazdırmak için: <b>Yatay kağıt</b> + <b>PDF Olarak Kaydet</b> seçin</span>
-  <button onclick="window.print()">🖨️ Yazdır / PDF Kaydet</button>
-</div>
-<table>
-<thead><tr><th>#</th><th>Ad Soyad</th><th>Görev</th><th>Maaş</th><th>Ek1</th><th>Ek2</th><th>E.Gün</th><th>E.Saat</th><th>Rapor</th><th>Yıllık</th><th>Yemek Kst.</th><th>Gün Kst.</th><th>Avans</th><th>YATAN</th><th>KALAN</th><th>Açıklama</th></tr></thead>
-<tbody>${rows}
-<tr class="tot"><td colspan="13">TOPLAM — ${aktif} personel</td><td>${fmt(tY)} ₺</td><td>${fmt(tK)} ₺</td><td style="color:#d8b4fe">Maliyet: ${fmt(tY+tK)} ₺</td></tr>
-</tbody></table>
-<div class="ft"><span>Eğitimci Dil Konuşma Merkezi — ${month} Maaş Bordrosu</span><span>${new Date().toLocaleDateString('tr-TR')}</span></div>
-</body></html>`;
+  var css = [
+    '*{box-sizing:border-box;margin:0;padding:0}',
+    'body{font-family:Arial,sans-serif;font-size:10px;color:#1e293b;background:#fff}',
+    '.hdr{background:#1e40af;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}',
+    '.hdr h1{font-size:13px;margin-bottom:2px}',
+    '.hdr p{font-size:8px;opacity:.8}',
+    '.ozet{background:#f1f5f9;padding:4px 14px;font-size:8px;color:#475569;border-bottom:1px solid #e2e8f0}',
+    '.pbar{background:#fef9c3;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#92400e}',
+    '.pbar button{background:#1e40af;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:600}',
+    'table{width:100%;border-collapse:collapse}',
+    'thead tr{background:#1e293b}',
+    'thead th{color:#94a3b8;padding:5px 3px;text-align:left;font-size:7.5px;white-space:nowrap}',
+    'tbody td{padding:3px 3px;border-bottom:1px solid #e2e8f0;vertical-align:middle}',
+    '.tot{background:#1e293b!important}',
+    '.tot td{color:#fff;font-weight:700;padding:5px 3px;border:none}',
+    '.ft{padding:4px 14px;font-size:7.5px;color:#94a3b8;display:flex;justify-content:space-between;margin-top:4px}',
+    '@media print{',
+    '  @page{size:A4 landscape;margin:7mm}',
+    '  .pbar{display:none!important}',
+    '  thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+    '  .tot{-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+    '  tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+    '  .hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+    '}'
+  ].join('\n');
 
-  const a = Object.assign(document.createElement('a'), {
-    href: URL.createObjectURL(new Blob([html], {type:'text/html;charset=utf-8'})),
-    download: 'bordro_' + month.replace(' ','_') + '.html'
-  });
+  var html = '<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">'
+    + '<title>Maas Bordrosu ' + month + '</title>'
+    + '<style>' + css + '</style></head><body>'
+    + '<div class="hdr">'
+    + '<div><h1>EGiTiMCi DiL KONUSMA MERKEZi</h1><p>MAAS BORDROSU - ' + month.toUpperCase() + '</p></div>'
+    + '<div style="display:flex">'
+    + '<div style="text-align:right;margin-left:14px"><div style="font-size:7px;opacity:.7">TOPLAM YATAN</div><div style="font-size:11px;font-weight:700;color:#86efac">' + fmt(tY) + ' TL</div></div>'
+    + '<div style="text-align:right;margin-left:14px"><div style="font-size:7px;opacity:.7">TOPLAM KALAN</div><div style="font-size:11px;font-weight:700;color:#93c5fd">' + fmt(tK) + ' TL</div></div>'
+    + '<div style="text-align:right;margin-left:14px"><div style="font-size:7px;opacity:.7">MALiYET</div><div style="font-size:11px;font-weight:700;color:#d8b4fe">' + fmt(tY+tK) + ' TL</div></div>'
+    + '</div></div>'
+    + '<div class="ozet">Aktif: ' + aktif + ' personel &nbsp;·&nbsp; Kesinti: ' + fmt(tKs) + ' TL &nbsp;·&nbsp; ' + new Date().toLocaleString('tr-TR') + '</div>'
+    + '<div class="pbar"><span>Yazdirmak icin: <b>Yatay kagit</b> + <b>PDF Olarak Kaydet</b></span>'
+    + '<button onclick="window.print()">Yazdir / PDF Kaydet</button></div>'
+    + '<table><thead><tr>'
+    + '<th>#</th><th>Ad Soyad</th><th>Gorev</th><th>Maas</th><th>Ek1</th><th>Ek2</th>'
+    + '<th>E.Gun</th><th>E.Saat</th><th>Rapor</th><th>Yillik</th>'
+    + '<th>Yemek Kst.</th><th>Gun Kst.</th><th>Avans</th><th>YATAN</th><th>KALAN</th><th>Aciklama</th>'
+    + '</tr></thead><tbody>' + rows
+    + '<tr class="tot"><td colspan="13">TOPLAM - ' + aktif + ' personel</td>'
+    + '<td>' + fmt(tY) + ' TL</td><td>' + fmt(tK) + ' TL</td>'
+    + '<td style="color:#d8b4fe">Maliyet: ' + fmt(tY+tK) + ' TL</td></tr>'
+    + '</tbody></table>'
+    + '<div class="ft"><span>Egitimci Dil Konusma Merkezi - ' + month + ' Maas Bordrosu</span>'
+    + '<span>' + new Date().toLocaleDateString('tr-TR') + '</span></div>'
+    + '</body></html>';
+
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html], {type:'text/html;charset=utf-8'}));
+  a.download = 'bordro_' + month.replace(' ','_') + '.html';
   document.body.appendChild(a);
   a.click();
   a.remove();
