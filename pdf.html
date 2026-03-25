@@ -69,7 +69,8 @@ tr:last-child td{border-bottom:none}
 @media print{
   .bar{display:none!important}
   body{background:#fff}
-  .page{margin:0;box-shadow:none;width:100%;overflow:hidden;page-break-after:always;break-after:page}
+  .page{margin:0;box-shadow:none;width:100%;overflow:hidden}
+  .page.has-page2{page-break-after:always;break-after:page}
   .page2{page-break-before:always;break-before:page;page-break-after:avoid;break-after:avoid;margin:0;box-shadow:none;width:100%;padding:24px;min-height:unset;overflow:visible}
   .page2 img{max-height:240mm}
 }
@@ -271,6 +272,7 @@ function render() {
 
   // 2. SAYFA - kimlik varsa ayrı .page div olarak DOM'a ekle, yoksa hiç ekleme
   if (g('kimlik_url')) {
+    document.querySelector('.page').classList.add('has-page2');
     var page2 = document.createElement('div');
     page2.className = 'page page2';
     page2.innerHTML =
