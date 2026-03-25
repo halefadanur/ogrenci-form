@@ -484,13 +484,16 @@ async function topluPdf(){
     }
     if(!kayitlar.length) return;
     const PDF_URL = 'https://halefadanur.github.io/ogrenci-form/pdf.html?v='+Date.now();
+    const A4H = Math.round(297 * 3.7795);
+    const barCss = '<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#f0ede8;margin:0;font-family:sans-serif}.bar2{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:12px 20px;display:flex;gap:10px;align-items:center;position:sticky;top:0;z-index:99}.bar2 h3{flex:1;font-size:14px;font-weight:700}.bar2 button{padding:8px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}.btnp{background:#fff;color:#764ba2}.btnx{background:rgba(255,255,255,.2);color:#fff}iframe{display:block;width:100%;border:none}.frw{width:100%}@media print{.bar2{display:none!important}body{background:#fff}.frw{page-break-after:always;break-after:page}.frw:last-child{page-break-after:avoid;break-after:avoid}}</style>';
+    let iframes = '';
+    kayitlar.forEach(function(r){
+      const d = encodeURIComponent(JSON.stringify(r));
+      const h = A4H * (r.kimlik_url ? 2 : 1);
+      iframes += '<div class="frw"><iframe src="'+PDF_URL+'&d='+d+'&tip=TAM+FORM" style="height:'+h+'px" scrolling="no"></iframe></div>';
+    });
     const yeni = window.open('','_blank');
-    yeni.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Toplu PDF</title>
-<style>body{font-family:sans-serif;background:#f0ede8;margin:0}.bar{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:12px 20px;display:flex;gap:10px;align-items:center;position:sticky;top:0;z-index:99}.bar h3{flex:1;font-size:14px;font-weight:700;margin:0}.bar button{padding:8px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit}.btnp{background:#fff;color:#764ba2}.btnx{background:rgba(255,255,255,.2);color:#fff}@media print{.bar{display:none!important}}</style>
-</head><body>
-<div class="bar"><h3>${kayitlar.length} öğrenci — Toplu PDF</h3><button class="btnp" onclick="window.print()">🖨️ Yazdır</button><button class="btnx" onclick="window.close()">✕</button></div>
-<div id="ic"></div>
-<script>const K=${JSON.stringify(kayitlar)};const w=document.getElementById('ic');K.forEach(r=>{const d=encodeURIComponent(JSON.stringify(r));const div=document.createElement('div');div.style.cssText='page-break-after:always';div.innerHTML='<iframe src="${PDF_URL}&d='+d+'&tip=TAM+FORM" style="width:100%;height:1200px;border:none;display:block;" onload="this.style.height=(this.contentWindow.document.body.scrollHeight+40)+\\'px\\'"></iframe>';w.appendChild(div);});<\/script></body></html>`);
+    yeni.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Toplu PDF</title>'+barCss+'</head><body><div class="bar2"><h3>'+kayitlar.length+' ogrenci — Toplu PDF</h3><button class="btnp" onclick="window.print()">Yazdir</button><button class="btnx" onclick="window.close()">X</button></div>'+iframes+'</body></html>');
     yeni.document.close();
   }catch(e){alert('Hata: '+e.message);}
   if(btn){btn.textContent='Toplu PDF';btn.disabled=false;}
