@@ -218,17 +218,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="clabel">📅 Görüşme Tarihi</div>
     <input type="date" id="gorusmeTarihi">
   </div>
-  <div class="card" id="cAd">
-    <div class="clabel">🎒 Öğrenci Adı Soyadı <span class="rq">*</span></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-      <input type="text" id="ogrenciAd" placeholder="Ad" oninput="capWords(this)">
-      <input type="text" id="ogrenciSoyad" placeholder="Soyad" oninput="capWords(this)">
-    </div>
-  </div>
-  <div class="card">
-    <div class="clabel">🏫 Okul</div>
-    <input type="text" id="okul" placeholder="Devam ettiği okul" oninput="capWords(this)">
-  </div>
   <div class="card" id="cSinif">
     <div class="clabel">📚 Sınıf <span class="rq">*</span></div>
     <div class="chips">
@@ -244,6 +233,17 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="chip" onclick="selectSinif(this,'7')">7</div>
       <div class="chip" onclick="selectSinif(this,'8+')">8+</div>
     </div>
+  </div>
+  <div class="card" id="cAd">
+    <div class="clabel">🎒 Öğrenci Adı Soyadı <span class="rq">*</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+      <input type="text" id="ogrenciAd" placeholder="Ad" oninput="capWords(this)">
+      <input type="text" id="ogrenciSoyad" placeholder="Soyad" oninput="capWords(this)">
+    </div>
+  </div>
+  <div class="card" id="cOkul">
+    <div class="clabel">🏫 Okul</div>
+    <input type="text" id="okul" placeholder="Devam ettiği okul" oninput="capWords(this)">
   </div>
   <div class="card">
     <div class="clabel">🎂 Doğum Tarihi</div>
@@ -681,13 +681,20 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <div class="cropmodal hidden" id="cropModal" style="display:none">
   <div class="cropsheet">
     <div class="chandle"></div>
-    <div class="ctitle">✂️ Fotoğrafı Kırp</div>
+    <div class="ctitle" id="cropTitle">✂️ Fotoğrafı Kırp</div>
     <div class="cwrap" id="cwrap"><canvas id="cropCanvas"></canvas></div>
-    <div class="chint">Sürükle · Yakınlaştır</div>
-    <div class="czrow">
-      <span style="font-size:18px">🔍</span>
-      <input type="range" id="cropZoom" min="0.3" max="4" step="0.05" value="1" oninput="onZoom()">
-      <span id="zoomVal">1×</span>
+    <!-- Foto modu: zoom slider -->
+    <div id="cropZoomRow" class="chint" style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:12px;color:#aaa;text-align:center">Sürükle · Yakınlaştır</div>
+      <div class="czrow">
+        <span style="font-size:18px">🔍</span>
+        <input type="range" id="cropZoom" min="0.3" max="4" step="0.05" value="1" oninput="onZoom()">
+        <span id="zoomVal">1×</span>
+      </div>
+    </div>
+    <!-- Kimlik modu: ipucu -->
+    <div id="cropKimlikHint" class="chint" style="display:none;font-size:12px;color:#aaa;text-align:center">
+      🟧 Turuncu köşelerden sürükle · Fotoğrafı da taşıyabilirsin
     </div>
     <div class="cacts">
       <button class="ccancel" onclick="closeCrop()">İptal</button>
@@ -831,8 +838,13 @@ function getSaglikStr(){
 
 /* ─ SINIF ─ */
 function selectSinif(el,val){
-  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
-  el.classList.add('on');D.sinif=val;updAkademik();
+  el.parentElement.querySelectorAll(".chip").forEach(c=>c.classList.remove("on"));
+  el.classList.add("on");D.sinif=val;updAkademik();
+  const pasif=(val==="Okula Gitmeyen");
+  const okulCard=document.getElementById("cOkul");
+  const okulInp=document.getElementById("okul");
+  if(okulCard) okulCard.style.opacity=pasif?"0.38":"1";
+  if(okulInp){okulInp.disabled=pasif;if(pasif)okulInp.value="";}
 }
 function updAkademik(){
   const k=(D.sinif==='Anaokulu-Kreş'||D.sinif==='Okula Gitmeyen');
@@ -950,8 +962,20 @@ function goTo(n){
 
 /* ══ CROP ═════════════════════════════════════ */
 let cropTgt=null,cropImg=new Image();
-const OW=300,OH=400;
+const OW=300,OH=400; // foto canvas boyutu
+
+// ── FOTO modu state ──
 let cr={ox:0,oy:0,scale:1,drag:false,lx:0,ly:0};
+
+// ── KİMLİK modu state ──
+// sel: seçim kutusu (canvas koordinatlarında)
+// imgOff: görüntünün canvas üzerindeki offset ve scale
+let kimlikMode=false;
+let kImg={ox:0,oy:0,scale:1}; // görüntü pozisyonu (img koordinatı → canvas)
+let sel={x:0,y:0,w:0,h:0};   // seçim kutusu (canvas piksel)
+let kDrag=null; // null | 'img' | 'tl'|'tr'|'bl'|'br'
+let kLast={x:0,y:0};
+const CORNER_R=18; // köşe tutma noktası yarıçapı (px, canvas)
 
 function handleFile(inp,tgt){
   const f=inp.files[0];if(!f)return;
@@ -960,49 +984,97 @@ function handleFile(inp,tgt){
     cropTgt=tgt;const img=new Image();
     img.onload=()=>{
       cropImg=img;
-      const s=Math.max(OW/img.naturalWidth,OH/img.naturalHeight);
-      cr={ox:(OW-img.naturalWidth*s)/2,oy:(OH-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
-      const zEl=document.getElementById('cropZoom');
-      zEl.min=Math.max(0.05,s*0.3).toFixed(3);
-      zEl.max=(s*5).toFixed(3);
-      zEl.value=s;
-      document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
-      openCrop();
+      if(tgt==='kimlik'){
+        initKimlikCrop(img);
+      } else {
+        const s=Math.max(OW/img.naturalWidth,OH/img.naturalHeight);
+        cr={ox:(OW-img.naturalWidth*s)/2,oy:(OH-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
+        const zEl=document.getElementById('cropZoom');
+        zEl.min=Math.max(0.05,s*0.3).toFixed(3);zEl.max=(s*5).toFixed(3);zEl.value=s;
+        document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
+        openCrop(false);
+      }
     };img.src=e.target.result;
   };rd.readAsDataURL(f);
 }
+
 function reCrop(tgt){
   const src=document.getElementById(tgt+'Img').src;if(!src||src.length<50)return;
   cropTgt=tgt;const img=new Image();
   img.onload=()=>{
-    cropImg=img;const s=Math.max(OW/img.naturalWidth,OH/img.naturalHeight);
-    cr={ox:(OW-img.naturalWidth*s)/2,oy:(OH-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
-    const zEl2=document.getElementById('cropZoom');
-    zEl2.min=Math.max(0.05,s*0.3).toFixed(3);
-    zEl2.max=(s*5).toFixed(3);
-    zEl2.value=s;document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
-    openCrop();
+    cropImg=img;
+    if(tgt==='kimlik'){
+      initKimlikCrop(img);
+    } else {
+      const s=Math.max(OW/img.naturalWidth,OH/img.naturalHeight);
+      cr={ox:(OW-img.naturalWidth*s)/2,oy:(OH-img.naturalHeight*s)/2,scale:s,drag:false,lx:0,ly:0};
+      const zEl2=document.getElementById('cropZoom');
+      zEl2.min=Math.max(0.05,s*0.3).toFixed(3);zEl2.max=(s*5).toFixed(3);
+      zEl2.value=s;document.getElementById('zoomVal').textContent=s.toFixed(2)+'×';
+      openCrop(false);
+    }
   };img.src=src;
 }
-function openCrop(){
+
+function initKimlikCrop(img){
+  // Canvas boyutuna göre görüntüyü sığdır
+  openCrop(true); // önce modalı aç, canvas boyutunu al
+  setTimeout(()=>{
+    const cv=document.getElementById('cropCanvas');
+    const cw=cv.width,ch=cv.height;
+    // Görüntüyü canvas'a sığdır (letterbox)
+    const s=Math.min(cw/img.naturalWidth,ch/img.naturalHeight)*0.95;
+    kImg={ox:(cw-img.naturalWidth*s)/2,oy:(ch-img.naturalHeight*s)/2,scale:s};
+    // Seçim kutusunu görüntü sınırlarına göre başlat (tüm görüntü)
+    sel={x:kImg.ox,y:kImg.oy,w:img.naturalWidth*s,h:img.naturalHeight*s};
+    renderKimlik();
+  },100);
+}
+
+function openCrop(isKimlik){
+  kimlikMode=isKimlik;
+  // UI güncelle
+  document.getElementById('cropTitle').textContent=isKimlik?'✂️ Kimlik Alanını Seç':'✂️ Fotoğrafı Kırp';
+  document.getElementById('cropZoomRow').style.display=isKimlik?'none':'flex';
+  document.getElementById('cropKimlikHint').style.display=isKimlik?'block':'none';
   const m=document.getElementById('cropModal');m.style.display='';m.classList.remove('hidden');
-  setTimeout(()=>{setupCv();renderCrop();},80);
+  setTimeout(()=>{setupCv();if(!isKimlik)renderCrop();},80);
 }
 function closeCrop(){
-  const m=document.getElementById('cropModal');m.classList.add('hidden');m.style.display='none';cr.drag=false;
+  const m=document.getElementById('cropModal');m.classList.add('hidden');m.style.display='none';
+  cr.drag=false;kDrag=null;
 }
+
 function setupCv(){
   const wrap=document.getElementById('cwrap'),old=document.getElementById('cropCanvas');
-  const dw=Math.min(wrap.clientWidth||400,530),dh=Math.round(dw*(OH/OW));
+  let dw,dh;
+  if(kimlikMode){
+    // Kimlik: geniş + yatay ağırlıklı
+    dw=Math.min(wrap.clientWidth||400,530);
+    dh=Math.round(dw*0.72);
+  } else {
+    dw=Math.min(wrap.clientWidth||400,530);
+    dh=Math.round(dw*(OH/OW));
+  }
   const cv=old.cloneNode(false);cv.id='cropCanvas';cv.width=dw;cv.height=dh;
   cv.style.cssText='display:block;width:100%;touch-action:none;cursor:grab';
   old.parentNode.replaceChild(cv,old);
-  cv.addEventListener('mousedown',sd);cv.addEventListener('touchstart',sd,{passive:false});
-  cv.addEventListener('mousemove',dd);cv.addEventListener('touchmove',dd,{passive:false});
-  cv.addEventListener('mouseup',()=>cr.drag=false);
-  cv.addEventListener('touchend',()=>cr.drag=false);
-  cv.addEventListener('mouseleave',()=>cr.drag=false);
+
+  if(kimlikMode){
+    cv.addEventListener('mousedown',ksd);cv.addEventListener('touchstart',ksd,{passive:false});
+    cv.addEventListener('mousemove',kdd);cv.addEventListener('touchmove',kdd,{passive:false});
+    cv.addEventListener('mouseup',kup);cv.addEventListener('touchend',kup);
+    cv.addEventListener('mouseleave',kup);
+  } else {
+    cv.addEventListener('mousedown',sd);cv.addEventListener('touchstart',sd,{passive:false});
+    cv.addEventListener('mousemove',dd);cv.addEventListener('touchmove',dd,{passive:false});
+    cv.addEventListener('mouseup',()=>cr.drag=false);
+    cv.addEventListener('touchend',()=>cr.drag=false);
+    cv.addEventListener('mouseleave',()=>cr.drag=false);
+  }
 }
+
+// ── FOTO CROP handlers ──
 function sd(e){cr.drag=true;const cv=document.getElementById('cropCanvas'),sc=cv.width/OW,pt=e.touches?e.touches[0]:e;cr.lx=pt.clientX/sc;cr.ly=pt.clientY/sc;e.preventDefault();}
 function dd(e){if(!cr.drag)return;const cv=document.getElementById('cropCanvas'),sc=cv.width/OW,pt=e.touches?e.touches[0]:e;const nx=pt.clientX/sc,ny=pt.clientY/sc;cr.ox+=(nx-cr.lx);cr.oy+=(ny-cr.ly);cr.lx=nx;cr.ly=ny;renderCrop();e.preventDefault();}
 function onZoom(){cr.scale=parseFloat(document.getElementById('cropZoom').value);document.getElementById('zoomVal').textContent=cr.scale.toFixed(2)+'×';renderCrop();}
@@ -1015,14 +1087,131 @@ function renderCrop(){
   for(let i=1;i<3;i++){ctx.beginPath();ctx.moveTo(cv.width*i/3,0);ctx.lineTo(cv.width*i/3,cv.height);ctx.stroke();ctx.beginPath();ctx.moveTo(0,cv.height*i/3);ctx.lineTo(cv.width,cv.height*i/3);ctx.stroke();}
   ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=2;ctx.strokeRect(1,1,cv.width-2,cv.height-2);
 }
+
+// ── KİMLİK CROP handlers ──
+function kGetPt(e){
+  const cv=document.getElementById('cropCanvas');
+  const rect=cv.getBoundingClientRect();
+  const pt=e.touches?e.touches[0]:e;
+  const scaleX=cv.width/rect.width;
+  const scaleY=cv.height/rect.height;
+  return{x:(pt.clientX-rect.left)*scaleX,y:(pt.clientY-rect.top)*scaleY};
+}
+function kCornerHit(px,py){
+  const corners=[
+    {id:'tl',x:sel.x,y:sel.y},
+    {id:'tr',x:sel.x+sel.w,y:sel.y},
+    {id:'bl',x:sel.x,y:sel.y+sel.h},
+    {id:'br',x:sel.x+sel.w,y:sel.y+sel.h}
+  ];
+  for(const c of corners){
+    if(Math.abs(px-c.x)<CORNER_R&&Math.abs(py-c.y)<CORNER_R) return c.id;
+  }
+  return null;
+}
+function ksd(e){
+  e.preventDefault();
+  const p=kGetPt(e);
+  const corner=kCornerHit(p.x,p.y);
+  if(corner){kDrag=corner;}
+  else if(p.x>=sel.x&&p.x<=sel.x+sel.w&&p.y>=sel.y&&p.y<=sel.y+sel.h){kDrag='img';}
+  else{kDrag='img';}
+  kLast={x:p.x,y:p.y};
+}
+function kdd(e){
+  e.preventDefault();
+  if(!kDrag)return;
+  const p=kGetPt(e);
+  const dx=p.x-kLast.x,dy=p.y-kLast.y;
+  kLast={x:p.x,y:p.y};
+  const MINSEL=30;
+  if(kDrag==='img'){
+    // Görüntüyü taşı
+    kImg.ox+=dx;kImg.oy+=dy;
+    // Seçim kutusunu da görüntüyle tut (sınır dışına çıkma)
+    // Seçim görüntü sınırları içinde kalmalı
+    sel.x=Math.max(kImg.ox,Math.min(sel.x,kImg.ox+cropImg.naturalWidth*kImg.scale-sel.w));
+    sel.y=Math.max(kImg.oy,Math.min(sel.y,kImg.oy+cropImg.naturalHeight*kImg.scale-sel.h));
+  } else {
+    // Köşe sürükleme
+    let nx=sel.x,ny=sel.y,nw=sel.w,nh=sel.h;
+    if(kDrag==='tl'){nx+=dx;ny+=dy;nw-=dx;nh-=dy;}
+    else if(kDrag==='tr'){nw+=dx;ny+=dy;nh-=dy;}
+    else if(kDrag==='bl'){nx+=dx;nw-=dx;nh+=dy;}
+    else if(kDrag==='br'){nw+=dx;nh+=dy;}
+    if(nw>MINSEL&&nh>MINSEL){sel={x:nx,y:ny,w:nw,h:nh};}
+  }
+  renderKimlik();
+}
+function kup(){kDrag=null;}
+
+function renderKimlik(){
+  const cv=document.getElementById('cropCanvas');if(!cv||!cv.width)return;
+  const ctx=cv.getContext('2d');
+  // Arka plan
+  ctx.fillStyle='#111';ctx.fillRect(0,0,cv.width,cv.height);
+  // Görüntü
+  ctx.drawImage(cropImg,kImg.ox,kImg.oy,cropImg.naturalWidth*kImg.scale,cropImg.naturalHeight*kImg.scale);
+  // Dim overlay (seçim dışı kara)
+  ctx.fillStyle='rgba(0,0,0,0.5)';
+  ctx.fillRect(0,0,cv.width,sel.y); // üst
+  ctx.fillRect(0,sel.y,sel.x,sel.h); // sol
+  ctx.fillRect(sel.x+sel.w,sel.y,cv.width-(sel.x+sel.w),sel.h); // sağ
+  ctx.fillRect(0,sel.y+sel.h,cv.width,cv.height-(sel.y+sel.h)); // alt
+  // Seçim çerçevesi
+  ctx.strokeStyle='#f0a020';ctx.lineWidth=2;ctx.strokeRect(sel.x,sel.y,sel.w,sel.h);
+  // Grid çizgileri (seçim içinde)
+  ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1;
+  for(let i=1;i<3;i++){
+    ctx.beginPath();ctx.moveTo(sel.x+sel.w*i/3,sel.y);ctx.lineTo(sel.x+sel.w*i/3,sel.y+sel.h);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(sel.x,sel.y+sel.h*i/3);ctx.lineTo(sel.x+sel.w,sel.y+sel.h*i/3);ctx.stroke();
+  }
+  // Köşe tutma noktaları
+  const corners=[{x:sel.x,y:sel.y},{x:sel.x+sel.w,y:sel.y},{x:sel.x,y:sel.y+sel.h},{x:sel.x+sel.w,y:sel.y+sel.h}];
+  corners.forEach(c=>{
+    ctx.fillStyle='#f0a020';ctx.beginPath();ctx.arc(c.x,c.y,CORNER_R*0.55,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(c.x,c.y,CORNER_R*0.28,0,Math.PI*2);ctx.fill();
+  });
+}
+
 function applyCrop(){
+  if(kimlikMode){
+    applyKimlikCrop();
+  } else {
+    applyFotoCrop();
+  }
+}
+
+function applyFotoCrop(){
   const out=document.createElement('canvas');out.width=OW;out.height=OH;
   const ctx=out.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,OW,OH);
   ctx.drawImage(cropImg,cr.ox,cr.oy,cropImg.naturalWidth*cr.scale,cropImg.naturalHeight*cr.scale);
-  const url=out.toDataURL('image/jpeg',.7);
+  const url=out.toDataURL('image/jpeg',.82);
   document.getElementById(cropTgt+'Img').src=url;
   document.getElementById(cropTgt+'Data').value=url;
   document.getElementById(cropTgt+'Preview').classList.remove('hidden');
+  closeCrop();
+}
+
+function applyKimlikCrop(){
+  const cv=document.getElementById('cropCanvas');
+  // Seçim kutusundan orijinal görüntü koordinatlarına dönüştür
+  const srcX=(sel.x-kImg.ox)/kImg.scale;
+  const srcY=(sel.y-kImg.oy)/kImg.scale;
+  const srcW=sel.w/kImg.scale;
+  const srcH=sel.h/kImg.scale;
+  // Çıktı canvas'ı: orijinal piksel değerlerinde (yüksek kalite)
+  const maxOut=1400; // max genişlik
+  const outScale=Math.min(1,maxOut/srcW);
+  const outW=Math.round(srcW*outScale);
+  const outH=Math.round(srcH*outScale);
+  const out=document.createElement('canvas');out.width=outW;out.height=outH;
+  const ctx=out.getContext('2d');
+  ctx.drawImage(cropImg,srcX,srcY,srcW,srcH,0,0,outW,outH);
+  const url=out.toDataURL('image/jpeg',.88);
+  document.getElementById('kimlikImg').src=url;
+  document.getElementById('kimlikData').value=url;
+  document.getElementById('kimlikPreview').classList.remove('hidden');
   closeCrop();
 }
 
