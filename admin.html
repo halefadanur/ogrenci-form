@@ -193,7 +193,7 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
   <div class="toplu-bar" id="topluBar">
     <span class="tbtn" id="topluCount">0 seçildi</span>
     <button class="tbtn tbtn-primary" onclick="topluPdf()">Toplu PDF</button>
-    <button class="tbtn" style="background:var(--red-bg);color:var(--red);border:none;" onclick="topluSilBaslat()">🗑️ Seçilenleri Sil</button>
+    <button id="topluSilBtn" class="tbtn" style="background:var(--red-bg);color:var(--red);border:none;display:none;" onclick="topluSilBaslat()">🗑️ Seçilenleri Sil</button>
     <button class="tbtn" onclick="secimTemizle()">Temizle</button>
   </div>
 
@@ -269,7 +269,9 @@ async function verileriYukle(){
   });
   istatistikGuncelle();
   filtrele();
-  // Tepe yönetici ise rapor butonunu göster
+  // Tepe yönetici ise rapor ve silme butonlarını göster
+  const silBtn = document.getElementById('topluSilBtn');
+  if(silBtn) silBtn.style.display = sessionStorage.getItem('tepe')==='1' ? 'inline-flex' : 'none';
   if(sessionStorage.getItem('tepe')==='1'){
     const btn = document.getElementById('raporBtn');
     if(btn) btn.style.display='inline-flex';
@@ -520,11 +522,14 @@ function chkUp(){
   const c=document.querySelectorAll('.rchk:checked').length;
   document.getElementById('topluBar').style.display=c?'flex':'none';
   document.getElementById('topluCount').textContent=c+' seçildi';
+  const silBtn=document.getElementById('topluSilBtn');
+  if(silBtn) silBtn.style.display=sessionStorage.getItem('tepe')==='1'?'inline-flex':'none';
 }
 function tumSecToggle(e){ document.querySelectorAll('.rchk').forEach(c=>c.checked=e.checked); chkUp(); }
 function secimTemizle(){ document.querySelectorAll('.rchk').forEach(c=>c.checked=false); chkUp(); }
 
 function topluSilBaslat(){
+  if(sessionStorage.getItem('tepe')!=='1') return;
   const secili = [...document.querySelectorAll('.rchk:checked')];
   if(!secili.length) return;
   const sayac = secili.length;
@@ -534,6 +539,7 @@ function topluSilBaslat(){
 }
 
 async function topluSilOnayla(idler){
+  if(sessionStorage.getItem('tepe')!=='1') return;
   document.getElementById('silModalOverlay').style.display = 'none';
   const btn = document.querySelector('#topluBar .tbtn-primary');
   if(btn){btn.textContent='⏳ Siliniyor...';btn.disabled=true;}
