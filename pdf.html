@@ -62,15 +62,15 @@ tr:last-child td{border-bottom:none}
 .not{background:#fffbf0;border:1.5px solid #fde68a;border-radius:7px;padding:8px 11px;font-size:11px;line-height:1.7;color:#3d2b00;white-space:pre-wrap}
 .ft{border-top:1px solid #e8e4de;padding:6px 28px;display:flex;justify-content:space-between;font-size:9px;color:#b0a898}
 /* İKİNCİ SAYFA */
-.page2{break-before:page;page-break-before:always;padding:24px;margin-top:0}
-.foto-wrap{display:flex;gap:24px;justify-content:center;align-items:flex-start;margin-top:12px}
-.foto-box{text-align:center}
-.foto-box .foto-label{font-size:11px;font-weight:700;color:#6b6560;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.page2{width:210mm;min-height:297mm;background:#fff;margin:20px auto;box-shadow:0 4px 30px rgba(0,0,0,.15);padding:32px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+.page2 .p2-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#a09a94;margin-bottom:20px;display:flex;align-items:center;gap:8px;width:100%}
+.page2 .p2-title::after{content:'';flex:1;height:1px;background:#ede8e0}
+.page2 img{width:100%;max-height:220mm;object-fit:contain;border-radius:8px;border:1px solid #e2dbd0;display:block}
 @media print{
   .bar{display:none!important}
   body{background:#fff}
   .page{margin:0;box-shadow:none;width:100%;min-height:unset}
-  .page2{page-break-before:always;margin:0;box-shadow:none;width:100%}
+  .page2{page-break-before:always;break-before:page;margin:0;box-shadow:none;width:100%;padding:24px;min-height:unset}
 }
 </style>
 </head>
@@ -266,15 +266,17 @@ function render() {
   html += '<div class="kb"><span>📋 '+karar+'</span></div>';
   html += '</div>';
 
-  // 8. İKİNCİ SAYFA - sadece kimlik fotoğrafı
-  if (g('kimlik_url')) {
-    html += '<div class="page2" style="break-before:page;page-break-before:always;padding:24px"><div class="st">🪪 Kimlik Fotoğrafı</div>';
-    html += '<div class="foto-wrap"><div class="foto-box">';
-    html += '<img src="'+g('kimlik_url')+'" style="max-width:100%;max-height:600px" onerror="this.style.display=\'none\'">';
-    html += '</div></div></div>';
-  }
-
   document.getElementById('elBody').innerHTML = html;
+
+  // 2. SAYFA - kimlik varsa ayrı .page div olarak DOM'a ekle, yoksa hiç ekleme
+  if (g('kimlik_url')) {
+    var page2 = document.createElement('div');
+    page2.className = 'page page2';
+    page2.innerHTML =
+      '<div class="p2-title">🪪 Kimlik Fotoğrafı</div>' +
+      '<img src="'+g('kimlik_url')+'" alt="Kimlik" onerror="this.style.display=\'none\'">';
+    document.body.appendChild(page2);
+  }
 }
 </script>
 </body>
