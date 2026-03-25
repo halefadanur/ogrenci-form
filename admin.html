@@ -135,13 +135,31 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
 
   <!-- Rapor Ay Seçici Modal -->
   <div id="raporModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:var(--surf);border-radius:16px;padding:28px;width:340px;box-shadow:0 8px 32px rgba(0,0,0,.3);">
-      <h3 style="margin-bottom:16px;font-size:16px;font-weight:700;">📊 Yönetici Raporu</h3>
-      <label style="font-size:13px;color:var(--sub);font-weight:600;display:block;margin-bottom:8px;">Rapor Ayı</label>
-      <select id="raporAySel" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;outline:none;margin-bottom:20px;"></select>
+    <div style="background:var(--surf);border-radius:16px;padding:28px;width:480px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.3);">
+      <h3 style="margin-bottom:20px;font-size:16px;font-weight:700;">📊 Yönetici Raporu</h3>
+
+      <!-- Rapor tipi seçimi -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
+        <button id="rtipGenel" onclick="raporTipSec('genel')" style="flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #7C3AED;background:#7C3AED;color:#fff;font-family:inherit;">📅 Aylık Aktivite</button>
+        <button id="rtipOzel" onclick="raporTipSec('ozel')" style="flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid var(--bd);background:transparent;color:var(--sub);font-family:inherit;">🎯 Karar Bazlı</button>
+      </div>
+
+      <label style="font-size:12px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Ay</label>
+      <select id="raporAySel" style="width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;outline:none;margin-bottom:18px;"></select>
+
+      <!-- Karar bazlı seçenekler -->
+      <div id="ozelRaporSec" style="display:none;">
+        <label style="font-size:12px;color:var(--sub);font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:10px;">Dahil edilecek kararlar</label>
+        <div id="kararCheckWrap" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;margin-bottom:16px;padding-right:4px;"></div>
+        <div style="display:flex;gap:8px;margin-bottom:18px;">
+          <button onclick="tumKararlariSec(true)" style="flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--sub);font-family:inherit;">Tümünü Seç</button>
+          <button onclick="tumKararlariSec(false)" style="flex:1;padding:7px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--sub);font-family:inherit;">Temizle</button>
+        </div>
+      </div>
+
       <div style="display:flex;gap:10px;justify-content:flex-end;">
         <button onclick="document.getElementById('raporModalOverlay').style.display='none'" style="padding:9px 18px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--sub);cursor:pointer;font-family:inherit;font-size:13px;">İptal</button>
-        <button onclick="raporAc()" style="padding:9px 18px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;">Raporu Aç</button>
+        <button onclick="raporAc()" style="padding:9px 18px;border-radius:8px;border:none;background:#7C3AED;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;">Raporu Aç →</button>
       </div>
     </div>
   </div>
@@ -506,6 +524,29 @@ function excelIndir(){
   XLSX.writeFile(wb, "Ogrenciler.xlsx");
 }
 
+const TUM_KARARLAR = ["KAYDEDİLDİ", "Kaydedilecek", "Başka Kurumda Kayıtlı, Kaydolacak", "Başka Kurumda Kayıtlı, Düşünecek", "Özel Ders Alacak", "Takibe Alındı", "Aile Düşünecek", "Aile Takip Edecek", "Başka Kuruma Gitti", "Eski Kurumuna Devam", "Rapordan Vazgeçti", "Rapor Çıkmadı", "Rapor İhtiyacı Yok", "Rapor Yenilemedi (Kurum)", "Rapor Yenilemedi (Veli)", "İlaç Tedavisi/Beklesin", "Devamsız", "ERİKLİ", "Ayrıldı (Biz Ayırdık)", "Ayrıldı (Memnun Değil)", "Ayrıldı (Zorunlu Sebeplerle)", "RED", "İşlemde", "Mezun Oldu"];
+let aktifRaporTip = 'genel';
+
+function raporTipSec(tip) {
+  aktifRaporTip = tip;
+  const bGenel = document.getElementById('rtipGenel');
+  const bOzel = document.getElementById('rtipOzel');
+  const ozelSec = document.getElementById('ozelRaporSec');
+  if(tip === 'genel') {
+    bGenel.style.background='#7C3AED';bGenel.style.color='#fff';bGenel.style.borderColor='#7C3AED';
+    bOzel.style.background='transparent';bOzel.style.color='var(--sub)';bOzel.style.borderColor='var(--bd)';
+    ozelSec.style.display='none';
+  } else {
+    bOzel.style.background='#7C3AED';bOzel.style.color='#fff';bOzel.style.borderColor='#7C3AED';
+    bGenel.style.background='transparent';bGenel.style.color='var(--sub)';bGenel.style.borderColor='var(--bd)';
+    ozelSec.style.display='block';
+  }
+}
+
+function tumKararlariSec(val) {
+  document.querySelectorAll('#kararCheckWrap input[type=checkbox]').forEach(cb => cb.checked = val);
+}
+
 function raporModalAc() {
   const sel = document.getElementById('raporAySel');
   sel.innerHTML = '';
@@ -519,11 +560,27 @@ function raporModalAc() {
     if(i===0) opt.selected = true;
     sel.appendChild(opt);
   }
+  // Karar checkboxları oluştur
+  const wrap = document.getElementById('kararCheckWrap');
+  wrap.innerHTML = '';
+  TUM_KARARLAR.forEach(k => {
+    const lbl = document.createElement('label');
+    lbl.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;cursor:pointer;border:1.5px solid var(--bd);background:var(--bg);font-size:13px;font-weight:500;transition:all .13s;';
+    lbl.innerHTML = `<input type="checkbox" value="${k}" style="accent-color:#7C3AED;width:15px;height:15px;cursor:pointer;flex-shrink:0;"><span>${k}</span>`;
+    lbl.addEventListener('mouseenter',()=>lbl.style.borderColor='#7C3AED');
+    lbl.addEventListener('mouseleave',()=>{if(!lbl.querySelector('input').checked)lbl.style.borderColor='var(--bd)';});
+    lbl.querySelector('input').addEventListener('change',function(){
+      lbl.style.borderColor = this.checked ? '#7C3AED' : 'var(--bd)';
+      lbl.style.background = this.checked ? 'rgba(124,58,237,0.08)' : 'var(--bg)';
+    });
+    wrap.appendChild(lbl);
+  });
   document.getElementById('raporModalOverlay').style.display = 'flex';
 }
 
 async function raporAc() {
   document.getElementById('raporModalOverlay').style.display = 'none';
+  if(aktifRaporTip === 'ozel') { await raporAcOzel(); return; }
   const ayVal = document.getElementById('raporAySel').value; // YYYY-MM
   const [yil, ay] = ayVal.split('-').map(Number);
   const baslangic = new Date(yil, ay-1, 1).toISOString();
@@ -614,6 +671,161 @@ body{font-family:'Segoe UI',sans-serif;background:#F9FAFB;color:#111827;padding:
   } catch(e) { alert('Hata: ' + e.message); }
   btn.innerHTML = origText;
   btn.disabled = false;
+}
+
+async function raporAcOzel() {
+  const ayVal = document.getElementById('raporAySel').value;
+  const [yil, ay] = ayVal.split('-').map(Number);
+  const baslangic = `${yil}-${String(ay).padStart(2,'0')}-01`;
+  const bitisTarih = new Date(yil, ay, 1);
+  const bitis = `${bitisTarih.getFullYear()}-${String(bitisTarih.getMonth()+1).padStart(2,'0')}-01`;
+  const ayAdi = new Date(yil, ay-1, 1).toLocaleString('tr-TR',{month:'long',year:'numeric'});
+
+  const seciliKararlar = [...document.querySelectorAll('#kararCheckWrap input:checked')].map(cb=>cb.value);
+  if(!seciliKararlar.length){ alert('En az bir karar seçin.'); return; }
+
+  const btn = document.getElementById('raporBtn');
+  const orig = btn.innerHTML; btn.innerHTML='⏳'; btn.disabled=true;
+
+  try {
+    const SUPA = "https://zciraijmwxcwhryidlki.supabase.co";
+    const KEY  = "sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou";
+    const hdrs = { apikey: KEY, Authorization: 'Bearer ' + KEY };
+
+    // Seçili her karar için ayrı sorgu yap, birleştir
+    // Filtre: gorusme_tarihi o aya ait VEYA updated_at o aya ait (ikisini union et)
+    const sonuclar = [];
+    const idSet = new Set();
+    for(const k of seciliKararlar){
+      const enc = encodeURIComponent(k);
+      // 1) Görüşme tarihi o aya ait
+      const url1 = `${SUPA}/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,anne_tel,baba_tel,gorusme_tarihi,sinif,tani,gorusme_not,yonetici_notu,rehber_notu&karar=eq.${enc}&gorusme_tarihi=gte.${baslangic}&gorusme_tarihi=lt.${bitis}&order=gorusme_tarihi.desc`;
+      // 2) updated_at o aya ait (karar bu ay değişmiş olabilir)
+      const url2 = `${SUPA}/rest/v1/ogrenciler?select=ad,soyad,karar,uzman,anne_tel,baba_tel,gorusme_tarihi,sinif,tani,gorusme_not,yonetici_notu,rehber_notu&karar=eq.${enc}&updated_at=gte.${baslangic}&updated_at=lt.${bitis}&order=updated_at.desc`;
+      const [r1,r2] = await Promise.all([fetch(url1,{headers:hdrs}).then(r=>r.json()),fetch(url2,{headers:hdrs}).then(r=>r.json())]);
+      for(const row of [...(r1||[]),...(r2||[])]){
+        const key = (row.ad||'')+'|'+(row.soyad||'')+'|'+(row.gorusme_tarihi||'');
+        if(!idSet.has(key)){ idSet.add(key); sonuclar.push(row); }
+      }
+    }
+
+    // Karar bazlı grupla
+    const gruplar = {};
+    sonuclar.forEach(r => {
+      const k = r.karar || '—';
+      if(!gruplar[k]) gruplar[k] = [];
+      gruplar[k].push(r);
+    });
+
+    const tf = t => t ? t.split('-').reverse().join('.') : '—';
+    const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+    let tabloHtml = '';
+    let toplamSayac = 0;
+    const KARAR_RENK = {
+      'KAYDEDİLDİ':'#059669','Kaydedilecek':'#0891B2',
+      'Başka Kuruma Gitti':'#DC2626','Eski Kurumuna Devam':'#DC2626',
+      'Rapordan Vazgeçti':'#D97706','Rapor Çıkmadı':'#D97706',
+      'Ayrıldı (Biz Ayırdık)':'#DC2626','Ayrıldı (Memnun Değil)':'#DC2626',
+      'Ayrıldı (Zorunlu Sebeplerle)':'#DC2626','RED':'#DC2626',
+      'Takibe Alındı':'#7C3AED','Aile Düşünecek':'#7C3AED','Aile Takip Edecek':'#7C3AED',
+    };
+
+    for(const [karar, kayitlar] of Object.entries(gruplar)){
+      toplamSayac += kayitlar.length;
+      const renk = KARAR_RENK[karar] || '#4338CA';
+      tabloHtml += `
+        <div style="margin-bottom:36px;page-break-inside:avoid;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:2px solid ${renk}33;">
+            <span style="width:10px;height:10px;border-radius:50%;background:${renk};display:inline-block;flex-shrink:0;"></span>
+            <h2 style="font-size:15px;font-weight:700;color:${renk};">${esc(karar)}</h2>
+            <span style="background:${renk}22;color:${renk};padding:1px 10px;border-radius:99px;font-size:12px;font-weight:700;">${kayitlar.length} kişi</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+            <thead>
+              <tr style="background:#F8FAFC;">
+                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;white-space:nowrap;">Öğrenci</th>
+                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;white-space:nowrap;">Görüşme</th>
+                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;white-space:nowrap;">Uzman</th>
+                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;white-space:nowrap;">Telefon</th>
+                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;">Tanı / Sınıf</th>
+                <th style="text-align:left;padding:9px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#64748B;font-weight:700;border-bottom:1.5px solid #E2E8F0;">Notlar</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${kayitlar.map((r,i) => {
+                const tel = r.anne_tel || r.baba_tel || '—';
+                const not = (r.yonetici_notu||r.gorusme_not||'').slice(0,180);
+                return `<tr style="border-bottom:1px solid #F1F5F9;background:${i%2?'#F8FAFC':'#fff'};">
+                  <td style="padding:9px 10px;font-weight:600;color:#0F172A;">${esc((r.ad||'')+' '+(r.soyad||'')).trim()}</td>
+                  <td style="padding:9px 10px;color:#64748B;white-space:nowrap;">${tf(r.gorusme_tarihi)}</td>
+                  <td style="padding:9px 10px;color:#64748B;white-space:nowrap;">${esc(r.uzman||'—')}</td>
+                  <td style="padding:9px 10px;color:#64748B;white-space:nowrap;font-family:monospace;">${esc(tel)}</td>
+                  <td style="padding:9px 10px;color:#64748B;white-space:nowrap;">${esc((r.tani||'')+(r.sinif?' · '+r.sinif:''))}</td>
+                  <td style="padding:9px 10px;font-size:12px;max-width:280px;">
+                    ${r.gorusme_not ? `<div style="color:#374151;margin-bottom:${(r.yonetici_notu||r.rehber_notu)?'6px':'0'}">${esc((r.gorusme_not||'').slice(0,160))}${(r.gorusme_not||'').length>160?'…':''}</div>` : ''}
+                    ${r.yonetici_notu ? `<div style="background:#FEF3C7;border-left:3px solid #D97706;padding:4px 8px;border-radius:0 5px 5px 0;color:#92400E;margin-bottom:${r.rehber_notu?'4px':'0'}"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:2px;">Yönetici</span>${esc((r.yonetici_notu||'').slice(0,160))}${(r.yonetici_notu||'').length>160?'…':''}</div>` : ''}
+                    ${r.rehber_notu ? `<div style="background:#EFF6FF;border-left:3px solid #3B82F6;padding:4px 8px;border-radius:0 5px 5px 0;color:#1E40AF"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:2px;">Rehber</span>${esc((r.rehber_notu||'').slice(0,160))}${(r.rehber_notu||'').length>160?'…':''}</div>` : ''}
+                    ${!r.gorusme_not && !r.yonetici_notu && !r.rehber_notu ? '<span style="color:#CBD5E1">—</span>' : ''}
+                  </td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    if(!toplamSayac){
+      tabloHtml = '<div style="text-align:center;padding:60px;color:#94A3B8;font-size:15px;">Bu ay ve bu kararlar için kayıt bulunamadı.</div>';
+    }
+
+    const html = `<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">
+<title>Karar Raporu — ${ayAdi}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#F9FAFB;color:#111827;}
+.bar{background:#1F2937;color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99;}
+.bar-left h1{font-size:15px;font-weight:700;margin-bottom:2px;}
+.bar-left p{font-size:12px;opacity:.55;}
+.bar button{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;margin-left:8px;}
+.content{max-width:960px;margin:0 auto;padding:28px 24px;}
+.ozet{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px;}
+.ozet-kart{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:14px 20px;flex:1;min-width:120px;}
+.ozet-kart .sayi{font-size:24px;font-weight:700;font-family:monospace;}
+.ozet-kart .etiket{font-size:11px;color:#64748B;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+@media print{
+  .bar button{display:none!important}
+  body{background:#fff}
+  .content{padding:16px}
+}
+</style>
+</head><body>
+<div class="bar">
+  <div class="bar-left">
+    <h1>🎯 Karar Bazlı Rapor</h1>
+    <p>${ayAdi} · ${seciliKararlar.length} karar türü · ${toplamSayac} öğrenci</p>
+  </div>
+  <div>
+    <button onclick="window.print()" style="background:#4F46E5;color:#fff;">🖨️ Yazdır</button>
+    <button onclick="window.close()" style="background:rgba(255,255,255,.15);color:#fff;">✕</button>
+  </div>
+</div>
+<div class="content">
+  <div class="ozet">
+    <div class="ozet-kart"><div class="sayi">${toplamSayac}</div><div class="etiket">Toplam Öğrenci</div></div>
+    <div class="ozet-kart"><div class="sayi">${Object.keys(gruplar).length}</div><div class="etiket">Karar Türü</div></div>
+    <div class="ozet-kart"><div class="sayi">${ayAdi}</div><div class="etiket">Dönem</div></div>
+  </div>
+  ${tabloHtml}
+</div>
+</body></html>`;
+
+    const win = window.open('','_blank');
+    win.document.write(html);
+    win.document.close();
+
+  } catch(e){ alert('Hata: '+e.message); }
+  btn.innerHTML = orig; btn.disabled = false;
 }
 </script>
 </body>
