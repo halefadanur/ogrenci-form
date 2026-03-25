@@ -832,7 +832,7 @@ function exportXLSX(type) {
   XLSX.writeFile(wb, `maas_${month.replace(' ','_')}_${type}.xlsx`);
 }
 
-// ─── PDF EXPORT (Muhasebe) — tarayıcı yazdırma ile ──────────────────────
+// ─── PDF EXPORT ──────────────────────────────────────────────────────────
 function exportPDF() {
   const month = monthLabel();
   let tY=0, tK=0, tKs=0, aktif=0;
@@ -845,339 +845,91 @@ function exportPDF() {
     tKs += rv.gunK + rv.yemekK;
   });
 
-  // Satırları oluştur
-  let satirlar = '';
+  let rows = '';
   let rn = 0;
   DATA.forEach((p,i) => {
     if (p.pasif) return;
     rn++;
-    const st = ST[i];
-    const rv = calc(p, st);
-    const zebra = rn%2===0 ? 'background:#f8fafc;' : '';
-    satirlar += `<tr style="${zebra}">
-      <td style="color:#94a3b8;text-align:center">${rn}</td>
-      <td><strong>${p.ad} ${p.soyad}</strong></td>
-      <td style="color:#475569">${p.gorev}</td>
-      <td>${p.maas ? fmt(p.maas) : '<em style="color:#94a3b8">Saat</em>'}</td>
-      <td>${(p.ek1||0)>0 ? fmt(p.ek1) : ''}</td>
-      <td>${(p.ek2||0)>0 ? fmt(p.ek2) : ''}</td>
-      <td style="color:${st.eksik?'#dc2626':'#94a3b8'}">${st.eksik||''}</td>
-      <td style="color:${st.eksikSaat?'#dc2626':'#94a3b8'}">${st.eksikSaat||''}</td>
-      <td style="color:${st.rapor?'#dc2626':'#94a3b8'}">${st.rapor||''}</td>
-      <td style="color:${st.yillik?'#d97706':'#94a3b8'}">${st.yillik||''}</td>
-      <td style="color:#dc2626">${rv.yemekK>0 ? '-'+fmt(rv.yemekK) : ''}</td>
-      <td style="color:#dc2626">${rv.gunK>0   ? '-'+fmt(rv.gunK)   : ''}</td>
-      <td style="color:#ea580c">${rv.avans>0  ? fmt(rv.avans)      : ''}</td>
+    const st = ST[i], rv = calc(p, st);
+    const bg = rn%2===0 ? '#f8fafc' : '#ffffff';
+    rows += `<tr style="background:${bg}">
+      <td style="text-align:center;color:#94a3b8">${rn}</td>
+      <td><b>${p.ad} ${p.soyad}</b></td>
+      <td>${p.gorev}</td>
+      <td>${p.maas ? fmt(p.maas) : 'Saat'}</td>
+      <td>${(p.ek1||0)>0?fmt(p.ek1):''}</td>
+      <td>${(p.ek2||0)>0?fmt(p.ek2):''}</td>
+      <td style="color:#dc2626">${st.eksik||''}</td>
+      <td style="color:#dc2626">${st.eksikSaat||''}</td>
+      <td style="color:#dc2626">${st.rapor||''}</td>
+      <td style="color:#d97706">${st.yillik||''}</td>
+      <td style="color:#dc2626">${rv.yemekK>0?'-'+fmt(rv.yemekK):''}</td>
+      <td style="color:#dc2626">${rv.gunK>0?'-'+fmt(rv.gunK):''}</td>
+      <td style="color:#ea580c">${rv.avans>0?fmt(rv.avans):''}</td>
       <td style="color:#166534;font-weight:700">${fmt(rv.yatan)}</td>
-      <td style="color:#1d4ed8;font-weight:700">${rv.kalan!==null ? fmt(rv.kalan) : ''}</td>
-      <td style="color:#64748b;font-size:9px">${buildAciklama(st,rv)}</td>
+      <td style="color:#1d4ed8;font-weight:700">${rv.kalan!==null?fmt(rv.kalan):''}</td>
+      <td style="font-size:9px;color:#64748b">${buildAciklama(st,rv)}</td>
     </tr>`;
   });
 
-  const html = `<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>Maaş Bordrosu — ${month}</title>
+  const html = `<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">
+<title>Maaş Bordrosu ${month}</title>
 <style>
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family: Arial, sans-serif; font-size: 10px; color: #1e293b; background:#fff; }
-
-  .header { background: #1e40af; color: white; padding: 12px 16px; display:flex; justify-content:space-between; align-items:center; }
-  .header-left h1 { font-size:14px; font-weight:700; margin-bottom:3px; }
-  .header-left p  { font-size:9px; opacity:.8; }
-  .header-right { display:flex; gap:12px; }
-  .kutu { text-align:right; }
-  .kutu .label { font-size:8px; opacity:.7; margin-bottom:2px; }
-  .kutu .val   { font-size:12px; font-weight:700; }
-  .kutu.yatan  .val { color:#86efac; }
-  .kutu.kalan  .val { color:#93c5fd; }
-  .kutu.maliyet .val { color:#d8b4fe; }
-
-  .ozet { background:#f1f5f9; padding:5px 16px; font-size:8.5px; color:#475569; border-bottom:1px solid #e2e8f0; }
-
-  table { width:100%; border-collapse:collapse; }
-  thead tr { background:#1e293b; color:#94a3b8; }
-  thead th { padding:5px 4px; text-align:left; font-size:8px; font-weight:600; white-space:nowrap; }
-  tbody td { padding:4px 4px; border-bottom:1px solid #e2e8f0; vertical-align:middle; }
-  tbody tr:last-child td { border-bottom:none; }
-
-  .toplam-row { background:#1e293b !important; }
-  .toplam-row td { color:white; font-weight:700; padding:6px 4px; border:none; }
-
-  .footer { margin-top:8px; padding:5px 16px; font-size:8px; color:#94a3b8; display:flex; justify-content:space-between; }
-
-  @media print {
-    @page { size: A4 landscape; margin: 8mm; }
-    body { font-size: 8.5px; }
-    .header { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    thead tr { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .toplam-row { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    tbody tr:nth-child(even) { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .no-print { display:none; }
-  }
-</style>
-</head>
-<body>
-<div class="header">
-  <div class="header-left">
-    <h1>EĞİTİMCİ DİL KONUŞMA MERKEZİ</h1>
-    <p>MAAŞ BORDROSU — ${month.toUpperCase()}</p>
-  </div>
-  <div class="header-right">
-    <div class="kutu yatan"><div class="label">TOPLAM YATAN</div><div class="val">${fmt(tY)} ₺</div></div>
-    <div class="kutu kalan"><div class="label">TOPLAM KALAN</div><div class="val">${fmt(tK)} ₺</div></div>
-    <div class="kutu maliyet"><div class="label">TOPLAM MALİYET</div><div class="val">${fmt(tY+tK)} ₺</div></div>
-  </div>
-</div>
-<div class="ozet">Aktif personel: ${aktif} &nbsp;·&nbsp; Toplam kesinti: ${fmt(tKs)} ₺ &nbsp;·&nbsp; Oluşturulma: ${new Date().toLocaleString('tr-TR')}</div>
-
-<div class="no-print" style="background:#fef9c3;padding:8px 16px;font-size:11px;color:#92400e;display:flex;justify-content:space-between;align-items:center;">
-  <span>⚠️ PDF kaydetmek için tarayıcının yazdır penceresinde <strong>Hedef: PDF Olarak Kaydet</strong> seçin, yatay (yatay) kağıt boyutunu ayarlayın.</span>
-  <button onclick="window.print()" style="background:#1e40af;color:white;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;">🖨️ Yazdır / PDF Kaydet</button>
-</div>
-
-<table>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Ad Soyad</th>
-      <th>Görev</th>
-      <th>Maaş</th>
-      <th>Ek1</th>
-      <th>Ek2</th>
-      <th>E.Gün</th>
-      <th>E.Saat</th>
-      <th>Rapor</th>
-      <th>Yıllık</th>
-      <th>Yemek Kst.</th>
-      <th>Gün Kst.</th>
-      <th>Avans</th>
-      <th>YATAN</th>
-      <th>KALAN</th>
-      <th>Açıklama</th>
-    </tr>
-  </thead>
-  <tbody>
-    ${satirlar}
-    <tr class="toplam-row">
-      <td colspan="13">TOPLAM — ${aktif} personel</td>
-      <td>${fmt(tY)} ₺</td>
-      <td>${fmt(tK)} ₺</td>
-      <td style="color:#d8b4fe">Maliyet: ${fmt(tY+tK)} ₺</td>
-    </tr>
-  </tbody>
-</table>
-
-<div class="footer">
-  <span>Eğitimci Dil Konuşma Merkezi — ${month} Maaş Bordrosu</span>
-  <span>${new Date().toLocaleDateString('tr-TR')}</span>
-</div>
-</body>
-</html>`;
-
-  // HTML dosyası olarak indir — en güvenilir yöntem
-  const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `maas_bordro_${month.replace(' ','_')}.html`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;font-size:10px;color:#1e293b;background:#fff}
+.hdr{background:#1e40af;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.hdr h1{font-size:13px;margin-bottom:2px}
+.hdr p{font-size:8px;opacity:.8}
+.kutu{text-align:right;margin-left:14px}
+.kutu .lb{font-size:7px;opacity:.7}
+.kutu .vl{font-size:11px;font-weight:700}
+.ozet{background:#f1f5f9;padding:4px 14px;font-size:8px;color:#475569;border-bottom:1px solid #e2e8f0}
+.pbar{background:#fef9c3;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#92400e}
+.pbar button{background:#1e40af;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:600}
+table{width:100%;border-collapse:collapse}
+thead tr{background:#1e293b}
+thead th{color:#94a3b8;padding:5px 3px;text-align:left;font-size:7.5px;white-space:nowrap}
+tbody td{padding:3px 3px;border-bottom:1px solid #e2e8f0;vertical-align:middle}
+.tot{background:#1e293b!important}
+.tot td{color:#fff;font-weight:700;padding:5px 3px;border:none}
+.ft{padding:4px 14px;font-size:7.5px;color:#94a3b8;display:flex;justify-content:space-between;margin-top:4px}
+@media print{
+  @page{size:A4 landscape;margin:7mm}
+  .pbar{display:none!important}
+  thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .tot{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
-  const month = monthLabel();
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
-  const PW = 297, PH = 210;
+</style></head><body>
+<div class="hdr">
+  <div><h1>EĞİTİMCİ DİL KONUŞMA MERKEZİ</h1><p>MAAŞ BORDROSU — ${month.toUpperCase()}</p></div>
+  <div style="display:flex">
+    <div class="kutu"><div class="lb">TOPLAM YATAN</div><div class="vl" style="color:#86efac">${fmt(tY)} ₺</div></div>
+    <div class="kutu"><div class="lb">TOPLAM KALAN</div><div class="vl" style="color:#93c5fd">${fmt(tK)} ₺</div></div>
+    <div class="kutu"><div class="lb">MALİYET</div><div class="vl" style="color:#d8b4fe">${fmt(tY+tK)} ₺</div></div>
+  </div>
+</div>
+<div class="ozet">Aktif: ${aktif} personel &nbsp;·&nbsp; Kesinti: ${fmt(tKs)} ₺ &nbsp;·&nbsp; ${new Date().toLocaleString('tr-TR')}</div>
+<div class="pbar">
+  <span>Yazdırmak için: <b>Yatay kağıt</b> + <b>PDF Olarak Kaydet</b> seçin</span>
+  <button onclick="window.print()">🖨️ Yazdır / PDF Kaydet</button>
+</div>
+<table>
+<thead><tr><th>#</th><th>Ad Soyad</th><th>Görev</th><th>Maaş</th><th>Ek1</th><th>Ek2</th><th>E.Gün</th><th>E.Saat</th><th>Rapor</th><th>Yıllık</th><th>Yemek Kst.</th><th>Gün Kst.</th><th>Avans</th><th>YATAN</th><th>KALAN</th><th>Açıklama</th></tr></thead>
+<tbody>${rows}
+<tr class="tot"><td colspan="13">TOPLAM — ${aktif} personel</td><td>${fmt(tY)} ₺</td><td>${fmt(tK)} ₺</td><td style="color:#d8b4fe">Maliyet: ${fmt(tY+tK)} ₺</td></tr>
+</tbody></table>
+<div class="ft"><span>Eğitimci Dil Konuşma Merkezi — ${month} Maaş Bordrosu</span><span>${new Date().toLocaleDateString('tr-TR')}</span></div>
+</body></html>`;
 
-  // Toplamlar
-  let tY=0, tK=0, tKs=0, aktif=0;
-  DATA.forEach((p,i) => {
-    if (p.pasif) return;
-    aktif++;
-    const rv = calc(p, ST[i]);
-    tY  += rv.yatan  || 0;
-    tK  += rv.kalan  || 0;
-    tKs += rv.gunK + rv.yemekK;
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([html], {type:'text/html;charset=utf-8'})),
+    download: 'bordro_' + month.replace(' ','_') + '.html'
   });
-
-  // ── HEADER BANDİ ──────────────────────────────────────────────────────
-  doc.setFillColor(37, 99, 235);   // mavi
-  doc.rect(0, 0, PW, 22, 'F');
-
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(13);
-  doc.setTextColor(255,255,255);
-  doc.text('EĞİTİMCİ DİL KONUŞMA MERKEZİ', 12, 9);
-
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(8.5);
-  doc.setTextColor(186,210,255);
-  doc.text(`MAAŞ BORDROSU — ${month.toUpperCase()}`, 12, 16);
-
-  // Sağ üst özet kutucukları
-  const boxes = [
-    { label:'YATAN',   val: fmt(tY)+' ₺',     x:155, bg:[22,163,74]  },
-    { label:'KALAN',   val: fmt(tK)+' ₺',     x:201, bg:[59,130,246] },
-    { label:'MALİYET', val: fmt(tY+tK)+' ₺',  x:247, bg:[124,58,237] },
-  ];
-  boxes.forEach(b => {
-    doc.setFillColor(...b.bg);
-    doc.roundedRect(b.x, 3, 42, 16, 2, 2, 'F');
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(5.5);
-    doc.setTextColor(200,230,200);
-    doc.text(b.label, b.x+3, 8);
-    doc.setFontSize(7.5);
-    doc.setTextColor(255,255,255);
-    doc.text(b.val, b.x+3, 15, {maxWidth:36});
-  });
-
-  // ── ÖZET SATIRI ───────────────────────────────────────────────────────
-  doc.setFillColor(241,245,249);
-  doc.rect(0, 22, PW, 8, 'F');
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(7);
-  doc.setTextColor(71,85,105);
-  doc.text(`Aktif personel: ${aktif}  ·  Toplam kesinti: ${fmt(tKs)} ₺  ·  Oluşturulma: ${new Date().toLocaleString('tr-TR')}`, 12, 27.5);
-
-  // ── TABLO ─────────────────────────────────────────────────────────────
-  // Sütunlar — bordro için kompakt ama okunabilir
-  const cols = [
-    { h:'#',          w:6  },
-    { h:'Ad Soyad',   w:36 },
-    { h:'Görev',      w:28 },
-    { h:'Maaş',       w:18 },
-    { h:'Ek1',        w:14 },
-    { h:'E.Gün',      w:11 },
-    { h:'E.Saat',     w:11 },
-    { h:'Rapor',      w:11 },
-    { h:'Yıllık',     w:11 },
-    { h:'Yemek Kst.', w:18 },
-    { h:'Gün Kst.',   w:18 },
-    { h:'Avans',      w:16 },
-    { h:'YATAN',      w:22 },
-    { h:'KALAN',      w:18 },
-    { h:'Açıklama',   w:0  },
-  ];
-  const usedW = cols.slice(0,-1).reduce((s,c)=>s+c.w, 0);
-  cols[cols.length-1].w = PW - 24 - usedW;
-
-  const SX = 12, SY = 32, RH = 7;
-
-  // Başlık satırı
-  doc.setFillColor(30,41,59);
-  doc.rect(SX, SY, PW-24, RH, 'F');
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(6);
-  doc.setTextColor(148,163,184);
-  let cx = SX + 2;
-  cols.forEach(c => {
-    doc.text(c.h, cx, SY + 4.6, {maxWidth: c.w-1});
-    cx += c.w;
-  });
-
-  // Veri satırları
-  let ry = SY + RH;
-  let rn = 0;
-
-  DATA.forEach((p, i) => {
-    if (p.pasif) return;
-    rn++;
-    const st = ST[i];
-    const rv = calc(p, st);
-
-    // Zebra
-    if (rn % 2 === 0) {
-      doc.setFillColor(248,250,252);
-      doc.rect(SX, ry, PW-24, RH, 'F');
-    }
-
-    // Sol kenar rengi (yatan büyüklüğüne göre)
-    doc.setFillColor(37,99,235);
-    doc.rect(SX, ry, 1.5, RH, 'F');
-
-    const cells = [
-      { v: String(rn),                                    color:[100,116,139], bold:false },
-      { v: `${p.ad} ${p.soyad}`,                          color:[15,23,42],    bold:true  },
-      { v: p.gorev,                                        color:[71,85,105],   bold:false },
-      { v: p.maas ? fmt(p.maas) : 'Saat',                 color:[51,65,85],    bold:false },
-      { v: (p.ek1||0)>0 ? fmt(p.ek1) : '',               color:[120,113,108],  bold:false },
-      { v: st.eksik     ? String(st.eksik)     : '',       color:[185,28,28],   bold:false },
-      { v: st.eksikSaat ? String(st.eksikSaat) : '',       color:[185,28,28],   bold:false },
-      { v: st.rapor     ? String(st.rapor)     : '',       color:[185,28,28],   bold:false },
-      { v: st.yillik    ? String(st.yillik)    : '',       color:[101,163,13],  bold:false },
-      { v: rv.yemekK>0  ? `-${fmt(rv.yemekK)}` : '',      color:[185,28,28],   bold:false },
-      { v: rv.gunK>0    ? `-${fmt(rv.gunK)}`   : '',      color:[185,28,28],   bold:false },
-      { v: rv.avans>0   ? fmt(rv.avans)         : '',      color:[234,88,12],   bold:false },
-      { v: fmt(rv.yatan),                                  color:[22,101,52],   bold:true  },
-      { v: rv.kalan!==null ? fmt(rv.kalan) : '',           color:[29,78,216],   bold:true  },
-      { v: buildAciklama(st, rv),                          color:[100,116,139], bold:false },
-    ];
-
-    cx = SX + 2;
-    cells.forEach((cell, ci) => {
-      doc.setFont('helvetica', cell.bold ? 'bold' : 'normal');
-      doc.setFontSize(ci === 1 ? 6.2 : 5.8);
-      doc.setTextColor(...cell.color);
-      doc.text(String(cell.v||''), cx, ry + 4.5, {maxWidth: cols[ci].w - 1});
-      cx += cols[ci].w;
-    });
-
-    // Alt çizgi
-    doc.setDrawColor(226,232,240);
-    doc.setLineWidth(0.2);
-    doc.line(SX, ry+RH, SX+PW-24, ry+RH);
-    ry += RH;
-
-    // Yeni sayfa
-    if (ry > PH - 18) {
-      doc.addPage();
-      // Yeni sayfada sade header
-      doc.setFillColor(37,99,235);
-      doc.rect(0,0,PW,10,'F');
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(8);
-      doc.setTextColor(255,255,255);
-      doc.text(`EĞİTİMCİ DİL KONUŞMA — ${month} (devam)`, 12, 7);
-      // Başlık satırını tekrar yaz
-      ry = 14;
-      doc.setFillColor(30,41,59);
-      doc.rect(SX, ry, PW-24, RH, 'F');
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(6);
-      doc.setTextColor(148,163,184);
-      cx = SX+2;
-      cols.forEach(c => { doc.text(c.h, cx, ry+4.6, {maxWidth:c.w-1}); cx += c.w; });
-      ry += RH;
-      rn = 0;
-    }
-  });
-
-  // ── TOPLAM SATIRI ──────────────────────────────────────────────────────
-  doc.setFillColor(30,41,59);
-  doc.rect(SX, ry, PW-24, RH+1, 'F');
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(7);
-  doc.setTextColor(255,255,255);
-  doc.text('TOPLAM', SX+2, ry+5);
-
-  const yatanX = SX + cols.slice(0,12).reduce((s,c)=>s+c.w, 0) + 2;
-  doc.setTextColor(134,239,172);
-  doc.text(fmt(tY)+' ₺', yatanX, ry+5);
-  doc.setTextColor(147,197,253);
-  doc.text(fmt(tK)+' ₺', yatanX + cols[12].w, ry+5);
-  doc.setTextColor(196,181,253);
-  doc.text(`Maliyet: ${fmt(tY+tK)} ₺`, yatanX + cols[12].w + cols[13].w, ry+5, {maxWidth:50});
-
-  // ── FOOTER ────────────────────────────────────────────────────────────
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(6);
-  doc.setTextColor(148,163,184);
-  doc.text(`Eğitimci Dil Konuşma Merkezi — ${month} Maaş Bordrosu — ${new Date().toLocaleDateString('tr-TR')}`, SX, PH-4);
-  doc.text(`Sayfa 1`, PW-20, PH-4);
-
-  doc.save(`maas_${month.replace(' ','_')}_muhasebe.pdf`);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }
 
 function styleHeader(ws, colCount) {
