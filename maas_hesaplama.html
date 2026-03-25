@@ -1247,27 +1247,24 @@ async function initApp() {
 }
 
 // Sayfa yüklenince oturum kontrolü
+showLogin(); // önce login ekranını göster
 (async () => {
   const session = getSession();
   if (session?.access_token) {
-    // Token geçerli mi kontrol et
     try {
       await sbFetch('/auth/v1/user');
       showApp(session.user.email);
       await initApp();
     } catch {
-      // Token süresi dolmuş, yenilemeyi dene
       const refreshed = await refreshToken();
       if (refreshed) {
         showApp(refreshed.user.email);
         await initApp();
-      } else {
-        showLogin();
       }
+      // showLogin zaten çağrıldı
     }
-  } else {
-    showLogin();
   }
+  // session yoksa login ekranı zaten açık
 })();
 
 </script>
