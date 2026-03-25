@@ -490,7 +490,7 @@ async function topluPdf(){
 </head><body>
 <div class="bar"><h3>${kayitlar.length} öğrenci — Toplu PDF</h3><button class="btnp" onclick="window.print()">🖨️ Yazdır</button><button class="btnx" onclick="window.close()">✕</button></div>
 <div id="ic"></div>
-<script>const K=${JSON.stringify(kayitlar)};const w=document.getElementById('ic');K.forEach(r=>{const d=encodeURIComponent(JSON.stringify(r));const div=document.createElement('div');div.style.cssText='page-break-after:always';div.innerHTML='<iframe src="${PDF_URL}?d='+d+'&tip=TAM+FORM" style="width:100%;height:1200px;border:none;display:block;" onload="this.style.height=(this.contentWindow.document.body.scrollHeight+40)+\\'px\\'"></iframe>';w.appendChild(div);});<\/script></body></html>`);
+<script>const K=${JSON.stringify(kayitlar)};const w=document.getElementById('ic');K.forEach(r=>{const d=encodeURIComponent(JSON.stringify(r));const div=document.createElement('div');div.style.cssText='page-break-after:always';div.innerHTML='<iframe src="${PDF_URL}&d='+d+'&tip=TAM+FORM" style="width:100%;height:1200px;border:none;display:block;" onload="this.style.height=(this.contentWindow.document.body.scrollHeight+40)+\\'px\\'"></iframe>';w.appendChild(div);});<\/script></body></html>`);
     yeni.document.close();
   }catch(e){alert('Hata: '+e.message);}
   if(btn){btn.textContent='Toplu PDF';btn.disabled=false;}
