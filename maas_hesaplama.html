@@ -226,18 +226,28 @@ tr.pasif:hover td{background:transparent;}
 <div class="main">
 
   <!-- STATS -->
-  <div class="stats-row" style="grid-template-columns:repeat(2,1fr);">
+  <div class="stats-row">
     <div class="stat-card">
       <div class="stat-label">Aktif / Toplam</div>
       <div class="stat-value sv-blue" id="sPersonel">0</div>
     </div>
-    <div class="stat-card" style="border-color:rgba(34,197,94,.3);">
+    <div class="stat-card">
       <div class="stat-label">Toplam Yatan</div>
       <div class="stat-value sv-green" id="sYatan">0 ₺</div>
     </div>
-    <div id="sKalan" style="display:none"></div>
-    <div id="sKesinti" style="display:none"></div>
-    <div id="sMaliyet" style="display:none"></div>
+    <div class="stat-card">
+      <div class="stat-label">Toplam Kalan</div>
+      <div class="stat-value sv-purple" id="sKalan">0 ₺</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Toplam Kesinti</div>
+      <div class="stat-value sv-orange" id="sKesinti">0 ₺</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(45,212,191,.3);">
+      <div class="stat-label">Toplam Maliyet</div>
+      <div class="stat-value sv-teal" id="sMaliyet">0 ₺</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:3px;">Yatan + Kalan</div>
+    </div>
   </div>
 
   <!-- COLUMN TOGGLE PANEL -->
@@ -795,25 +805,26 @@ function exportXLSX(type) {
     XLSX.utils.book_append_sheet(wb, ws, 'Banka');
 
   } else {
-    const rows = [['GÖREV','ADI','SOYADI','HESAP NO','T.C.','MAAŞ',
+    const rows = [['GÖREV','ADI','SOYADI','HESAP NO','T.C.','MAAŞ','EK1','EK2',
       'EKSİK GÜN','EKSİK SAAT','RAPORLU GÜN','YILLIK İZİN','SAAT ÜCR.1','SAAT ÜCR.2',
-      'YEMEK','YEMEK KESİNTİ','GÜN KESİNTİ','TOPLAM KESİNTİ','AVANS','YATAN (NET)','AÇIKLAMA']];
+      'YEMEK','YEMEK KESİNTİ','GÜN KESİNTİ','TOPLAM KESİNTİ','AVANS','YATAN (NET)','KALAN','AÇIKLAMA']];
     DATA.forEach((p,i) => {
       if (p.pasif) return;
       const st = ST[i]; const rv = calc(p, st);
       rows.push([
         p.gorev, p.ad, p.soyad, p.hesapNo, p.tc,
-        p.maas||'',
+        p.maas||'', p.ek1||'', p.ek2||'',
         st.eksik||0, st.eksikSaat||0, st.rapor||0, st.yillik||0,
         st.saat1||'', st.saat2||'',
         YEMEK, rv.yemekK||0, rv.gunK||0, r2(rv.gunK+rv.yemekK),
         rv.avans||0,
-        r2(rv.yatan), buildAciklama(st, rv)
+        r2(rv.yatan), rv.kalan!==null ? r2(rv.kalan) : '',
+        buildAciklama(st, rv)
       ]);
     });
     const ws = XLSX.utils.aoa_to_sheet(rows);
-    ws['!cols'] = [{wch:22},{wch:14},{wch:16},{wch:12},{wch:14},{wch:12},
-                  {wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:13},{wch:12},{wch:14},{wch:10},{wch:14},{wch:40}];
+    ws['!cols'] = [{wch:22},{wch:14},{wch:16},{wch:12},{wch:14},{wch:10},{wch:10},{wch:10},
+                  {wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:13},{wch:12},{wch:14},{wch:10},{wch:14},{wch:12},{wch:40}];
     styleHeader(ws, rows[0].length);
     XLSX.utils.book_append_sheet(wb, ws, 'Muhasebe');
   }
@@ -846,6 +857,8 @@ function exportPDF() {
       + '<td><b>' + p.ad + ' ' + p.soyad + '</b></td>'
       + '<td>' + p.gorev + '</td>'
       + '<td>' + (p.maas ? fmt(p.maas) : '<i style="color:#94a3b8">Saat</i>') + '</td>'
+      + '<td>' + ((p.ek1||0)>0 ? fmt(p.ek1) : '') + '</td>'
+      + '<td>' + ((p.ek2||0)>0 ? fmt(p.ek2) : '') + '</td>'
       + '<td style="color:#dc2626">' + (st.eksik||'') + '</td>'
       + '<td style="color:#dc2626">' + (st.eksikSaat||'') + '</td>'
       + '<td style="color:#dc2626">' + (st.rapor||'') + '</td>'
@@ -854,6 +867,7 @@ function exportPDF() {
       + '<td style="color:#dc2626">' + (rv.gunK>0   ? '-'+fmt(rv.gunK)   : '') + '</td>'
       + '<td style="color:#ea580c">' + (rv.avans>0  ? fmt(rv.avans)      : '') + '</td>'
       + '<td style="color:#166534;font-weight:700">' + fmt(rv.yatan) + '</td>'
+      + '<td style="color:#1d4ed8;font-weight:700">' + (rv.kalan!==null ? fmt(rv.kalan) : '') + '</td>'
       + '<td style="font-size:9px;color:#64748b">' + buildAciklama(st,rv) + '</td>'
       + '</tr>';
   });
@@ -898,12 +912,13 @@ function exportPDF() {
     + '<div class="pbar"><span>Yazdirmak icin: <b>Yatay kagit</b> + <b>PDF Olarak Kaydet</b></span>'
     + '<button onclick="window.print()">Yazdir / PDF Kaydet</button></div>'
     + '<table><thead><tr>'
-    + '<th>#</th><th>Ad Soyad</th><th>Gorev</th><th>Maas</th>'
+    + '<th>#</th><th>Ad Soyad</th><th>Gorev</th><th>Maas</th><th>Ek1</th><th>Ek2</th>'
     + '<th>E.Gun</th><th>E.Saat</th><th>Rapor</th><th>Yillik</th>'
-    + '<th>Yemek Kst.</th><th>Gun Kst.</th><th>Avans</th><th>YATAN</th><th>Aciklama</th>'
+    + '<th>Yemek Kst.</th><th>Gun Kst.</th><th>Avans</th><th>YATAN</th><th>KALAN</th><th>Aciklama</th>'
     + '</tr></thead><tbody>' + rows
-    + '<tr class="tot"><td colspan="11">TOPLAM - ' + aktif + ' personel</td>'
-    + '<td>' + fmt(tY) + ' TL</td></tr>'
+    + '<tr class="tot"><td colspan="13">TOPLAM - ' + aktif + ' personel</td>'
+    + '<td>' + fmt(tY) + ' TL</td><td>' + fmt(tK) + ' TL</td>'
+    + '<td style="color:#d8b4fe">Maliyet: ' + fmt(tY+tK) + ' TL</td></tr>'
     + '</tbody></table>'
     + '<div class="ft"><span>Egitimci Dil Konusma Merkezi - ' + month + ' Maas Bordrosu</span>'
     + '<span>' + new Date().toLocaleDateString('tr-TR') + '</span></div>'
