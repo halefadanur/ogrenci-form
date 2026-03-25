@@ -335,7 +335,6 @@ tr.pasif:hover td{background:transparent;}
 </div><!-- /appWrap -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 // ─── DATA ──────────────────────────────────────────────────────────────────
 let YEMEK = 2000;
@@ -825,8 +824,154 @@ function exportXLSX(type) {
   XLSX.writeFile(wb, `maas_${month.replace(' ','_')}_${type}.xlsx`);
 }
 
-// ─── PDF EXPORT (Muhasebe) ────────────────────────────────────────────────
+// ─── PDF EXPORT (Muhasebe) — tarayıcı yazdırma ile ──────────────────────
 function exportPDF() {
+  const month = monthLabel();
+  let tY=0, tK=0, tKs=0, aktif=0;
+  DATA.forEach((p,i) => {
+    if (p.pasif) return;
+    aktif++;
+    const rv = calc(p, ST[i]);
+    tY  += rv.yatan  || 0;
+    tK  += rv.kalan  || 0;
+    tKs += rv.gunK + rv.yemekK;
+  });
+
+  // Satırları oluştur
+  let satirlar = '';
+  let rn = 0;
+  DATA.forEach((p,i) => {
+    if (p.pasif) return;
+    rn++;
+    const st = ST[i];
+    const rv = calc(p, st);
+    const zebra = rn%2===0 ? 'background:#f8fafc;' : '';
+    satirlar += `<tr style="${zebra}">
+      <td style="color:#94a3b8;text-align:center">${rn}</td>
+      <td><strong>${p.ad} ${p.soyad}</strong></td>
+      <td style="color:#475569">${p.gorev}</td>
+      <td>${p.maas ? fmt(p.maas) : '<em style="color:#94a3b8">Saat</em>'}</td>
+      <td>${(p.ek1||0)>0 ? fmt(p.ek1) : ''}</td>
+      <td>${(p.ek2||0)>0 ? fmt(p.ek2) : ''}</td>
+      <td style="color:${st.eksik?'#dc2626':'#94a3b8'}">${st.eksik||''}</td>
+      <td style="color:${st.eksikSaat?'#dc2626':'#94a3b8'}">${st.eksikSaat||''}</td>
+      <td style="color:${st.rapor?'#dc2626':'#94a3b8'}">${st.rapor||''}</td>
+      <td style="color:${st.yillik?'#d97706':'#94a3b8'}">${st.yillik||''}</td>
+      <td style="color:#dc2626">${rv.yemekK>0 ? '-'+fmt(rv.yemekK) : ''}</td>
+      <td style="color:#dc2626">${rv.gunK>0   ? '-'+fmt(rv.gunK)   : ''}</td>
+      <td style="color:#ea580c">${rv.avans>0  ? fmt(rv.avans)      : ''}</td>
+      <td style="color:#166534;font-weight:700">${fmt(rv.yatan)}</td>
+      <td style="color:#1d4ed8;font-weight:700">${rv.kalan!==null ? fmt(rv.kalan) : ''}</td>
+      <td style="color:#64748b;font-size:9px">${buildAciklama(st,rv)}</td>
+    </tr>`;
+  });
+
+  const html = `<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Maaş Bordrosu — ${month}</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family: Arial, sans-serif; font-size: 10px; color: #1e293b; background:#fff; }
+
+  .header { background: #1e40af; color: white; padding: 12px 16px; display:flex; justify-content:space-between; align-items:center; }
+  .header-left h1 { font-size:14px; font-weight:700; margin-bottom:3px; }
+  .header-left p  { font-size:9px; opacity:.8; }
+  .header-right { display:flex; gap:12px; }
+  .kutu { text-align:right; }
+  .kutu .label { font-size:8px; opacity:.7; margin-bottom:2px; }
+  .kutu .val   { font-size:12px; font-weight:700; }
+  .kutu.yatan  .val { color:#86efac; }
+  .kutu.kalan  .val { color:#93c5fd; }
+  .kutu.maliyet .val { color:#d8b4fe; }
+
+  .ozet { background:#f1f5f9; padding:5px 16px; font-size:8.5px; color:#475569; border-bottom:1px solid #e2e8f0; }
+
+  table { width:100%; border-collapse:collapse; }
+  thead tr { background:#1e293b; color:#94a3b8; }
+  thead th { padding:5px 4px; text-align:left; font-size:8px; font-weight:600; white-space:nowrap; }
+  tbody td { padding:4px 4px; border-bottom:1px solid #e2e8f0; vertical-align:middle; }
+  tbody tr:last-child td { border-bottom:none; }
+
+  .toplam-row { background:#1e293b !important; }
+  .toplam-row td { color:white; font-weight:700; padding:6px 4px; border:none; }
+
+  .footer { margin-top:8px; padding:5px 16px; font-size:8px; color:#94a3b8; display:flex; justify-content:space-between; }
+
+  @media print {
+    @page { size: A4 landscape; margin: 8mm; }
+    body { font-size: 8.5px; }
+    .header { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    thead tr { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .toplam-row { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    tbody tr:nth-child(even) { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .no-print { display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <h1>EĞİTİMCİ DİL KONUŞMA MERKEZİ</h1>
+    <p>MAAŞ BORDROSU — ${month.toUpperCase()}</p>
+  </div>
+  <div class="header-right">
+    <div class="kutu yatan"><div class="label">TOPLAM YATAN</div><div class="val">${fmt(tY)} ₺</div></div>
+    <div class="kutu kalan"><div class="label">TOPLAM KALAN</div><div class="val">${fmt(tK)} ₺</div></div>
+    <div class="kutu maliyet"><div class="label">TOPLAM MALİYET</div><div class="val">${fmt(tY+tK)} ₺</div></div>
+  </div>
+</div>
+<div class="ozet">Aktif personel: ${aktif} &nbsp;·&nbsp; Toplam kesinti: ${fmt(tKs)} ₺ &nbsp;·&nbsp; Oluşturulma: ${new Date().toLocaleString('tr-TR')}</div>
+
+<div class="no-print" style="background:#fef9c3;padding:8px 16px;font-size:11px;color:#92400e;display:flex;justify-content:space-between;align-items:center;">
+  <span>⚠️ PDF kaydetmek için tarayıcının yazdır penceresinde <strong>Hedef: PDF Olarak Kaydet</strong> seçin, yatay (yatay) kağıt boyutunu ayarlayın.</span>
+  <button onclick="window.print()" style="background:#1e40af;color:white;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;">🖨️ Yazdır / PDF Kaydet</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Ad Soyad</th>
+      <th>Görev</th>
+      <th>Maaş</th>
+      <th>Ek1</th>
+      <th>Ek2</th>
+      <th>E.Gün</th>
+      <th>E.Saat</th>
+      <th>Rapor</th>
+      <th>Yıllık</th>
+      <th>Yemek Kst.</th>
+      <th>Gün Kst.</th>
+      <th>Avans</th>
+      <th>YATAN</th>
+      <th>KALAN</th>
+      <th>Açıklama</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${satirlar}
+    <tr class="toplam-row">
+      <td colspan="13">TOPLAM — ${aktif} personel</td>
+      <td>${fmt(tY)} ₺</td>
+      <td>${fmt(tK)} ₺</td>
+      <td style="color:#d8b4fe">Maliyet: ${fmt(tY+tK)} ₺</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  <span>Eğitimci Dil Konuşma Merkezi — ${month} Maaş Bordrosu</span>
+  <span>${new Date().toLocaleDateString('tr-TR')}</span>
+</div>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+}
   const month = monthLabel();
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
