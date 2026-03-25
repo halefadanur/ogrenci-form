@@ -69,8 +69,9 @@ tr:last-child td{border-bottom:none}
 @media print{
   .bar{display:none!important}
   body{background:#fff}
-  .page{margin:0;box-shadow:none;width:100%;min-height:unset}
-  .page2{page-break-before:always;break-before:page;margin:0;box-shadow:none;width:100%;padding:24px;min-height:unset}
+  .page{margin:0;box-shadow:none;width:100%;overflow:hidden;page-break-after:always;break-after:page}
+  .page2{page-break-before:always;break-before:page;page-break-after:avoid;break-after:avoid;margin:0;box-shadow:none;width:100%;padding:24px;min-height:unset;overflow:visible}
+  .page2 img{max-height:240mm}
 }
 </style>
 </head>
