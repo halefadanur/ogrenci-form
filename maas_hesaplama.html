@@ -108,7 +108,7 @@ tr:last-child td{border-bottom:none;} tr:hover td{background:#1e2338;} tr.pasif 
   </div>
   <div class="col-panel"><div class="col-panel-head" onclick="toggleColPanel()"><span>🔧 Sütunları Göster / Gizle</span><span class="arrow" id="colArrow">▼</span></div><div class="col-toggles" id="colToggles" style="display:none;"></div></div>
   <div class="table-wrap"><div class="table-top"><div class="table-title">Personel Maaş Tablosu</div><div style="font-size:10px;color:var(--text3)"><span class="tag tag-saat">SAAT</span> saat ücretli &nbsp;<span class="tag tag-ek">EK</span> ek ödemeli &nbsp;<span class="tag tag-pasif">PASİF</span> işten çıktı</div></div><div class="scrollable"><table id="mainTable"><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></div>
-  <div class="export-panel"><div class="export-info"><strong>Excel Dışa Aktarım</strong> — Pasif personel dahil edilmez</div><div class="export-btns"><button class="btn btn-success" onclick="exportXLSX('banka')">⬇ Banka (.xlsx)</button><button class="btn btn-primary" onclick="exportXLSX('muhasebe')">⬇ Muhasebe (.xlsx)</button><button class="btn" onclick="exportPDF()" style="background:#dc2626;color:white;">⬇ Muhasebe (.pdf)</button><button class="btn" onclick="exportPDFTam()" style="background:#7c3aed;color:white;">⬇ Tam (.pdf)</button></div></div>
+  <div class="export-panel"><div class="export-info"><strong>Excel Dışa Aktarım</strong> — Banka/Muhasebe pasif personel dahil edilmez</div><div class="export-btns"><button class="btn btn-success" onclick="exportXLSX('banka')">⬇ Banka (.xlsx)</button><button class="btn btn-primary" onclick="exportXLSX('muhasebe')">⬇ Muhasebe (.xlsx)</button><button class="btn btn-outline" onclick="exportXLSX('anasayfa')">⬇ Ana Sayfa (.xlsx)</button><button class="btn" onclick="exportPDF()" style="background:#dc2626;color:white;">⬇ Muhasebe (.pdf)</button><button class="btn" onclick="exportPDFTam()" style="background:#7c3aed;color:white;">⬇ Tam (.pdf)</button></div></div>
 </div>
 <div class="modal-overlay" id="histModal"><div class="modal" style="width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"><h3 style="margin:0">📅 Kayıtlı Aylar</h3><button class="act-btn del" onclick="closeHistory()" style="font-size:16px">✕</button></div><div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Bir aya tıklayarak yükleyebilir, üzerine kaydedebilir veya silebilirsiniz.</div><div class="hist-list" id="histList"></div><div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;"><button class="btn btn-outline" onclick="closeHistory()">Kapat</button></div></div></div>
 <div class="modal-overlay" id="tipModal"><div class="modal" style="width:360px"><h3 id="tipModalTitle"></h3><div class="mf"><div class="ml" style="font-size:11px;color:var(--text2);line-height:1.5" id="tipInfo"></div></div><div class="mf" id="tipMaasRow"><div class="ml">Aylık Maaş (₺)</div><input class="mi" id="tipMaasInput" type="number" min="1" placeholder="örn. 38000" onkeydown="if(event.key==='Enter')confirmTip()" /></div><div class="modal-btns"><button class="btn btn-outline" onclick="closeTipModal()">İptal</button><button class="btn" id="tipConfirmBtn" onclick="confirmTip()" style="color:white">Onayla</button></div></div></div>
@@ -158,7 +158,65 @@ function calcTam(p, st){const normal=calc(p,st); const eksik=+st.eksik||0, eksik
 function buildAciklama(st,rv){const parts=[]; if(+st.eksik)parts.push(`Eksik gün: ${st.eksik}`); if(+st.eksikSaat)parts.push(`Eksik saat: ${st.eksikSaat}`); if(+st.rapor)parts.push(`Raporlu: ${st.rapor} gün`); if(+st.yillik)parts.push(`Yıllık izin: ${st.yillik} gün`); if(+st.avans)parts.push(`Avans: ${fmt(+st.avans)} ₺`); if(rv.yemekK>0)parts.push(`Yemek kst: -${fmt(rv.yemekK)} ₺`); if(rv.gunK>0)parts.push(`Gün kst: -${fmt(rv.gunK)} ₺`); return parts.length?parts.join(' | '):'Tam ay';}
 let colPanelOpen=false; function toggleColPanel(){colPanelOpen=!colPanelOpen; document.getElementById('colToggles').style.display=colPanelOpen?'flex':'none'; document.getElementById('colArrow').classList.toggle('open',colPanelOpen);} function buildColPanel(){const wrap=document.getElementById('colToggles'); wrap.innerHTML=''; COLS.forEach(c=>{if(c.fixed)return; const btn=document.createElement('div'); btn.className='col-toggle'+(colVis[c.id]?' active':''); btn.innerHTML=`<span class="dot"></span>${c.label}`; btn.onclick=()=>{colVis[c.id]=!colVis[c.id]; btn.classList.toggle('active',colVis[c.id]); applyColVis();}; wrap.appendChild(btn);});}
 function applyColVis(){COLS.forEach((c,idx)=>{if(c.fixed)return; const hidden=!colVis[c.id]; const ths=document.querySelectorAll(`#mainTable thead tr th`); if(ths[idx]) ths[idx].classList.toggle('col-hidden',hidden); document.querySelectorAll(`#mainTable tbody tr td:nth-child(${idx+1})`).forEach(td=>td.classList.toggle('col-hidden',hidden));});}
-function render(){renderHead(); renderBody(); applyColVis(); updateStats();}
+
+// Ana tabloda Maaş/Ek1/Ek2 hücrelerini inline editable yapmak
+function updatePersonMeta(i, field, val) {
+  const v = parseFloat(val);
+  const p = DATA[i];
+  const s = ST[i];
+
+  if (!p || !s) return;
+
+  if (field === 'maas') {
+    if (!val || isNaN(v) || v <= 0) {
+      p.maas = null; // saat ücretliye dön
+    } else {
+      p.maas = v; // aylıklı hale dön
+      // aylıklı hesapta saat alanları kullanılmaz
+      s.saat1 = 0;
+      s.saat2 = 0;
+      s.calSaat = 0;
+    }
+  } else if (field === 'ek1' || field === 'ek2') {
+    p[field] = (!val || isNaN(v) || v < 0) ? 0 : v;
+  }
+
+  render();
+}
+
+function makeMetaEditable() {
+  const rows = document.querySelectorAll('#tbody tr');
+  rows.forEach((tr, i) => {
+    const p = DATA[i];
+    if (!p || p.pasif) return;
+
+    // Sütun sırası sabit: no(0),ad(1),gorev(2),hesap(3),tc(4),maas(5),ek1(6),ek2(7)
+    const maasCell = tr.children[5];
+    const ek1Cell = tr.children[6];
+    const ek2Cell = tr.children[7];
+    if (maasCell) {
+      maasCell.innerHTML =
+        `<input class="inp inp-md" type="number" min="0" step=".01" value="${p.maas||''}" ` +
+        `placeholder="${p.maas ? '' : '0'}" ` +
+        `onchange="updatePersonMeta(${i},'maas',this.value)" ` +
+        `onkeydown="if(event.key==='Enter')updatePersonMeta(${i},'maas',this.value)" />`;
+    }
+    if (ek1Cell) {
+      const v1 = (p.ek1||0) > 0 ? p.ek1 : '';
+      ek1Cell.innerHTML =
+        `<input class="inp inp-sm" type="number" min="0" step=".01" value="${v1}" ` +
+        `placeholder="0" onchange="updatePersonMeta(${i},'ek1',this.value)" />`;
+    }
+    if (ek2Cell) {
+      const v2 = (p.ek2||0) > 0 ? p.ek2 : '';
+      ek2Cell.innerHTML =
+        `<input class="inp inp-sm" type="number" min="0" step=".01" value="${v2}" ` +
+        `placeholder="0" onchange="updatePersonMeta(${i},'ek2',this.value)" />`;
+    }
+  });
+}
+
+function render(){renderHead(); renderBody(); applyColVis(); makeMetaEditable(); updateStats();}
 function renderHead(){document.getElementById('thead').innerHTML='<tr>'+COLS.map(c=>`<th class="${c.id==='no'||c.id==='ad'||c.id==='gorev'||c.id==='hesap'||c.id==='tc'?'left':''}">${c.label}</th>`).join('')+'</tr>';}
 function renderBody(){const tbody=document.getElementById('tbody'); tbody.innerHTML=''; DATA.forEach((p,i)=>{const st=ST[i], isSaatli=!p.maas, hasEk=(p.ek1||0)>0||(p.ek2||0)>0, rv=calc(p,st), tv=calcTam(p,st); const kalanDisp=(rv.kalan!==null && rv.kalan!==undefined) ? rv.kalan : (tv.kalanTam!==undefined ? tv.kalanTam : null); const tr=document.createElement('tr'); if(p.pasif) tr.className='pasif'; const saatDis=isSaatli?'':'disabled style="opacity:.3"'; const tags=p.pasif?`<span class="tag tag-pasif">PASİF</span>`:`${isSaatli?'<span class="tag tag-saat">SAAT</span>':''}${hasEk?' <span class="tag tag-ek">EK</span>':''}`; tr.innerHTML=[`<td class="left" style="color:var(--text3);font-family:'IBM Plex Mono',monospace">${String(i+1).padStart(2,'0')}</td>`,`<td class="left"><div class="name-cell">${p.ad} ${p.soyad}</div><div style="margin-top:2px">${tags}</div></td>`,`<td class="left"><span class="role-badge">${p.gorev}</span></td>`,`<td class="left" style="font-family:'IBM Plex Mono',monospace;font-size:11px">${p.hesapNo}</td>`,`<td class="left" style="font-family:'IBM Plex Mono',monospace;font-size:11px">${p.tc}</td>`,`<td class="money ${isSaatli?'m-dim':''}">${isSaatli?'—':fmt(p.maas)}</td>`,`<td class="money m-ek">${(p.ek1||0)>0?fmt(p.ek1):'—'}</td>`,`<td class="money m-ek">${(p.ek2||0)>0?fmt(p.ek2):'—'}</td>`,`<td><input class="inp inp-sm" type="number" min="0" step=".5" value="${st.eksik||''}" placeholder="0" onchange="updateST(${i},'eksik',this.value)"></td>`,`<td><input class="inp inp-sm" type="number" min="0" step="1" value="${st.eksikSaat||''}" placeholder="0" onchange="updateST(${i},'eksikSaat',this.value)"></td>`,`<td><input class="inp inp-sm" type="number" min="0" step=".5" value="${st.rapor||''}" placeholder="0" onchange="updateST(${i},'rapor',this.value)"></td>`,`<td><input class="inp inp-sm" type="number" min="0" step=".5" value="${st.yillik||''}" placeholder="0" onchange="updateST(${i},'yillik',this.value)"></td>`,`<td><input class="inp inp-md" type="number" min="0" value="${st.saat1||''}" placeholder="${isSaatli?'Gir':'—'}" ${saatDis} onchange="updateST(${i},'saat1',this.value)"></td>`,`<td><input class="inp inp-md" type="number" min="0" value="${st.saat2||''}" placeholder="${isSaatli?'Gir':'—'}" ${saatDis} onchange="updateST(${i},'saat2',this.value)"></td>`,`<td><input class="inp inp-md" type="number" min="0" step="1" value="${st.calSaat||''}" placeholder="${isSaatli?'Gir':'—'}" ${saatDis} onchange="updateST(${i},'calSaat',this.value)"></td>`,`<td class="money">${fmt(YEMEK)}</td>`,`<td class="money m-red">${rv.yemekK>0?'-'+fmt(rv.yemekK):'—'}</td>`,`<td class="money m-red">${rv.gunK>0?'-'+fmt(rv.gunK):'—'}</td>`,`<td class="money m-red">${(rv.gunK+rv.yemekK)>0?'-'+fmt(rv.gunK+rv.yemekK):'—'}</td>`,`<td><input class="inp inp-md" type="number" min="0" value="${st.avans||''}" placeholder="0" onchange="updateST(${i},'avans',this.value)" style="border-color:rgba(239,68,68,.4)"></td>`,`<td class="money m-yatan">${fmt(rv.yatan)}${rv.avans>0?`<br><span style="font-size:9px;color:var(--text3)">brüt: ${fmt(rv.yatanBrut)}</span>`:''}${rv.yatan===0&&rv.avans>0?'<br><span style="font-size:9px;color:var(--red)">avans aşıyor!</span>':''}</td>`,`<td class="money m-kalan">${(kalanDisp!==null && kalanDisp!==undefined) ? fmt(kalanDisp) : '—'}</td>`,`<td class="left" style="min-width:220px;max-width:320px"><div style="font-size:10px;color:var(--text2);line-height:1.6;white-space:normal" id="aciklama_${i}">${buildAciklama(st,rv)}</div></td>`,`<td><button class="act-btn warn" title="${isSaatli?'Aylıklıya çevir':'Saat ücretliye çevir'}" onclick="toggleTip(${i})">${isSaatli?'↔₺/ay':'↔₺/saat'}</button><button class="act-btn ${p.pasif?'':'warn'}" title="${p.pasif?'Aktifleştir':'Pasifleştir'}" onclick="togglePasif(${i})">${p.pasif?'▶':'⏸'}</button><button class="act-btn del" title="Sil" onclick="delPerson(${i})">✕</button></td>`].join(''); tbody.appendChild(tr);});}
 function updateST(i,field,val){ST[i][field]=parseFloat(val)||0; const tr=document.getElementById('tbody').rows[i]; if(!tr) return; const rv=calc(DATA[i],ST[i]); const tv=calcTam(DATA[i],ST[i]); const kalanDisp=(rv.kalan!==null && rv.kalan!==undefined) ? rv.kalan : (tv.kalanTam!==undefined ? tv.kalanTam : null); const ci={yemekk:16,gunk:17,toplamk:18,yatan:20,kalan:21}; tr.cells[ci.yemekk].innerHTML=rv.yemekK>0?`<span class="money m-red">-${fmt(rv.yemekK)}</span>`:'—'; tr.cells[ci.gunk].innerHTML=rv.gunK>0?`<span class="money m-red">-${fmt(rv.gunK)}</span>`:'—'; tr.cells[ci.toplamk].innerHTML=(rv.gunK+rv.yemekK)>0?`<span class="money m-red">-${fmt(rv.gunK+rv.yemekK)}</span>`:'—'; const avansWarn=rv.yatan===0&&rv.avans>0?'<br><span style="font-size:9px;color:var(--red)">avans aşıyor!</span>':''; const brutInfo=rv.avans>0?`<br><span style="font-size:9px;color:var(--text3)">brüt: ${fmt(rv.yatanBrut)}</span>`:''; tr.cells[ci.yatan].innerHTML=`<span class="money m-yatan">${fmt(rv.yatan)}</span>${brutInfo}${avansWarn}`; tr.cells[ci.kalan].innerHTML=(kalanDisp!==null && kalanDisp!==undefined)?`<span class="money m-kalan">${fmt(kalanDisp)}</span>`:'—'; const acEl=document.getElementById(`aciklama_${i}`); if(acEl) acEl.textContent=buildAciklama(ST[i],rv); updateStats();}
@@ -173,7 +231,120 @@ function addPerson(){const adFull=document.getElementById('mAd').value.trim(); i
 function delPerson(i){if(!confirm(`${DATA[i].ad} ${DATA[i].soyad} silinsin mi?`)) return; DATA.splice(i,1); const ns={}; DATA.forEach((_,ni)=>{ns[ni]=ST[ni]||{eksik:0,eksikSaat:0,rapor:0,yillik:0,saat1:0,saat2:0,calSaat:0,avans:0};}); Object.keys(ST).forEach(k=>delete ST[k]); Object.assign(ST,ns); render();}
 function initMonths(){const sel=document.getElementById('monthSel'); sel.onchange=onMonthChange; const now=new Date(); const months=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık']; for(let y=now.getFullYear()+1;y>=now.getFullYear()-1;y--){const startM=(y===now.getFullYear()+1)?now.getMonth():11; const endM=(y===now.getFullYear()-1)?now.getMonth():0; for(let m=startM;m>=endM;m--){const o=document.createElement('option'); o.value=`${y}-${m}`; o.textContent=`${months[m]} ${y}`; if(y===now.getFullYear()&&m===now.getMonth()) o.selected=true; sel.appendChild(o);}}}
 function monthLabel(){const s=document.getElementById('monthSel'); return s.options[s.selectedIndex].text;}
-function exportXLSX(type){const month=monthLabel(); const wb=XLSX.utils.book_new(); if(type==='banka'){const rows=[['Personel Banka Hesap No','Personel TC Kimlik Numarası','Personel Adı','Personel Soyadı','Net Ödeme Tutarı','Ödeme Tipi','Dönem']]; DATA.forEach((p,i)=>{if(p.pasif)return; const rv=calc(p,ST[i]); rows.push([p.hesapNo,p.tc,p.ad,p.soyad,r2(rv.yatan),'MAAŞ',month]);}); const ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[{wch:22},{wch:16},{wch:14},{wch:18},{wch:16},{wch:12},{wch:16}]; styleHeader(ws,rows[0].length); XLSX.utils.book_append_sheet(wb,ws,'Banka');} else {const rows=[['GÖREV','ADI','SOYADI','HESAP NO','T.C.','MAAŞ','EKSİK GÜN','EKSİK SAAT','RAPORLU GÜN','YILLIK İZİN','SAAT ÜCR.1','ÇAL. SAAT','YEMEK','YEMEK KESİNTİ','GÜN KESİNTİ','TOPLAM KESİNTİ','AVANS','YATAN (NET)','AÇIKLAMA']]; DATA.forEach((p,i)=>{if(p.pasif)return; const st=ST[i], rv=calc(p,st); rows.push([p.gorev,p.ad,p.soyad,p.hesapNo,p.tc,p.maas||'',st.eksik||0,st.eksikSaat||0,st.rapor||0,st.yillik||0,st.saat1||'',st.calSaat||0,YEMEK,rv.yemekK||0,rv.gunK||0,r2(rv.gunK+rv.yemekK),rv.avans||0,r2(rv.yatan),buildAciklama(st,rv)]);}); const ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[{wch:22},{wch:14},{wch:16},{wch:12},{wch:14},{wch:12},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:13},{wch:12},{wch:14},{wch:10},{wch:14},{wch:40}]; styleHeader(ws,rows[0].length); XLSX.utils.book_append_sheet(wb,ws,'Muhasebe');} XLSX.writeFile(wb,`maas_${month.replace(' ','_')}_${type}.xlsx`);}
+function exportXLSX(type){
+  const month = monthLabel();
+  const wb = XLSX.utils.book_new();
+
+  if(type==='banka'){
+    const rows=[['Personel Banka Hesap No','Personel TC Kimlik Numarası','Personel Adı','Personel Soyadı','Net Ödeme Tutarı','Ödeme Tipi','Dönem']];
+    DATA.forEach((p,i)=>{
+      if(p.pasif) return;
+      const rv=calc(p,ST[i]);
+      rows.push([p.hesapNo,p.tc,p.ad,p.soyad,r2(rv.yatan),'MAAŞ',month]);
+    });
+    const ws=XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols']=[{wch:22},{wch:16},{wch:14},{wch:18},{wch:16},{wch:12},{wch:16}];
+    styleHeader(ws,rows[0].length);
+    XLSX.utils.book_append_sheet(wb,ws,'Banka');
+
+  } else if(type==='anasayfa'){
+    const activeCols = COLS.filter(c=>c.fixed||colVis[c.id]);
+    const rows=[activeCols.map(c=>c.label)];
+
+    DATA.forEach((p,i)=>{
+      const st=ST[i];
+      const rv=calc(p,st);
+      const tv=calcTam(p,st);
+      const kalanDisp=(rv.kalan!==null&&rv.kalan!==undefined)?rv.kalan:tv.kalanTam;
+
+      const row=[];
+      activeCols.forEach(c=>{
+        switch(c.id){
+          case 'no':
+            row.push(String(i+1).padStart(2,'0')); break;
+          case 'ad':
+            row.push(`${p.ad} ${p.soyad}${p.pasif?' (PASİF)':''}`); break;
+          case 'gorev':
+            row.push(p.gorev); break;
+          case 'hesap':
+            row.push(p.hesapNo); break;
+          case 'tc':
+            row.push(p.tc); break;
+          case 'maas':
+            row.push(p.maas?p.maas:''); break;
+          case 'ek1':
+            row.push((p.ek1||0)>0?p.ek1:''); break;
+          case 'ek2':
+            row.push((p.ek2||0)>0?p.ek2:''); break;
+          case 'eksik':
+            row.push(st.eksik||0); break;
+          case 'eksikSaat':
+            row.push(st.eksikSaat||0); break;
+          case 'rapor':
+            row.push(st.rapor||0); break;
+          case 'yillik':
+            row.push(st.yillik||0); break;
+          case 'saat1':
+            row.push(st.saat1||0); break;
+          case 'saat2':
+            row.push(st.saat2||0); break;
+          case 'calSaat':
+            row.push(st.calSaat||0); break;
+          case 'yemek':
+            row.push(YEMEK); break;
+          case 'yemekk':
+            row.push(rv.yemekK>0?-rv.yemekK:''); break;
+          case 'gunk':
+            row.push(rv.gunK>0?-rv.gunK:''); break;
+          case 'toplamk':
+            row.push((rv.gunK+rv.yemekK)>0?-(rv.gunK+rv.yemekK):''); break;
+          case 'avans':
+            row.push(st.avans||0); break;
+          case 'yatan':
+            row.push(rv.yatan); break;
+          case 'kalan':
+            row.push(kalanDisp!==null&&kalanDisp!==undefined?kalanDisp:''); break;
+          case 'aciklama':
+            row.push(buildAciklama(st,rv)); break;
+          case 'actions':
+            row.push(''); break;
+          default:
+            row.push(''); break;
+        }
+      });
+      rows.push(row);
+    });
+
+    const ws=XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols']=activeCols.map(c=>{
+      if(c.id==='aciklama') return {wch:55};
+      if(c.id==='ad') return {wch:26};
+      if(c.id==='gorev') return {wch:20};
+      if(c.id==='hesap') return {wch:18};
+      if(c.id==='tc') return {wch:14};
+      if(c.id==='actions') return {wch:8};
+      return {wch:12};
+    });
+    styleHeader(ws,rows[0].length);
+    XLSX.utils.book_append_sheet(wb,ws,'Ana Sayfa');
+    XLSX.writeFile(wb,`maas_${month.replace(' ','_')}_anasayfa.xlsx`);
+    return;
+
+  } else {
+    const rows=[['GÖREV','ADI','SOYADI','HESAP NO','T.C.','MAAŞ','EKSİK GÜN','EKSİK SAAT','RAPORLU GÜN','YILLIK İZİN','SAAT ÜCR.1','ÇAL. SAAT','YEMEK','YEMEK KESİNTİ','GÜN KESİNTİ','TOPLAM KESİNTİ','AVANS','YATAN (NET)','AÇIKLAMA']];
+    DATA.forEach((p,i)=>{
+      if(p.pasif) return;
+      const st=ST[i], rv=calc(p,st);
+      rows.push([p.gorev,p.ad,p.soyad,p.hesapNo,p.tc,p.maas||'',st.eksik||0,st.eksikSaat||0,st.rapor||0,st.yillik||0,st.saat1||'',st.calSaat||0,YEMEK,rv.yemekK||0,rv.gunK||0,r2(rv.gunK+rv.yemekK),rv.avans||0,r2(rv.yatan),buildAciklama(st,rv)]);
+    });
+    const ws=XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols']=[{wch:22},{wch:14},{wch:16},{wch:12},{wch:14},{wch:12},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:13},{wch:12},{wch:14},{wch:10},{wch:14},{wch:40}];
+    styleHeader(ws,rows[0].length);
+    XLSX.utils.book_append_sheet(wb,ws,'Muhasebe');
+  }
+
+  XLSX.writeFile(wb,`maas_${month.replace(' ','_')}_${type}.xlsx`);
+}
 function exportPDF(){var month=monthLabel(); var tY=0,tK=0,tKs=0,aktif=0; DATA.forEach(function(p,i){if(p.pasif)return; aktif++; var rv=calc(p,ST[i]); tY+=rv.yatan||0; tK+=rv.kalan||0; tKs+=rv.gunK+rv.yemekK;}); var rows='', rn=0; DATA.forEach(function(p,i){if(p.pasif)return; rn++; var st=ST[i], rv=calc(p,st), bg=rn%2===0?'#f8fafc':'#ffffff'; rows += '<tr style="background:' + bg + '">' + '<td style="text-align:center;color:#94a3b8">' + rn + '</td>' + '<td><b>' + p.ad + ' ' + p.soyad + '</b></td>' + '<td>' + p.gorev + '</td>' + '<td>' + (p.maas ? fmt(p.maas) : '<i style="color:#94a3b8">Saat</i>') + '</td>' + '<td style="color:#dc2626">' + (st.eksik||'') + '</td>' + '<td style="color:#dc2626">' + (st.eksikSaat||'') + '</td>' + '<td style="color:#dc2626">' + (st.rapor||'') + '</td>' + '<td style="color:#d97706">' + (st.yillik||'') + '</td>' + '<td style="color:#dc2626">' + (rv.yemekK>0 ? '-'+fmt(rv.yemekK) : '') + '</td>' + '<td style="color:#dc2626">' + (rv.gunK>0 ? '-'+fmt(rv.gunK) : '') + '</td>' + '<td style="color:#ea580c">' + (rv.avans>0 ? fmt(rv.avans) : '') + '</td>' + '<td style="color:#166534;font-weight:700">' + fmt(rv.yatan) + '</td>' + '<td style="font-size:9px;color:#64748b">' + buildAciklama(st,rv) + '</td>' + '</tr>';}); var css=['*{box-sizing:border-box;margin:0;padding:0}','body{font-family:Arial,sans-serif;font-size:10px;color:#1e293b;background:#fff}','.hdr{background:#1e40af;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}','.hdr h1{font-size:13px;margin-bottom:2px}','.hdr p{font-size:8px;opacity:.8}','.ozet{background:#f1f5f9;padding:4px 14px;font-size:8px;color:#475569;border-bottom:1px solid #e2e8f0}','.pbar{background:#fef9c3;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#92400e}','.pbar button{background:#1e40af;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:600}','table{width:100%;border-collapse:collapse}','thead tr{background:#1e293b}','thead th{color:#94a3b8;padding:5px 3px;text-align:left;font-size:7.5px;white-space:nowrap}','tbody td{padding:3px 3px;border-bottom:1px solid #e2e8f0;vertical-align:middle}','.tot{background:#1e293b!important}','.tot td{color:#fff;font-weight:700;padding:5px 3px;border:none}','.ft{padding:4px 14px;font-size:7.5px;color:#94a3b8;display:flex;justify-content:space-between;margin-top:4px}','@media print{','  @page{size:A4 landscape;margin:7mm}','  .pbar{display:none!important}','  thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}','  .tot{-webkit-print-color-adjust:exact;print-color-adjust:exact}','  tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}','  .hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}','}'].join('\n'); var html='<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">' + '<title>Maas Bordrosu ' + month + '</title>' + '<style>' + css + '</style></head><body>' + '<div class="hdr">' + '<div><h1>EGiTiMCi DiL KONUSMA MERKEZi</h1><p>MAAS BORDROSU - ' + month.toUpperCase() + '</p></div>' + '<div style="display:flex"><div style="text-align:right;margin-left:14px"><div style="font-size:7px;opacity:.7">TOPLAM YATAN</div><div style="font-size:11px;font-weight:700;color:#86efac">' + fmt(tY) + ' TL</div></div></div></div>' + '<div class="ozet">Aktif: ' + aktif + ' personel &nbsp;·&nbsp; Kesinti: ' + fmt(tKs) + ' TL &nbsp;·&nbsp; ' + new Date().toLocaleString('tr-TR') + '</div>' + '<div class="pbar"><span>Yazdirmak icin: <b>Yatay kagit</b> + <b>PDF Olarak Kaydet</b></span><button onclick="window.print()">Yazdir / PDF Kaydet</button></div>' + '<table><thead><tr><th>#</th><th>Ad Soyad</th><th>Gorev</th><th>Maas</th><th>E.Gun</th><th>E.Saat</th><th>Rapor</th><th>Yillik</th><th>Yemek Kst.</th><th>Gun Kst.</th><th>Avans</th><th>YATAN</th><th>Aciklama</th></tr></thead><tbody>' + rows + '<tr class="tot"><td colspan="11">TOPLAM - ' + aktif + ' personel</td><td>' + fmt(tY) + ' TL</td></tr></tbody></table><div class="ft"><span>Egitimci Dil Konusma Merkezi - ' + month + ' Maas Bordrosu</span><span>' + new Date().toLocaleDateString('tr-TR') + '</span></div></body></html>'; var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'})); a.download='bordro_'+month.replace(' ','_')+'.html'; document.body.appendChild(a); a.click(); a.remove();}
 function exportPDFTam(){var month=monthLabel(); var tY=0,tK=0,aktif=0; DATA.forEach(function(p,i){if(p.pasif)return; aktif++; var tv=calcTam(p,ST[i]); tY+=tv.tamYatan||0; tK+=tv.kalanTam||0;}); var rows='',rn=0; DATA.forEach(function(p,i){if(p.pasif)return; rn++; var st=ST[i], tv=calcTam(p,st), bg=rn%2===0?'#f8fafc':'#ffffff'; rows += '<tr style="background:' + bg + '">' + '<td style="text-align:center;color:#94a3b8">' + rn + '</td>' + '<td><b>' + p.ad + ' ' + p.soyad + '</b></td>' + '<td>' + p.gorev + '</td>' + '<td>' + (p.maas ? fmt((p.maas||0)+(p.ek1||0)+(p.ek2||0)) : (st.saat2?fmt(st.saat2):'<i style="color:#94a3b8">Saat2</i>')) + '</td>' + '<td style="color:#dc2626">' + (st.eksik||'') + '</td>' + '<td style="color:#dc2626">' + (st.eksikSaat||'') + '</td>' + '<td style="color:#dc2626">' + (st.rapor||'') + '</td>' + '<td style="color:#d97706">' + (st.yillik||'') + '</td>' + '<td>' + (st.calSaat||'') + '</td>' + '<td style="color:#166534;font-weight:700">' + fmt(tv.tamYatan) + '</td>' + '<td style="color:#7c3aed;font-weight:700">' + fmt(tv.kalanTam) + '</td>' + '<td style="font-size:9px;color:#64748b">Tam hesap</td>' + '</tr>';}); var css=['*{box-sizing:border-box;margin:0;padding:0}','body{font-family:Arial,sans-serif;font-size:10px;color:#1e293b;background:#fff}','.hdr{background:#5b21b6;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}','.hdr h1{font-size:13px;margin-bottom:2px}','.hdr p{font-size:8px;opacity:.8}','.ozet{background:#f1f5f9;padding:4px 14px;font-size:8px;color:#475569;border-bottom:1px solid #e2e8f0}','.pbar{background:#ede9fe;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#5b21b6}','.pbar button{background:#5b21b6;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:600}','table{width:100%;border-collapse:collapse}','thead tr{background:#1e293b}','thead th{color:#94a3b8;padding:5px 3px;text-align:left;font-size:7.5px;white-space:nowrap}','tbody td{padding:3px 3px;border-bottom:1px solid #e2e8f0;vertical-align:middle}','.tot{background:#1e293b!important}','.tot td{color:#fff;font-weight:700;padding:5px 3px;border:none}','.ft{padding:4px 14px;font-size:7.5px;color:#94a3b8;display:flex;justify-content:space-between;margin-top:4px}','@media print{','  @page{size:A4 landscape;margin:7mm}','  .pbar{display:none!important}','  thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}','  .tot{-webkit-print-color-adjust:exact;print-color-adjust:exact}','  tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}','  .hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}','}'].join('\n'); var html='<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">'+'<title>Maas Bordrosu Tam '+month+'</title>'+'<style>'+css+'</style></head><body>'+'<div class="hdr">'+'<div><h1>EGiTiMCi DiL KONUSMA MERKEZi</h1><p>TAM MAAS BORDROSU - '+month.toUpperCase()+'</p></div>'+'<div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM TAM / KALAN</div>'+'<div style="font-size:13px;font-weight:700;color:#ddd6fe">'+fmt(tY)+' / '+fmt(tK)+' TL</div></div>'+'</div>'+'<div class="ozet">Aktif: '+aktif+' personel &nbsp;·&nbsp; '+new Date().toLocaleString('tr-TR')+'</div>'+'<div class="pbar"><span>Yatay kagit + PDF Olarak Kaydet secin</span><button onclick="window.print()">Yazdir / PDF Kaydet</button></div>'+'<table><thead><tr><th>#</th><th>Ad Soyad</th><th>Gorev</th><th>Tam Maas</th><th>E.Gun</th><th>E.Saat</th><th>Rapor</th><th>Yillik</th><th>Cal.Saat</th><th>YATAN (TAM)</th><th>KALAN (TAM)</th><th>Aciklama</th></tr></thead><tbody>'+rows+'<tr class="tot"><td colspan="9">TOPLAM - '+aktif+' personel</td><td>'+fmt(tY)+' TL</td><td>'+fmt(tK)+' TL</td><td></td></tr></tbody></table><div class="ft"><span>Egitimci Dil Konusma Merkezi - '+month+' (Tam)</span><span>'+new Date().toLocaleDateString('tr-TR')+'</span></div></body></html>'; var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'})); a.download='bordro_tam_'+month.replace(' ','_')+'.html'; document.body.appendChild(a); a.click(); a.remove();}
 function styleHeader(ws,colCount){for(let c=0;c<colCount;c++){const addr=XLSX.utils.encode_cell({r:0,c}); if(ws[addr]) ws[addr].s={font:{bold:true,color:{rgb:'E2E8F0'}}, fill:{patternType:'solid',fgColor:{rgb:'22263A'}}, alignment:{horizontal:'center'}};}}
