@@ -1,3 +1,4 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/maas_hesaplama.html b/maas_hesaplama.html
 index dce476a3830859c591f0b21f33aa25112e3a8339..dd70de1a016678adbbe580baa80b1504fd63056c 100644
 --- a/maas_hesaplama.html
@@ -443,3 +444,6 @@ index dce476a3830859c591f0b21f33aa25112e3a8339..dd70de1a016678adbbe580baa80b1504
      },
    });
    if (!res.ok) {
+ 
+EOF
+)
