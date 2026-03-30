@@ -217,13 +217,16 @@ function calc(p, st){
     if(!p.maas){
         // Saat ücretli
         const calSaat=+st.calSaat||0;
-        const ucret1Toplam=saat1*calSaat;
-        yemekK=(eksikTam+raporTam+yillikTam)*100;
-        const yemekNet=Math.max(0,Math.floor(calSaat/8)*100-yemekK);
-        gunK=(eksik*8+eksikSaat+rapor*8)*saat1;
+        const calGun = Math.floor(calSaat/8); // Çalışılan gün sayısı
+        const yemek = calGun * 100; // Her gün için 100 TL yemek
+        const ucret1Toplam = saat1 * calSaat;
         // Mesai: saat1 üzerinden 1.5 kat
         mesaiUcret = r2(mesai * saat1 * 1.5);
-        yatan=r2(Math.max(0,ucret1Toplam-gunK+yemekNet+mesaiUcret));
+        // Yatan = saat ücreti + yemek + mesai
+        yatan = r2(Math.max(0, ucret1Toplam + yemek + mesaiUcret));
+        // yemekK ve gunK saat ücretlilerde kullanılmıyor
+        yemekK = 0;
+        gunK = 0;
     } else {
         // Aylıklı - sadece maaş kullanılır, mesai maaş üzerinden hesaplanır
         const taban=p.maas;
@@ -256,13 +259,13 @@ function calcTam(p, st){
     if(!p.maas){
         // Saat ücretli - saat2 üzerinden hesaplanır
         const saat2=+st.saat2||0, calSaat=+st.calSaat||0;
-        const ucretToplam=saat2*calSaat;
-        const yemekK=(eksikTam+raporTam+yillikTam)*100;
-        const yemekNet=Math.max(0,Math.floor(calSaat/8)*100-yemekK);
-        const gunK=(eksik*8+eksikSaat+rapor*8)*saat2;
+        const calGun = Math.floor(calSaat/8); // Çalışılan gün sayısı
+        const yemek = calGun * 100; // Her gün için 100 TL yemek
+        const ucretToplam = saat2 * calSaat;
         // Mesai: saat2 üzerinden 1.5 kat
         mesaiUcretTam = r2(mesai * saat2 * 1.5);
-        tamBrut=r2(Math.max(0,ucretToplam-gunK+yemekNet+mesaiUcretTam));
+        // Tam = saat ücreti + yemek + mesai
+        tamBrut = r2(Math.max(0, ucretToplam + yemek + mesaiUcretTam));
     } else {
         // Aylıklı - maaş + ek1 kullanılır
         const taban=(p.maas||0)+(p.ek1||0);
