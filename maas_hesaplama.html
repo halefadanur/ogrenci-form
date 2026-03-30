@@ -815,10 +815,15 @@ async function saveMonth(){
     const stSnap={};
     Object.keys(ST).forEach(k=>{stSnap[k]={...ST[k]};});
     const dataSnap=DATA.map(p=>({...p}));
-    const payload={user_id:uid, ay, yemek:YEMEK, data:dataSnap, state:stSnap};
+    const payload={user_id:uid, ay, yemek:YEMEK, data:dataSnap, state:stSnap, saved_at: new Date().toISOString()};
     setSaveState('saving');
     try{
-        await sbFetch('/rest/v1/maas_bordro',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(payload)});
+        // Upsert: varsa güncelle, yoksa ekle
+        await sbFetch('/rest/v1/maas_bordro?on_conflict=user_id,ay',{
+            method:'POST',
+            headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+            body:JSON.stringify(payload)
+        });
         setSaveState('saved');
     } catch(e){
         if(e.message.includes('JWT')||e.message.includes('401')){
