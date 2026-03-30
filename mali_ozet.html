@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mali Özet - Maaş Sistemi</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3352;
+            --accent:#4f8ef7;--accent2:#7c3aed;--green:#22c55e;--red:#ef4444;
+            --yellow:#f59e0b;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+        }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;}
+        header{background:linear-gradient(135deg,#1a1d27,#0f1117);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;gap:12px;flex-wrap:wrap;}
+        .logo{display:flex;align-items:center;gap:10px;}
+        .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--green),#059669);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+        .logo-text{font-size:14px;font-weight:700;}
+        .logo-sub{font-size:10px;color:var(--text2);}
+        .header-right{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+        .btn{padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;transition:all .15s;display:flex;align-items:center;gap:4px;white-space:nowrap;text-decoration:none;}
+        .btn-primary{background:var(--accent);color:#fff;} .btn-primary:hover{background:#3b7de8;}
+        .btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border);} .btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+        .main{padding:20px 24px;max-width:1400px;margin:0 auto;}
+        
+        /* Ay Seçici */
+        .month-selector{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;align-items:center;}
+        .month-selector label{font-size:12px;color:var(--text2);}
+        .month-selector select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-family:inherit;font-size:13px;cursor:pointer;min-width:150px;}
+        .month-selector select:focus{outline:none;border-color:var(--accent);}
+        
+        /* Özet Kartları */
+        .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px;}
+        .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;}
+        .summary-card.highlight{border-color:rgba(34,197,94,.4);background:linear-gradient(135deg,rgba(34,197,94,.08),transparent);}
+        .summary-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+        .summary-value{font-size:26px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+        .summary-sub{font-size:11px;color:var(--text3);margin-top:4px;}
+        .sv-green{color:var(--green);} .sv-blue{color:var(--accent);} .sv-purple{color:#a78bfa;} .sv-teal{color:#2dd4bf;}
+        
+        /* Karşılaştırma */
+        .compare-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;}
+        .compare-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+        .compare-grid{display:grid;grid-template-columns:1fr 80px 1fr;gap:16px;align-items:center;}
+        .compare-box{background:var(--surface2);border-radius:10px;padding:16px;}
+        .compare-box-label{font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:8px;}
+        .compare-box-value{font-size:22px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+        .compare-arrow{text-align:center;font-size:24px;color:var(--text3);}
+        .compare-diff{text-align:center;}
+        .diff-value{font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+        .diff-percent{font-size:12px;margin-top:2px;}
+        .diff-up{color:var(--red);} .diff-down{color:var(--green);} .diff-same{color:var(--text3);}
+        
+        /* Zam Simülasyonu */
+        .sim-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px;}
+        .sim-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+        .sim-controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:20px;}
+        .sim-input-group{display:flex;align-items:center;gap:8px;}
+        .sim-input-group label{font-size:12px;color:var(--text2);}
+        .sim-input{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:14px;width:100px;text-align:center;}
+        .sim-input:focus{outline:none;border-color:var(--accent);}
+        .sim-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+        .sim-result-card{background:var(--surface2);border-radius:8px;padding:14px;}
+        .sim-result-label{font-size:10px;color:var(--text3);text-transform:uppercase;}
+        .sim-result-value{font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace;margin-top:4px;}
+        .sim-result-diff{font-size:11px;margin-top:2px;}
+        
+        /* Personel Tablosu */
+        .table-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+        .table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+        .table-title{font-size:14px;font-weight:600;}
+        .table-info{font-size:11px;color:var(--text3);}
+        .scrollable{overflow-x:auto;}
+        table{width:100%;border-collapse:collapse;}
+        th{background:var(--surface2);padding:10px 14px;text-align:right;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;border-bottom:1px solid var(--border);}
+        th.left{text-align:left;}
+        td{padding:10px 14px;border-bottom:1px solid #1e2235;text-align:right;white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+        td.left{text-align:left;font-family:'IBM Plex Sans',sans-serif;}
+        tr:last-child td{border-bottom:none;}
+        tr:hover td{background:#1e2338;}
+        .name-cell{font-weight:600;}
+        .diff-cell{font-size:11px;}
+        .diff-cell.up{color:var(--green);}
+        
+        /* Loading */
+        .loading{text-align:center;padding:60px;color:var(--text3);}
+        .loading-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px;}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        
+        /* Login */
+        #loginWrap{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;align-items:center;justify-content:center;flex-direction:column;}
+        .login-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:360px;max-width:95vw;}
+        .login-header{display:flex;align-items:center;gap:12px;margin-bottom:28px;}
+        .login-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--green),#059669);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+        .login-title{font-size:15px;font-weight:700;}
+        .login-sub{font-size:11px;color:var(--text2);}
+        .form-group{margin-bottom:14px;}
+        .form-label{font-size:10px;color:var(--text2);text-transform:uppercase;margin-bottom:5px;}
+        .form-input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-family:inherit;font-size:13px;}
+        .form-input:focus{outline:none;border-color:var(--accent);}
+        .login-error{color:var(--red);font-size:11px;margin-bottom:12px;min-height:16px;}
+        .login-btn{width:100%;background:var(--green);color:white;border:none;padding:11px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
+        .login-btn:hover{background:#16a34a;}
+    </style>
+</head>
+<body>
+
+<div id="loginWrap">
+    <div class="login-box">
+        <div class="login-header">
+            <div class="login-icon">📊</div>
+            <div>
+                <div class="login-title">Mali Özet</div>
+                <div class="login-sub">Eğitimci Dil Konuşma Merkezi</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-label">Email</div>
+            <input id="loginEmail" type="email" class="form-input" placeholder="ornek@mail.com" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
+        </div>
+        <div class="form-group">
+            <div class="form-label">Şifre</div>
+            <input id="loginPass" type="password" class="form-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <div id="loginErr" class="login-error"></div>
+        <button id="loginBtn" class="login-btn" onclick="doLogin()">Giriş Yap</button>
+    </div>
+</div>
+
+<div id="appWrap" style="display:none;">
+    <header>
+        <div class="logo">
+            <div class="logo-icon">📊</div>
+            <div>
+                <div class="logo-text">Mali Özet & Analiz</div>
+                <div class="logo-sub">Eğitimci Dil Konuşma Merkezi</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <a href="maas_hesaplama.html" class="btn btn-outline">← Maaş Tablosu</a>
+            <span id="userEmail" style="font-size:10px;color:var(--text3);"></span>
+            <button class="btn btn-outline" onclick="signOut()">Çıkış</button>
+        </div>
+    </header>
+
+    <div class="main">
+        <!-- Ay Seçici -->
+        <div class="month-selector">
+            <label>Görüntülenen Ay:</label>
+            <select id="currentMonth"></select>
+            <label style="margin-left:20px;">Karşılaştırma:</label>
+            <select id="compareMonth"></select>
+        </div>
+
+        <!-- Özet Kartları -->
+        <div class="summary-grid" id="summaryCards">
+            <div class="loading"><div class="loading-spinner"></div>Yükleniyor...</div>
+        </div>
+
+        <!-- Ay Karşılaştırması -->
+        <div class="compare-section" id="compareSection" style="display:none;">
+            <div class="compare-title">📈 Ay Karşılaştırması</div>
+            <div class="compare-grid">
+                <div class="compare-box">
+                    <div class="compare-box-label" id="prevMonthLabel">Önceki Ay</div>
+                    <div class="compare-box-value sv-blue" id="prevMonthValue">0 ₺</div>
+                </div>
+                <div class="compare-diff">
+                    <div class="diff-value" id="diffValue">0 ₺</div>
+                    <div class="diff-percent" id="diffPercent">%0</div>
+                </div>
+                <div class="compare-box">
+                    <div class="compare-box-label" id="currMonthLabel">Bu Ay</div>
+                    <div class="compare-box-value sv-green" id="currMonthValue">0 ₺</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zam Simülasyonu -->
+        <div class="sim-section">
+            <div class="sim-title">💰 Zam Simülasyonu</div>
+            <div class="sim-controls">
+                <div class="sim-input-group">
+                    <label>Zam Oranı:</label>
+                    <input type="number" id="zamOrani" class="sim-input" value="10" min="0" max="100" step="0.5" onchange="hesaplaZam()" oninput="hesaplaZam()">
+                    <span style="color:var(--text2)">%</span>
+                </div>
+                <div class="sim-input-group">
+                    <label>Uygula:</label>
+                    <select id="zamHedef" class="sim-input" style="width:140px;" onchange="hesaplaZam()">
+                        <option value="maas">Sadece Maaş</option>
+                        <option value="maas_ek1">Maaş + Ek1</option>
+                        <option value="hepsi">Maaş + Ek1 + Ek2</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sim-results" id="simResults">
+                <div class="sim-result-card">
+                    <div class="sim-result-label">Mevcut Toplam Maliyet</div>
+                    <div class="sim-result-value sv-blue" id="simMevcut">0 ₺</div>
+                </div>
+                <div class="sim-result-card">
+                    <div class="sim-result-label">Zam Sonrası Maliyet</div>
+                    <div class="sim-result-value sv-green" id="simYeni">0 ₺</div>
+                </div>
+                <div class="sim-result-card">
+                    <div class="sim-result-label">Aylık Fark</div>
+                    <div class="sim-result-value sv-purple" id="simFark">0 ₺</div>
+                    <div class="sim-result-diff" id="simFarkYuzde">%0 artış</div>
+                </div>
+                <div class="sim-result-card">
+                    <div class="sim-result-label">Yıllık Ek Maliyet</div>
+                    <div class="sim-result-value" style="color:var(--yellow);" id="simYillik">0 ₺</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personel Detay Tablosu -->
+        <div class="table-section">
+            <div class="table-header">
+                <div class="table-title">Personel Bazlı Zam Önizleme</div>
+                <div class="table-info">Sadece aylıklı personel gösterilir</div>
+            </div>
+            <div class="scrollable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="left">Ad Soyad</th>
+                            <th class="left">Görev</th>
+                            <th>Mevcut Maaş</th>
+                            <th>Mevcut Ek1</th>
+                            <th>Mevcut Ek2</th>
+                            <th>Mevcut Toplam</th>
+                            <th>Yeni Maaş</th>
+                            <th>Yeni Ek1</th>
+                            <th>Yeni Ek2</th>
+                            <th>Yeni Toplam</th>
+                            <th>Fark</th>
+                        </tr>
+                    </thead>
+                    <tbody id="zamTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const SB_URL='https://zciraijmwxcwhryidlki.supabase.co';
+const SB_KEY='sb_publishable_G1M4C_upyM7SMh59AOEhEA_pJ4MvEou';
+
+let currentData = null;
+let compareData = null;
+let allMonths = [];
+
+function fmt(n){
+    if(n===null||n===undefined||isNaN(n)) return '—';
+    return n.toLocaleString('tr-TR',{minimumFractionDigits:0,maximumFractionDigits:0});
+}
+
+function fmtFull(n){
+    if(n===null||n===undefined||isNaN(n)) return '—';
+    return n.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function r2(n){return Math.round((n||0)*100)/100;}
+
+// Supabase
+async function sbFetch(path,opts={}){
+    const session=JSON.parse(localStorage.getItem('sb_session')||'null');
+    const token=session?.access_token||SB_KEY;
+    const res=await fetch(SB_URL+path,{...opts,headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+token,...(opts.headers||{})}});
+    if(!res.ok){const err=await res.json().catch(()=>({})); throw new Error(err.message||err.error_description||res.status);}
+    const text=await res.text();
+    return text?JSON.parse(text):null;
+}
+
+async function signIn(email,password){
+    const data=await sbFetch('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email,password})});
+    localStorage.setItem('sb_session',JSON.stringify(data));
+    return data;
+}
+
+async function signOut(){
+    try{const session=JSON.parse(localStorage.getItem('sb_session')||'null'); if(session?.access_token) await sbFetch('/auth/v1/logout',{method:'POST'});}catch{}
+    localStorage.removeItem('sb_session');
+    showLogin();
+}
+
+function getSession(){try{return JSON.parse(localStorage.getItem('sb_session'));}catch{return null;}}
+function getUserId(){const s=getSession(); return s?.user?.id||null;}
+
+async function refreshToken(){
+    const s=getSession();
+    if(!s?.refresh_token) return null;
+    try{
+        const data=await sbFetch('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:JSON.stringify({refresh_token:s.refresh_token})});
+        localStorage.setItem('sb_session',JSON.stringify(data));
+        return data;
+    }catch{return null;}
+}
+
+function showLogin(){
+    document.getElementById('appWrap').style.display='none';
+    document.getElementById('loginWrap').style.display='flex';
+}
+
+function showApp(email){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('appWrap').style.display='block';
+    document.getElementById('userEmail').textContent=email;
+}
+
+async function doLogin(){
+    const email=document.getElementById('loginEmail').value.trim();
+    const pass=document.getElementById('loginPass').value;
+    const btn=document.getElementById('loginBtn');
+    const err=document.getElementById('loginErr');
+    if(!email||!pass){err.textContent='Email ve şifre gerekli.'; return;}
+    btn.textContent='Giriş yapılıyor...';
+    btn.disabled=true;
+    err.textContent='';
+    try{
+        const data=await signIn(email,pass);
+        showApp(data.user.email);
+        await initApp();
+    } catch(e){err.textContent='Hata: '+(e.message.includes('Invalid')?'Email veya şifre yanlış.':e.message);}
+    finally{btn.textContent='Giriş Yap'; btn.disabled=false;}
+}
+
+// Hesaplama fonksiyonları
+function calcMesaiUcret(taban, mesaiSaat) {
+    if (!taban || !mesaiSaat) return 0;
+    const saatlikUcret = taban / 30 / 8;
+    return r2(mesaiSaat * saatlikUcret * 1.5);
+}
+
+function calcYatan(p, st, YEMEK) {
+    const eksik=+st.eksik||0, eksikSaat=+st.eksikSaat||0, rapor=+st.rapor||0;
+    const mesai=+st.mesai||0, saat1=+st.saat1||0, calSaat=+st.calSaat||0;
+    const eksikTam=Math.floor(eksik), raporTam=Math.floor(rapor), yillikTam=Math.floor(+st.yillik||0);
+    
+    let yatan=0, mesaiUcret=0;
+    
+    if(!p.maas){
+        const calGun = Math.floor(calSaat/8);
+        const yemek = calGun * 100;
+        const ucret1Toplam = saat1 * calSaat;
+        mesaiUcret = r2(mesai * saat1 * 1.5);
+        yatan = r2(Math.max(0, ucret1Toplam + yemek + mesaiUcret));
+    } else {
+        const taban = p.maas;
+        const gunluk = taban/30, saatlik = gunluk/8;
+        const gunK = (eksik+rapor)*gunluk + eksikSaat*saatlik;
+        const yemekK = Math.min((eksikTam+raporTam+yillikTam)*100, YEMEK);
+        mesaiUcret = calcMesaiUcret(taban, mesai);
+        const net = taban - gunK + (YEMEK - yemekK) + mesaiUcret;
+        yatan = r2(Math.max(0, net));
+    }
+    
+    const avans = +st.avans||0;
+    return r2(Math.max(0, yatan - avans));
+}
+
+function calcTam(p, st, YEMEK) {
+    const normalYatan = calcYatan(p, st, YEMEK);
+    const eksik=+st.eksik||0, eksikSaat=+st.eksikSaat||0, rapor=+st.rapor||0;
+    const mesai=+st.mesai||0, saat2=+st.saat2||0, calSaat=+st.calSaat||0, avans=+st.avans||0;
+    const eksikTam=Math.floor(eksik), raporTam=Math.floor(rapor), yillikTam=Math.floor(+st.yillik||0);
+    
+    let tamBrut=0, mesaiUcretTam=0;
+    
+    if(!p.maas){
+        const calGun = Math.floor(calSaat/8);
+        const yemek = calGun * 100;
+        const ucretToplam = saat2 * calSaat;
+        mesaiUcretTam = r2(mesai * saat2 * 1.5);
+        tamBrut = r2(Math.max(0, ucretToplam + yemek + mesaiUcretTam));
+    } else {
+        const taban = (p.maas||0) + (p.ek1||0);
+        const gunluk = taban/30, saatlik = gunluk/8;
+        const gunK = (eksik+rapor)*gunluk + eksikSaat*saatlik;
+        const yemekK = Math.min((eksikTam+raporTam+yillikTam)*100, YEMEK);
+        mesaiUcretTam = calcMesaiUcret(taban, mesai);
+        tamBrut = r2(Math.max(0, taban - gunK + (YEMEK - yemekK) + mesaiUcretTam));
+    }
+    
+    const tamYatan = r2(Math.max(0, tamBrut - avans));
+    const kalan = r2(Math.max(0, tamYatan - normalYatan));
+    return { yatan: normalYatan, kalan, toplam: r2(normalYatan + kalan) };
+}
+
+function calcMonthTotals(row) {
+    if (!row || !row.data) return { yatan: 0, kalan: 0, toplam: 0, aktif: 0 };
+    
+    const YEMEK = row.yemek || 2000;
+    let tY = 0, tK = 0, aktif = 0;
+    
+    row.data.forEach((p, i) => {
+        if (p.pasif) return;
+        aktif++;
+        const st = row.state?.[i] || {};
+        const result = calcTam(p, st, YEMEK);
+        tY += result.yatan;
+        tK += result.kalan;
+    });
+    
+    return { yatan: r2(tY), kalan: r2(tK), toplam: r2(tY + tK), aktif };
+}
+
+// Verileri yükle
+async function loadAllMonths() {
+    const uid = getUserId();
+    if (!uid) return [];
+    
+    try {
+        const rows = await sbFetch(`/rest/v1/maas_bordro?user_id=eq.${uid}&select=ay,yemek,data,state,saved_at&order=saved_at.desc`);
+        return rows || [];
+    } catch(e) {
+        console.error('Yükleme hatası:', e);
+        return [];
+    }
+}
+
+async function initApp() {
+    allMonths = await loadAllMonths();
+    
+    if (allMonths.length === 0) {
+        document.getElementById('summaryCards').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text3);">Henüz kayıtlı ay bulunamadı.<br>Önce <a href="maas_hesaplama.html" style="color:var(--accent)">Maaş Tablosu</a>ndan veri kaydedin.</div>';
+        return;
+    }
+    
+    // Ay seçicileri doldur
+    const currentSel = document.getElementById('currentMonth');
+    const compareSel = document.getElementById('compareMonth');
+    
+    currentSel.innerHTML = '';
+    compareSel.innerHTML = '<option value="">-- Seçiniz --</option>';
+    
+    allMonths.forEach((m, i) => {
+        const opt1 = document.createElement('option');
+        opt1.value = i;
+        opt1.textContent = m.ay;
+        currentSel.appendChild(opt1);
+        
+        const opt2 = document.createElement('option');
+        opt2.value = i;
+        opt2.textContent = m.ay;
+        compareSel.appendChild(opt2);
+    });
+    
+    // Varsayılan: ikinci ay karşılaştırma için
+    if (allMonths.length > 1) {
+        compareSel.value = '1';
+    }
+    
+    currentSel.onchange = () => updateDisplay();
+    compareSel.onchange = () => updateDisplay();
+    
+    updateDisplay();
+}
+
+function updateDisplay() {
+    const currentIdx = parseInt(document.getElementById('currentMonth').value) || 0;
+    const compareIdx = document.getElementById('compareMonth').value;
+    
+    currentData = allMonths[currentIdx];
+    compareData = compareIdx !== '' ? allMonths[parseInt(compareIdx)] : null;
+    
+    renderSummary();
+    renderComparison();
+    hesaplaZam();
+}
+
+function renderSummary() {
+    if (!currentData) return;
+    
+    const totals = calcMonthTotals(currentData);
+    
+    document.getElementById('summaryCards').innerHTML = `
+        <div class="summary-card">
+            <div class="summary-label">Aktif Personel</div>
+            <div class="summary-value sv-blue">${totals.aktif}</div>
+            <div class="summary-sub">toplam ${currentData.data?.length || 0} personel</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Toplam Yatan</div>
+            <div class="summary-value sv-green">${fmt(totals.yatan)} ₺</div>
+            <div class="summary-sub">banka ödemesi</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Toplam Kalan</div>
+            <div class="summary-value sv-purple">${fmt(totals.kalan)} ₺</div>
+            <div class="summary-sub">elden ödeme</div>
+        </div>
+        <div class="summary-card highlight">
+            <div class="summary-label">Toplam Maliyet</div>
+            <div class="summary-value sv-teal">${fmt(totals.toplam)} ₺</div>
+            <div class="summary-sub">yatan + kalan</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Tahmini Yıllık</div>
+            <div class="summary-value" style="color:var(--yellow);">${fmt(totals.toplam * 12)} ₺</div>
+            <div class="summary-sub">12 ay projeksiyon</div>
+        </div>
+    `;
+}
+
+function renderComparison() {
+    const section = document.getElementById('compareSection');
+    
+    if (!currentData || !compareData) {
+        section.style.display = 'none';
+        return;
+    }
+    
+    section.style.display = 'block';
+    
+    const curr = calcMonthTotals(currentData);
+    const prev = calcMonthTotals(compareData);
+    
+    const diff = curr.toplam - prev.toplam;
+    const diffPercent = prev.toplam > 0 ? ((diff / prev.toplam) * 100) : 0;
+    
+    document.getElementById('prevMonthLabel').textContent = compareData.ay;
+    document.getElementById('currMonthLabel').textContent = currentData.ay;
+    document.getElementById('prevMonthValue').textContent = fmt(prev.toplam) + ' ₺';
+    document.getElementById('currMonthValue').textContent = fmt(curr.toplam) + ' ₺';
+    
+    const diffEl = document.getElementById('diffValue');
+    const diffPctEl = document.getElementById('diffPercent');
+    
+    if (diff > 0) {
+        diffEl.textContent = '+' + fmt(diff) + ' ₺';
+        diffEl.className = 'diff-value diff-up';
+        diffPctEl.textContent = '+%' + diffPercent.toFixed(1);
+        diffPctEl.className = 'diff-percent diff-up';
+    } else if (diff < 0) {
+        diffEl.textContent = fmt(diff) + ' ₺';
+        diffEl.className = 'diff-value diff-down';
+        diffPctEl.textContent = '%' + diffPercent.toFixed(1);
+        diffPctEl.className = 'diff-percent diff-down';
+    } else {
+        diffEl.textContent = '0 ₺';
+        diffEl.className = 'diff-value diff-same';
+        diffPctEl.textContent = '%0';
+        diffPctEl.className = 'diff-percent diff-same';
+    }
+}
+
+function hesaplaZam() {
+    if (!currentData || !currentData.data) return;
+    
+    const oran = parseFloat(document.getElementById('zamOrani').value) || 0;
+    const hedef = document.getElementById('zamHedef').value;
+    const carpan = 1 + (oran / 100);
+    
+    let mevcutToplam = 0;
+    let yeniToplam = 0;
+    const rows = [];
+    
+    currentData.data.forEach((p, i) => {
+        if (p.pasif || !p.maas) return;
+        
+        const mevcutMaas = p.maas || 0;
+        const mevcutEk1 = p.ek1 || 0;
+        const mevcutEk2 = p.ek2 || 0;
+        const mevcutTop = mevcutMaas + mevcutEk1 + mevcutEk2;
+        
+        let yeniMaas = mevcutMaas;
+        let yeniEk1 = mevcutEk1;
+        let yeniEk2 = mevcutEk2;
+        
+        if (hedef === 'maas') {
+            yeniMaas = r2(mevcutMaas * carpan);
+        } else if (hedef === 'maas_ek1') {
+            yeniMaas = r2(mevcutMaas * carpan);
+            yeniEk1 = r2(mevcutEk1 * carpan);
+        } else {
+            yeniMaas = r2(mevcutMaas * carpan);
+            yeniEk1 = r2(mevcutEk1 * carpan);
+            yeniEk2 = r2(mevcutEk2 * carpan);
+        }
+        
+        const yeniTop = yeniMaas + yeniEk1 + yeniEk2;
+        const fark = yeniTop - mevcutTop;
+        
+        mevcutToplam += mevcutTop;
+        yeniToplam += yeniTop;
+        
+        rows.push({
+            ad: p.ad + ' ' + p.soyad,
+            gorev: p.gorev,
+            mevcutMaas, mevcutEk1, mevcutEk2, mevcutTop,
+            yeniMaas, yeniEk1, yeniEk2, yeniTop,
+            fark
+        });
+    });
+    
+    const fark = yeniToplam - mevcutToplam;
+    const yuzde = mevcutToplam > 0 ? ((fark / mevcutToplam) * 100) : 0;
+    
+    document.getElementById('simMevcut').textContent = fmt(mevcutToplam) + ' ₺';
+    document.getElementById('simYeni').textContent = fmt(yeniToplam) + ' ₺';
+    document.getElementById('simFark').textContent = '+' + fmt(fark) + ' ₺';
+    document.getElementById('simFarkYuzde').textContent = '%' + yuzde.toFixed(1) + ' artış';
+    document.getElementById('simYillik').textContent = '+' + fmt(fark * 12) + ' ₺';
+    
+    // Tablo
+    const tbody = document.getElementById('zamTable');
+    tbody.innerHTML = rows.map(r => `
+        <tr>
+            <td class="left name-cell">${r.ad}</td>
+            <td class="left">${r.gorev}</td>
+            <td>${fmt(r.mevcutMaas)}</td>
+            <td>${r.mevcutEk1 > 0 ? fmt(r.mevcutEk1) : '—'}</td>
+            <td>${r.mevcutEk2 > 0 ? fmt(r.mevcutEk2) : '—'}</td>
+            <td style="font-weight:600;">${fmt(r.mevcutTop)}</td>
+            <td style="color:var(--green);">${fmt(r.yeniMaas)}</td>
+            <td style="color:var(--green);">${r.yeniEk1 > 0 ? fmt(r.yeniEk1) : '—'}</td>
+            <td style="color:var(--green);">${r.yeniEk2 > 0 ? fmt(r.yeniEk2) : '—'}</td>
+            <td style="font-weight:600;color:var(--green);">${fmt(r.yeniTop)}</td>
+            <td class="diff-cell up">+${fmt(r.fark)}</td>
+        </tr>
+    `).join('');
+}
+
+// Init
+showLogin();
+(async()=>{
+    const session=getSession();
+    if(session?.access_token){
+        try{
+            await sbFetch('/auth/v1/user');
+            showApp(session.user.email);
+            await initApp();
+        } catch{
+            const refreshed=await refreshToken();
+            if(refreshed){showApp(refreshed.user.email); await initApp();}
+        }
+    }
+})();
+</script>
+</body>
+</html>
