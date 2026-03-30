@@ -229,7 +229,8 @@ function calc(p, st){
         const taban=p.maas;
         const gunluk=taban/30, saatlik=gunluk/8;
         gunK=(eksik+rapor)*gunluk+eksikSaat*saatlik;
-        yemekK=Math.min((eksikTam+raporTam+yillikTam)*(YEMEK/IS_GUNU),YEMEK);
+        // Yemek kesintisi: eksik gün başına sabit 100 TL
+        yemekK=Math.min((eksikTam+raporTam+yillikTam)*100,YEMEK);
         // Mesai ücreti: sadece maaş üzerinden hesaplanır
         mesaiUcret = calcMesaiUcret(taban, mesai);
         const net=taban-gunK+(YEMEK-yemekK)+mesaiUcret;
@@ -267,7 +268,8 @@ function calcTam(p, st){
         const taban=(p.maas||0)+(p.ek1||0);
         const gunluk=taban/30, saatlik=gunluk/8;
         const gunK=(eksik+rapor)*gunluk+eksikSaat*saatlik;
-        const yemekK=Math.min((eksikTam+raporTam+yillikTam)*(YEMEK/IS_GUNU),YEMEK);
+        // Yemek kesintisi: eksik gün başına sabit 100 TL
+        const yemekK=Math.min((eksikTam+raporTam+yillikTam)*100,YEMEK);
         // Mesai ücreti: maaş+ek1 üzerinden hesaplanır
         mesaiUcretTam = calcMesaiUcret(taban, mesai);
         tamBrut=r2(Math.max(0,taban-gunK+(YEMEK-yemekK)+mesaiUcretTam));
