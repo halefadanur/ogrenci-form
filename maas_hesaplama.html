@@ -395,7 +395,7 @@ function renderBody(){
         
         tr.innerHTML=[
             `<td class="left" style="color:var(--text3);font-family:'IBM Plex Mono',monospace">${String(i+1).padStart(2,'0')}</td>`,
-            `<td class="left"><div class="name-cell">${p.ad} ${p.soyad}</div><div style="margin-top:2px">${tags}</div></td>`,
+            `<td class="left"><span class="name-cell">${p.ad} ${p.soyad}</span> ${tags}</td>`,
             `<td class="left"><span class="role-badge">${p.gorev}</span></td>`,
             `<td class="left" style="font-family:'IBM Plex Mono',monospace;font-size:11px">${p.hesapNo}</td>`,
             `<td class="left" style="font-family:'IBM Plex Mono',monospace;font-size:11px">${p.tc}</td>`,
