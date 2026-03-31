@@ -170,6 +170,7 @@ h1.ltitle{text-align:center;font-size:24px;margin-bottom:24px;}
       </select>
       <select class="fsel" id="kararGizleSel" onchange="kararGizleEkle()"><option value="">🚫 Buradan Karar Gizle...</option></select>
       <select class="fsel" id="kararSel" onchange="filtrele()"><option value="">Tüm Kararlar</option></select>
+      <button class="fsel" style="background:var(--red-bg);color:var(--red);border:1px solid var(--red);cursor:pointer;font-weight:600;" onclick="topluGizleToggle()">🚫 Toplu Gizle</button>
     </div>
   </div>
   <div id="gizlenenlerKutusu" style="margin-top:-10px; margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;"></div>
@@ -363,6 +364,49 @@ function filtrele(){
 let sCol = null, sAsc = true;
 let gizlenenKararlar = [];
 
+// Önem değerine göre gizlenecek kararlar
+const TOPLU_GIZLE_KARARLAR = [
+  'Ayrıldı (Biz Ayırdık)',
+  'Ayrıldı (Memnun Değil)',
+  'Ayrıldı (Zorunlu Sebeplerle)',
+  'Başka Kuruma Gitti',
+  'ERİKLİ',
+  'Eski Kurumuna Devam',
+  'Mezun Oldu',
+  'Rapor Çıkmadı',
+  'Rapor İhtiyacı Yok',
+  'Rapor Yenilemedi (Kurum)',
+  'Rapor Yenilemedi (Veli)',
+  'Rapordan Vazgeçti',
+  'RED'
+];
+
+let topluGizleAktif = false;
+
+function topluGizleToggle() {
+  topluGizleAktif = !topluGizleAktif;
+  const btn = event.target;
+  if(topluGizleAktif) {
+    // Toplu gizle aktif - tüm kararları ekle
+    TOPLU_GIZLE_KARARLAR.forEach(k => {
+      if(!gizlenenKararlar.includes(k)) gizlenenKararlar.push(k);
+    });
+    btn.textContent = '✅ Toplu Gizle Açık';
+    btn.style.background = 'var(--green-bg)';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+  } else {
+    // Toplu gizle kapalı - sadece toplu eklenen kararları kaldır
+    gizlenenKararlar = gizlenenKararlar.filter(k => !TOPLU_GIZLE_KARARLAR.includes(k));
+    btn.textContent = '🚫 Toplu Gizle';
+    btn.style.background = 'var(--red-bg)';
+    btn.style.color = 'var(--red)';
+    btn.style.borderColor = 'var(--red)';
+  }
+  gizlenenlerRender();
+  filtrele();
+}
+
 function kararGizleEkle() {
   const sel = document.getElementById('kararGizleSel');
   const val = sel.value;
@@ -381,7 +425,17 @@ function gizlemeKaldir(val) {
 function gizlenenlerRender() {
   const kutu = document.getElementById('gizlenenlerKutusu');
   kutu.innerHTML = '';
-  gizlenenKararlar.forEach(k => {
+  
+  // Toplu gizle aktifse bilgi mesajı göster
+  if(topluGizleAktif) {
+    kutu.innerHTML += `<div style="width:100%;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:8px;">
+      <strong>⚠️ Önem değerine göre ${TOPLU_GIZLE_KARARLAR.length} karar türü gizleniyor:</strong> ${TOPLU_GIZLE_KARARLAR.join(', ')}
+    </div>`;
+  }
+  
+  // Manuel eklenen gizli kararları göster (toplu gizle dışındakiler)
+  const manuelGizlenenler = gizlenenKararlar.filter(k => !topluGizleAktif || !TOPLU_GIZLE_KARARLAR.includes(k));
+  manuelGizlenenler.forEach(k => {
     kutu.innerHTML += `<span style="background:var(--red); color:white; padding:4px 10px; border-radius:12px; font-size:12px; cursor:pointer; box-shadow:0 2px 4px rgba(209,43,30,0.2)" onclick="gizlemeKaldir('${k}')" title="Gizlemeyi kaldır">✖ ${k}</span>`;
   });
 }
