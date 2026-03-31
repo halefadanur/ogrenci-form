@@ -872,17 +872,31 @@ function applyKimlikCrop(){
 
 async function uploadFoto(base64Data, dosyaAdi){
   try{
+    console.log('Upload başlıyor:', dosyaAdi);
     const base64 = base64Data.split(',')[1];
     const byteChars = atob(base64);
     const byteArr = new Uint8Array(byteChars.length);
     for(let i=0;i<byteChars.length;i++) byteArr[i]=byteChars.charCodeAt(i);
     const blob = new Blob([byteArr],{type:'image/jpeg'});
+    console.log('Blob boyutu:', blob.size);
     const res = await fetch(SUPA_URL+'/storage/v1/object/fotograflar/'+encodeURIComponent(dosyaAdi),{
       method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'image/jpeg','x-upsert':'true'},body:blob
     });
-    if(res.ok) return SUPA_URL+'/storage/v1/object/public/fotograflar/'+encodeURIComponent(dosyaAdi);
+    console.log('Upload response:', res.status, res.statusText);
+    if(res.ok) {
+      const url = SUPA_URL+'/storage/v1/object/public/fotograflar/'+encodeURIComponent(dosyaAdi);
+      console.log('Upload başarılı:', url);
+      return url;
+    }
+    const errText = await res.text();
+    console.error('Upload hatası:', errText);
+    toast('❌ Yükleme hatası: ' + res.status);
     return '';
-  }catch(e){return '';}
+  }catch(e){
+    console.error('Upload exception:', e);
+    toast('❌ Yükleme hatası: ' + e.message);
+    return '';
+  }
 }
 
 function fv(id){ const el=document.getElementById('f_'+id); return el?el.value.trim():''; }
@@ -903,13 +917,20 @@ async function kaydet(){
     .replace(/ü/g,'u').replace(/Ü/g,'U').replace(/ç/g,'c').replace(/Ç/g,'C')
     .replace(/[^a-zA-Z0-9 ]/g,'').replace(/\s+/g,'_');
   const tarih = new Date().toISOString().slice(0,10);
+  
+  console.log('_yeniFotoData var mı:', !!_yeniFotoData, _yeniFotoData ? _yeniFotoData.substring(0,50) : '');
+  console.log('_yeniKimlikData var mı:', !!_yeniKimlikData, _yeniKimlikData ? _yeniKimlikData.substring(0,50) : '');
+  
   if(_yeniFotoData) {
     toast('⏳ Fotoğraf yükleniyor...');
-    fotoUrl = await uploadFoto(_yeniFotoData, ogrenciTam+'_foto_'+tarih+'.jpg') || fotoUrl;
+    const yeniFotoUrl = await uploadFoto(_yeniFotoData, ogrenciTam+'_foto_'+tarih+'.jpg');
+    if(yeniFotoUrl) fotoUrl = yeniFotoUrl;
   }
   if(_yeniKimlikData) {
     toast('⏳ Kimlik yükleniyor...');
-    kimlikUrl = await uploadFoto(_yeniKimlikData, ogrenciTam+'_kimlik_'+tarih+'.jpg') || kimlikUrl;
+    const yeniKimlikUrl = await uploadFoto(_yeniKimlikData, ogrenciTam+'_kimlik_'+tarih+'.jpg');
+    if(yeniKimlikUrl) kimlikUrl = yeniKimlikUrl;
+    console.log('Yeni kimlik URL:', yeniKimlikUrl, '-> kimlikUrl:', kimlikUrl);
   }
 
   const p = {
