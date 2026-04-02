@@ -213,9 +213,9 @@ function loadTheme() {
 function openKalanList() {
     const list = [];
     let total = 0;
-    data.forEach((p, i) => {
+    DATA.forEach((p, i) => {
         if (p.pasif) return;
-        const st = state[i] || {};
+        const st = ST[i] || {};
         const tv = calcTam(p, st);
         if (tv.kalanTam > 0) {
             list.push({ ad: p.ad + ' ' + p.soyad, gorev: p.gorev, kalan: tv.kalanTam });
@@ -246,9 +246,9 @@ function closeKalanList() {
 function exportKalanPDF() {
     const list = [];
     let total = 0;
-    data.forEach((p, i) => {
+    DATA.forEach((p, i) => {
         if (p.pasif) return;
-        const st = state[i] || {};
+        const st = ST[i] || {};
         const tv = calcTam(p, st);
         if (tv.kalanTam > 0) {
             list.push({ ad: p.ad + ' ' + p.soyad, gorev: p.gorev, kalan: tv.kalanTam });
