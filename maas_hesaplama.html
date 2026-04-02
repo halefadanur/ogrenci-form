@@ -799,11 +799,20 @@ function exportXLSX(type){
     } else {
         // Muhasebe: sadece maaş sütunu ile hesaplanan yatan (mesai dahil)
         const rows=[['GÖREV','ADI','SOYADI','HESAP NO','T.C.','MAAŞ','EKSİK GÜN','EKSİK SAAT','RAPORLU GÜN','YILLIK İZİN','SAAT ÜCR.1','ÇAL. SAAT','MESAİ SAAT','MESAİ ₺','YEMEK','YEMEK KESİNTİ','GÜN KESİNTİ','TOPLAM KESİNTİ','AVANS','YATAN (NET)','AÇIKLAMA']];
+        let tMesai=0, tYemekK=0, tGunK=0, tToplamK=0, tAvans=0, tYatan=0;
         DATA.forEach((p,i)=>{
             if(p.pasif) return;
             const st=ST[i], rv=calc(p,st), tv=calcTam(p,st);
+            tMesai += rv.mesaiUcret||0;
+            tYemekK += rv.yemekK||0;
+            tGunK += rv.gunK||0;
+            tToplamK += r2(rv.gunK+rv.yemekK);
+            tAvans += rv.avans||0;
+            tYatan += rv.yatan||0;
             rows.push([p.gorev,p.ad,p.soyad,p.hesapNo,p.tc,p.maas||'',st.eksik||0,st.eksikSaat||0,st.rapor||0,st.yillik||0,st.saat1||'',st.calSaat||0,st.mesai||0,rv.mesaiUcret||0,YEMEK,rv.yemekK||0,rv.gunK||0,r2(rv.gunK+rv.yemekK),rv.avans||0,r2(rv.yatan),buildAciklama(st,rv,tv)]);
         });
+        // Toplam satırı
+        rows.push(['','','','','TOPLAM','','','','','','','','',r2(tMesai),'',r2(tYemekK),r2(tGunK),r2(tToplamK),r2(tAvans),r2(tYatan),'']);
         const ws=XLSX.utils.aoa_to_sheet(rows);
         ws['!cols']=[{wch:22},{wch:14},{wch:16},{wch:12},{wch:14},{wch:12},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10},{wch:12},{wch:10},{wch:13},{wch:12},{wch:14},{wch:10},{wch:14},{wch:40}];
         styleHeader(ws,rows[0].length);
@@ -814,15 +823,18 @@ function exportXLSX(type){
 
 function exportPDF(){
     var month=monthLabel();
-    var tY=0,tK=0,tKs=0,aktif=0;
+    var tY=0,tMesai=0,tYemekK=0,tGunK=0,tAvans=0,aktif=0;
     DATA.forEach(function(p,i){
         if(p.pasif)return;
         aktif++;
         var rv=calc(p,ST[i]);
         tY+=rv.yatan||0;
-        tK+=rv.kalan||0;
-        tKs+=rv.gunK+rv.yemekK;
+        tMesai+=rv.mesaiUcret||0;
+        tYemekK+=rv.yemekK||0;
+        tGunK+=rv.gunK||0;
+        tAvans+=rv.avans||0;
     });
+    var tKs=tYemekK+tGunK;
     var rows='', rn=0;
     DATA.forEach(function(p,i){
         if(p.pasif)return;
@@ -843,21 +855,22 @@ function exportPDF(){
             '<td style="color:#dc2626">' + (rv.gunK>0 ? '-'+fmt(rv.gunK) : '') + '</td>' +
             '<td style="color:#ea580c">' + (rv.avans>0 ? fmt(rv.avans) : '') + '</td>' +
             '<td style="color:#166534;font-weight:700">' + fmt(rv.yatan) + '</td>' +
-            '<td style="font-size:9px;color:#64748b">' + buildAciklama(st,rv,tv) + '</td>' +
+            '<td style="font-size:9px;color:#64748b;max-width:120px;white-space:normal">' + buildAciklama(st,rv,tv) + '</td>' +
             '</tr>';
     });
-    var css=['*{box-sizing:border-box;margin:0;padding:0}','body{font-family:Arial,sans-serif;font-size:10px;color:#1e293b;background:#fff}','.hdr{background:#1e40af;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}','.hdr h1{font-size:13px;margin-bottom:2px}','.hdr p{font-size:8px;opacity:.8}','.ozet{background:#f1f5f9;padding:4px 14px;font-size:8px;color:#475569;border-bottom:1px solid #e2e8f0}','.pbar{background:#fef9c3;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#92400e}','.pbar button{background:#1e40af;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:600}','table{width:100%;border-collapse:collapse}','thead tr{background:#1e293b}','thead th{color:#94a3b8;padding:5px 3px;text-align:left;font-size:7.5px;white-space:nowrap}','tbody td{padding:3px 3px;border-bottom:1px solid #e2e8f0;vertical-align:middle}','.tot{background:#1e293b!important}','.tot td{color:#fff;font-weight:700;padding:5px 3px;border:none}','.ft{padding:4px 14px;font-size:7.5px;color:#94a3b8;display:flex;justify-content:space-between;margin-top:4px}','@media print{',' @page{size:A4 landscape;margin:7mm}',' .pbar{display:none!important}',' thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' .tot{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' .hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}','}'].join('\n');
+    var css=['*{box-sizing:border-box;margin:0;padding:0}','body{font-family:Arial,sans-serif;font-size:10px;color:#1e293b;background:#fff;min-height:100vh;display:flex;flex-direction:column}','.hdr{background:#1e40af;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}','.hdr h1{font-size:13px;margin-bottom:2px}','.hdr p{font-size:8px;opacity:.8}','.ozet{background:#f1f5f9;padding:4px 14px;font-size:8px;color:#475569;border-bottom:1px solid #e2e8f0}','.pbar{background:#fef9c3;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#92400e}','.pbar button{background:#1e40af;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:600}','.content{flex:1}','table{width:100%;border-collapse:collapse}','thead tr{background:#1e293b}','thead th{color:#94a3b8;padding:5px 3px;text-align:left;font-size:7.5px;white-space:nowrap}','tbody td{padding:3px 3px;border-bottom:1px solid #e2e8f0;vertical-align:middle}','.tot{background:#1e293b!important}','.tot td{color:#fff;font-weight:700;padding:5px 3px;border:none}','.ft{background:#f1f5f9;padding:8px 14px;font-size:8px;color:#475569;display:flex;justify-content:space-between;border-top:1px solid #e2e8f0;margin-top:auto}','@media print{',' @page{size:A4 landscape;margin:7mm}',' .pbar{display:none!important}',' thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' .tot{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' .hdr,.ft{-webkit-print-color-adjust:exact;print-color-adjust:exact}','}'].join('\n');
     var html='<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">' +
         '<title>Maas Bordrosu ' + month + '</title>' +
         '<style>' + css + '</style></head><body>' +
         '<div class="hdr">' +
         '<div><h1>EGiTiMCi DiL KONUSMA MERKEZi</h1><p>MAAS BORDROSU - ' + month.toUpperCase() + '</p></div>' +
-        '<div style="display:flex"><div style="text-align:right;margin-left:14px"><div style="font-size:7px;opacity:.7">TOPLAM YATAN</div><div style="font-size:11px;font-weight:700;color:#86efac">' + fmt(tY) + ' TL</div></div></div></div>' +
-        '<div class="ozet">Aktif: ' + aktif + ' personel &nbsp;·&nbsp; Kesinti: ' + fmt(tKs) + ' TL &nbsp;·&nbsp; ' + new Date().toLocaleString('tr-TR') + '</div>' +
+        '<div style="display:flex;gap:16px"><div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM MESAİ</div><div style="font-size:10px;color:#86efac">+' + fmt(tMesai) + '</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM KESİNTİ</div><div style="font-size:10px;color:#fca5a5">-' + fmt(tKs) + '</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM YATAN</div><div style="font-size:12px;font-weight:700;color:#86efac">' + fmt(tY) + ' TL</div></div></div></div>' +
+        '<div class="ozet">Aktif: ' + aktif + ' personel &nbsp;·&nbsp; Yemek Kes: ' + fmt(tYemekK) + ' TL &nbsp;·&nbsp; Gün Kes: ' + fmt(tGunK) + ' TL &nbsp;·&nbsp; Avans: ' + fmt(tAvans) + ' TL &nbsp;·&nbsp; ' + new Date().toLocaleString('tr-TR') + '</div>' +
         '<div class="pbar"><span>Yazdirmak icin: <b>Yatay kagit</b> + <b>PDF Olarak Kaydet</b></span><button onclick="window.print()">Yazdir / PDF Kaydet</button></div>' +
-        '<table><thead><tr><th>#</th><th>Ad Soyad</th><th>Gorev</th><th>Maas</th><th>E.Gun</th><th>E.Saat</th><th>Rapor</th><th>Yillik</th><th>Mesai</th><th>Mesai TL</th><th>Yemek Kst.</th><th>Gun Kst.</th><th>Avans</th><th>YATAN</th><th>Aciklama</th></tr></thead><tbody>' +
+        '<div class="content"><table><thead><tr><th>#</th><th>Ad Soyad</th><th>Gorev</th><th>Maas</th><th>E.Gun</th><th>E.Saat</th><th>Rapor</th><th>Yillik</th><th>Mesai</th><th>Mesai TL</th><th>Yemek Kst.</th><th>Gun Kst.</th><th>Avans</th><th>YATAN</th><th>Aciklama</th></tr></thead><tbody>' +
         rows +
-        '<tr class="tot"><td colspan="13">TOPLAM - ' + aktif + ' personel</td><td>' + fmt(tY) + ' TL</td></tr></tbody></table><div class="ft"><span>Egitimci Dil Konusma Merkezi - ' + month + ' Maas Bordrosu</span><span>' + new Date().toLocaleDateString('tr-TR') + '</span></div></body></html>';
+        '<tr class="tot"><td colspan="9">TOPLAM - ' + aktif + ' personel</td><td>+' + fmt(tMesai) + '</td><td>-' + fmt(tYemekK) + '</td><td>-' + fmt(tGunK) + '</td><td>' + fmt(tAvans) + '</td><td>' + fmt(tY) + ' TL</td><td></td></tr></tbody></table></div>' +
+        '<div class="ft"><span>Egitimci Dil Konusma Merkezi - ' + month + ' Maas Bordrosu</span><span>Olusturulma: ' + new Date().toLocaleDateString('tr-TR') + '</span></div></body></html>';
     var a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
     a.download='bordro_'+month.replace(' ','_')+'.html';
@@ -868,14 +881,19 @@ function exportPDF(){
 
 function exportPDFTam(){
     var month=monthLabel();
-    var tY=0,tK=0,aktif=0;
+    var tY=0,tK=0,tMesai=0,tYemekK=0,tGunK=0,aktif=0;
     DATA.forEach(function(p,i){
         if(p.pasif)return;
         aktif++;
+        var rv=calc(p,ST[i]);
         var tv=calcTam(p,ST[i]);
         tY+=tv.tamYatan||0;
         tK+=tv.kalanTam||0;
+        tMesai+=tv.mesaiUcretTam||0;
+        tYemekK+=rv.yemekK||0;
+        tGunK+=rv.gunK||0;
     });
+    var tKs=tYemekK+tGunK;
     var rows='',rn=0;
     DATA.forEach(function(p,i){
         if(p.pasif)return;
@@ -901,20 +919,20 @@ function exportPDFTam(){
             '<td style="font-size:9px;color:#64748b;max-width:140px;white-space:normal">' + aciklama + '</td>' +
             '</tr>';
     });
-    var css=['*{box-sizing:border-box;margin:0;padding:0}','body{font-family:Arial,sans-serif;font-size:10px;color:#1e293b;background:#fff}','.hdr{background:#5b21b6;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}','.hdr h1{font-size:13px;margin-bottom:2px}','.hdr p{font-size:8px;opacity:.8}','.ozet{background:#f1f5f9;padding:4px 14px;font-size:8px;color:#475569;border-bottom:1px solid #e2e8f0}','.pbar{background:#ede9fe;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#5b21b6}','.pbar button{background:#5b21b6;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:600}','table{width:100%;border-collapse:collapse}','thead tr{background:#1e293b}','thead th{color:#94a3b8;padding:5px 3px;text-align:left;font-size:7.5px;white-space:nowrap}','tbody td{padding:3px 3px;border-bottom:1px solid #e2e8f0;vertical-align:middle}','.tot{background:#1e293b!important}','.tot td{color:#fff;font-weight:700;padding:5px 3px;border:none}','.ft{padding:4px 14px;font-size:7.5px;color:#94a3b8;display:flex;justify-content:space-between;margin-top:4px}','@media print{',' @page{size:A4 landscape;margin:7mm}',' .pbar{display:none!important}',' thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' .tot{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' .hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}','}'].join('\n');
+    var css=['*{box-sizing:border-box;margin:0;padding:0}','body{font-family:Arial,sans-serif;font-size:10px;color:#1e293b;background:#fff;min-height:100vh;display:flex;flex-direction:column}','.hdr{background:#5b21b6;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}','.hdr h1{font-size:13px;margin-bottom:2px}','.hdr p{font-size:8px;opacity:.8}','.ozet{background:#f1f5f9;padding:4px 14px;font-size:8px;color:#475569;border-bottom:1px solid #e2e8f0}','.pbar{background:#ede9fe;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#5b21b6}','.pbar button{background:#5b21b6;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:600}','.content{flex:1}','table{width:100%;border-collapse:collapse}','thead tr{background:#1e293b}','thead th{color:#94a3b8;padding:5px 3px;text-align:left;font-size:7.5px;white-space:nowrap}','tbody td{padding:3px 3px;border-bottom:1px solid #e2e8f0;vertical-align:middle}','.tot{background:#1e293b!important}','.tot td{color:#fff;font-weight:700;padding:5px 3px;border:none}','.ft{background:#f1f5f9;padding:8px 14px;font-size:8px;color:#475569;display:flex;justify-content:space-between;border-top:1px solid #e2e8f0;margin-top:auto}','@media print{',' @page{size:A4 landscape;margin:7mm}',' .pbar{display:none!important}',' thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' .tot{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' .hdr,.ft{-webkit-print-color-adjust:exact;print-color-adjust:exact}','}'].join('\n');
     var html='<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">'+
         '<title>Maas Bordrosu Tam '+month+'</title>'+
         '<style>'+css+'</style></head><body>'+
         '<div class="hdr">'+
-        '<div><h1>EGiTiMCi DiL KONUSMA MERKEZi</h1><p>TAM MAAS BORDROSU - '+month.toUpperCase()+'</p></div>'+
-        '<div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM TAM / KALAN</div>'+
-        '<div style="font-size:13px;font-weight:700;color:#ddd6fe">'+fmt(tY)+' / '+fmt(tK)+' TL</div></div>'+
+        '<div><h1>EĞİTİMCİ DİL KONUŞMA MERKEZİ</h1><p>TAM MAAŞ BORDROSU - '+month.toUpperCase()+'</p></div>'+
+        '<div style="display:flex;gap:16px"><div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM MESAİ</div><div style="font-size:10px;color:#c4b5fd">+'+fmt(tMesai)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM KESİNTİ</div><div style="font-size:10px;color:#fca5a5">-'+fmt(tKs)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">TAM YATAN</div><div style="font-size:11px;font-weight:700;color:#86efac">'+fmt(tY)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">KALAN</div><div style="font-size:11px;font-weight:700;color:#c4b5fd">'+fmt(tK)+' TL</div></div></div>'+
         '</div>'+
-        '<div class="ozet">Aktif: '+aktif+' personel &nbsp;·&nbsp; '+new Date().toLocaleString('tr-TR')+'</div>'+
-        '<div class="pbar"><span>Yatay kagit + PDF Olarak Kaydet secin</span><button onclick="window.print()">Yazdir / PDF Kaydet</button></div>'+
-        '<table><thead><tr><th>#</th><th>Ad Soyad</th><th>Gorev</th><th>Tam Maas</th><th>E.Gun</th><th>E.Saat</th><th>Rapor</th><th>Yillik</th><th>Cal.Saat</th><th>Mesai</th><th>Mesai Ücr.</th><th>YATAN (TAM)</th><th>KALAN (TAM)</th><th>Aciklama</th></tr></thead><tbody>'+
+        '<div class="ozet">Aktif: '+aktif+' personel &nbsp;·&nbsp; Yemek Kes: '+fmt(tYemekK)+' TL &nbsp;·&nbsp; Gün Kes: '+fmt(tGunK)+' TL &nbsp;·&nbsp; '+new Date().toLocaleString('tr-TR')+'</div>'+
+        '<div class="pbar"><span>Yatay kağıt + PDF Olarak Kaydet seçin</span><button onclick="window.print()">Yazdır / PDF Kaydet</button></div>'+
+        '<div class="content"><table><thead><tr><th>#</th><th>Ad Soyad</th><th>Görev</th><th>Tam Maaş</th><th>E.Gün</th><th>E.Saat</th><th>Rapor</th><th>Yıllık</th><th>Çal.Saat</th><th>Mesai</th><th>Mesai Ücr.</th><th>YATAN (TAM)</th><th>KALAN</th><th>Açıklama</th></tr></thead><tbody>'+
         rows+
-        '<tr class="tot"><td colspan="11">TOPLAM - '+aktif+' personel</td><td>'+fmt(tY)+' TL</td><td>'+fmt(tK)+' TL</td><td></td></tr></tbody></table><div class="ft"><span>Egitimci Dil Konusma Merkezi - '+month+' (Tam)</span><span>'+new Date().toLocaleDateString('tr-TR')+'</span></div></body></html>';
+        '<tr class="tot"><td colspan="10">TOPLAM ('+aktif+' personel)</td><td style="color:#c4b5fd">+'+fmt(tMesai)+'</td><td style="color:#86efac">'+fmt(tY)+'</td><td style="color:#c4b5fd">'+fmt(tK)+'</td><td></td></tr></tbody></table></div>'+
+        '<div class="ft"><span>Eğitimci Dil Konuşma Merkezi - '+month+' Tam Maaş Bordrosu</span><span>Oluşturulma: '+new Date().toLocaleDateString('tr-TR')+'</span></div></body></html>';
     var a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
     a.download='bordro_tam_'+month.replace(' ','_')+'.html';
