@@ -743,11 +743,31 @@ function exportXLSX(type){
     } else if(type==='anasayfa'){
         const activeCols = COLS.filter(c=>c.fixed||colVis[c.id]);
         const rows=[activeCols.map(c=>c.label)];
+        // Toplamlar için değişkenler
+        let tMaas=0,tEk1=0,tEk2=0,tEksik=0,tEksikSaat=0,tRapor=0,tYillik=0,tMesai=0,tMesaiUcret=0,tYemekK=0,tGunK=0,tToplamK=0,tAvans=0,tYatan=0,tKalan=0;
         DATA.forEach((p,i)=>{
             const st=ST[i];
             const rv=calc(p,st);
             const tv=calcTam(p,st);
             const kalanDisp=(rv.kalan!==null&&rv.kalan!==undefined)?rv.kalan:tv.kalanTam;
+            // Toplamları hesapla (pasif olmayanlar için)
+            if(!p.pasif){
+                tMaas+=p.maas||0;
+                tEk1+=p.ek1||0;
+                tEk2+=p.ek2||0;
+                tEksik+=+st.eksik||0;
+                tEksikSaat+=+st.eksikSaat||0;
+                tRapor+=+st.rapor||0;
+                tYillik+=+st.yillik||0;
+                tMesai+=+st.mesai||0;
+                tMesaiUcret+=rv.mesaiUcret||0;
+                tYemekK+=rv.yemekK||0;
+                tGunK+=rv.gunK||0;
+                tToplamK+=r2(rv.gunK+rv.yemekK);
+                tAvans+=+st.avans||0;
+                tYatan+=rv.yatan||0;
+                tKalan+=kalanDisp||0;
+            }
             const row=[];
             activeCols.forEach(c=>{
                 switch(c.id){
@@ -782,6 +802,40 @@ function exportXLSX(type){
             });
             rows.push(row);
         });
+        // Toplam satırı ekle
+        const totRow=[];
+        activeCols.forEach(c=>{
+            switch(c.id){
+                case 'no': totRow.push(''); break;
+                case 'ad': totRow.push('TOPLAM'); break;
+                case 'gorev': totRow.push(''); break;
+                case 'hesap': totRow.push(''); break;
+                case 'tc': totRow.push(''); break;
+                case 'maas': totRow.push(r2(tMaas)); break;
+                case 'ek1': totRow.push(tEk1>0?r2(tEk1):''); break;
+                case 'ek2': totRow.push(tEk2>0?r2(tEk2):''); break;
+                case 'eksik': totRow.push(tEksik>0?r2(tEksik):''); break;
+                case 'eksikSaat': totRow.push(tEksikSaat>0?r2(tEksikSaat):''); break;
+                case 'rapor': totRow.push(tRapor>0?r2(tRapor):''); break;
+                case 'yillik': totRow.push(tYillik>0?r2(tYillik):''); break;
+                case 'saat1': totRow.push(''); break;
+                case 'saat2': totRow.push(''); break;
+                case 'calSaat': totRow.push(''); break;
+                case 'mesai': totRow.push(tMesai>0?r2(tMesai):''); break;
+                case 'mesaiUcret': totRow.push(tMesaiUcret>0?r2(tMesaiUcret):''); break;
+                case 'yemek': totRow.push(''); break;
+                case 'yemekk': totRow.push(tYemekK>0?-r2(tYemekK):''); break;
+                case 'gunk': totRow.push(tGunK>0?-r2(tGunK):''); break;
+                case 'toplamk': totRow.push(tToplamK>0?-r2(tToplamK):''); break;
+                case 'avans': totRow.push(tAvans>0?r2(tAvans):''); break;
+                case 'yatan': totRow.push(r2(tYatan)); break;
+                case 'kalan': totRow.push(r2(tKalan)); break;
+                case 'aciklama': totRow.push(''); break;
+                case 'actions': totRow.push(''); break;
+                default: totRow.push(''); break;
+            }
+        });
+        rows.push(totRow);
         const ws=XLSX.utils.aoa_to_sheet(rows);
         ws['!cols']=activeCols.map(c=>{
             if(c.id==='aciklama') return {wch:55};
@@ -881,17 +935,25 @@ function exportPDF(){
 
 function exportPDFTam(){
     var month=monthLabel();
-    var tY=0,tK=0,tMesai=0,tYemekK=0,tGunK=0,aktif=0;
+    var tY=0,tK=0,tMesai=0,tYemekK=0,tGunK=0,tTamMaas=0,tEksik=0,tEksikSaat=0,tRapor=0,tYillik=0,tCalSaat=0,tMesaiSaat=0,aktif=0;
     DATA.forEach(function(p,i){
         if(p.pasif)return;
         aktif++;
-        var rv=calc(p,ST[i]);
-        var tv=calcTam(p,ST[i]);
+        var st=ST[i];
+        var rv=calc(p,st);
+        var tv=calcTam(p,st);
         tY+=tv.tamYatan||0;
         tK+=tv.kalanTam||0;
         tMesai+=tv.mesaiUcretTam||0;
         tYemekK+=rv.yemekK||0;
         tGunK+=rv.gunK||0;
+        if(p.maas) tTamMaas+=(p.maas||0)+(p.ek1||0);
+        tEksik+=+st.eksik||0;
+        tEksikSaat+=+st.eksikSaat||0;
+        tRapor+=+st.rapor||0;
+        tYillik+=+st.yillik||0;
+        tCalSaat+=+st.calSaat||0;
+        tMesaiSaat+=+st.mesai||0;
     });
     var tKs=tYemekK+tGunK;
     var rows='',rn=0;
@@ -927,11 +989,11 @@ function exportPDFTam(){
         '<div><h1>EĞİTİMCİ DİL KONUŞMA MERKEZİ</h1><p>TAM MAAŞ BORDROSU - '+month.toUpperCase()+'</p></div>'+
         '<div style="display:flex;gap:16px"><div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM MESAİ</div><div style="font-size:10px;color:#c4b5fd">+'+fmt(tMesai)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM KESİNTİ</div><div style="font-size:10px;color:#fca5a5">-'+fmt(tKs)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">TAM YATAN</div><div style="font-size:11px;font-weight:700;color:#86efac">'+fmt(tY)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">KALAN</div><div style="font-size:11px;font-weight:700;color:#c4b5fd">'+fmt(tK)+' TL</div></div></div>'+
         '</div>'+
-        '<div class="ozet">Aktif: '+aktif+' personel &nbsp;·&nbsp; Yemek Kes: '+fmt(tYemekK)+' TL &nbsp;·&nbsp; Gün Kes: '+fmt(tGunK)+' TL &nbsp;·&nbsp; '+new Date().toLocaleString('tr-TR')+'</div>'+
+        '<div class="ozet">Aktif: '+aktif+' personel &nbsp;·&nbsp; Eksik Gün: '+fmt(tEksik)+' &nbsp;·&nbsp; Rapor: '+fmt(tRapor)+' &nbsp;·&nbsp; Yıllık: '+fmt(tYillik)+' &nbsp;·&nbsp; Yemek Kes: '+fmt(tYemekK)+' TL &nbsp;·&nbsp; Gün Kes: '+fmt(tGunK)+' TL &nbsp;·&nbsp; '+new Date().toLocaleString('tr-TR')+'</div>'+
         '<div class="pbar"><span>Yatay kağıt + PDF Olarak Kaydet seçin</span><button onclick="window.print()">Yazdır / PDF Kaydet</button></div>'+
         '<div class="content"><table><thead><tr><th>#</th><th>Ad Soyad</th><th>Görev</th><th>Tam Maaş</th><th>E.Gün</th><th>E.Saat</th><th>Rapor</th><th>Yıllık</th><th>Çal.Saat</th><th>Mesai</th><th>Mesai Ücr.</th><th>YATAN (TAM)</th><th>KALAN</th><th>Açıklama</th></tr></thead><tbody>'+
         rows+
-        '<tr class="tot"><td colspan="10">TOPLAM ('+aktif+' personel)</td><td style="color:#c4b5fd">+'+fmt(tMesai)+'</td><td style="color:#86efac">'+fmt(tY)+'</td><td style="color:#c4b5fd">'+fmt(tK)+'</td><td></td></tr></tbody></table></div>'+
+        '<tr class="tot"><td></td><td colspan="2">TOPLAM ('+aktif+' personel)</td><td>'+fmt(tTamMaas)+'</td><td style="color:#fca5a5">'+fmt(tEksik)+'</td><td style="color:#fca5a5">'+fmt(tEksikSaat)+'</td><td style="color:#fca5a5">'+fmt(tRapor)+'</td><td style="color:#fbbf24">'+fmt(tYillik)+'</td><td>'+fmt(tCalSaat)+'</td><td style="color:#86efac">'+fmt(tMesaiSaat)+'</td><td style="color:#c4b5fd">+'+fmt(tMesai)+'</td><td style="color:#86efac">'+fmt(tY)+'</td><td style="color:#c4b5fd">'+fmt(tK)+'</td><td></td></tr></tbody></table></div>'+
         '<div class="ft"><span>Eğitimci Dil Konuşma Merkezi - '+month+' Tam Maaş Bordrosu</span><span>Oluşturulma: '+new Date().toLocaleDateString('tr-TR')+'</span></div></body></html>';
     var a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
