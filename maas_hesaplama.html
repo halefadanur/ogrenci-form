@@ -172,7 +172,7 @@
 
         <div class="table-wrap"><div class="table-top"><div class="table-title">Personel Maaş Tablosu</div><div style="font-size:10px;color:var(--text3)"><span class="tag tag-saat">SAAT</span> saat ücretli &nbsp;<span class="tag tag-ek">EK</span> ek ödemeli &nbsp;<span class="tag tag-mesai">MESAİ</span> mesaili &nbsp;<span class="tag tag-pasif">PASİF</span> işten çıktı</div></div><div class="scrollable"><table id="mainTable"><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></div>
 
-        <div class="export-panel"><div class="export-info"><strong>Excel Dışa Aktarım</strong> — Banka/Muhasebe pasif personel dahil edilmez</div><div class="export-btns"><button class="btn btn-success" onclick="exportXLSX('banka')">⬇ Banka (.xlsx)</button><button class="btn btn-primary" onclick="exportXLSX('muhasebe')">⬇ Muhasebe (.xlsx)</button><button class="btn btn-outline" onclick="exportXLSX('anasayfa')">⬇ Ana Sayfa (.xlsx)</button><button class="btn" onclick="exportPDF()" style="background:#dc2626;color:white;">⬇ Muhasebe (.pdf)</button><button class="btn" onclick="exportPDFTam()" style="background:#7c3aed;color:white;">⬇ Tam (.pdf)</button></div></div>
+        <div class="export-panel"><div class="export-info"><strong>Excel Dışa Aktarım</strong> — Banka/Muhasebe pasif personel dahil edilmez</div><div class="export-btns"><button class="btn btn-success" onclick="exportXLSX('banka')">⬇ Banka (.xlsx)</button><button class="btn btn-primary" onclick="exportXLSX('muhasebe')">⬇ Muhasebe (.xlsx)</button><button class="btn btn-outline" onclick="exportXLSX('anasayfa')">⬇ Tam (.xlsx)</button><button class="btn" onclick="exportPDF()" style="background:#dc2626;color:white;">⬇ Muhasebe (.pdf)</button><button class="btn" onclick="exportPDFTam()" style="background:#7c3aed;color:white;">⬇ Tam (.pdf)</button></div></div>
     </div>
 
     <div class="modal-overlay" id="histModal"><div class="modal" style="width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"><h3 style="margin:0">📅 Kayıtlı Aylar</h3><button class="act-btn del" onclick="closeHistory()" style="font-size:16px">✕</button></div><div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Bir aya tıklayarak yükleyebilir, üzerine kaydedebilir veya silebilirsiniz.</div><div class="hist-list" id="histList"></div><div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;"><button class="btn btn-outline" onclick="closeHistory()">Kapat</button></div></div></div>
@@ -573,7 +573,7 @@ function renderBody(){
             `<td><input class="inp inp-md" type="number" min="0" value="${st.saat2||''}" placeholder="${isSaatli?'Gir':'—'}" ${saatDis} onchange="updateST(${i},'saat2',this.value)"></td>`,
             `<td><input class="inp inp-md" type="number" min="0" step="1" value="${st.calSaat||''}" placeholder="${isSaatli?'Gir':'—'}" ${saatDis} onchange="updateST(${i},'calSaat',this.value)"></td>`,
             `<td><input class="inp inp-sm inp-mesai" type="number" min="0" step="0.5" value="${st.mesai||''}" placeholder="0" onchange="updateST(${i},'mesai',this.value)" title="Mesai saati"></td>`,
-            `<td class="money m-mesai">${rv.mesaiUcret>0?'+'+fmt(rv.mesaiUcret):'—'}</td>`,
+            `<td class="money m-mesai">${tv.mesaiUcretTam>0?'+'+fmt(tv.mesaiUcretTam):'—'}</td>`,
             `<td class="money">${fmt(YEMEK)}</td>`,
             `<td class="money m-red">${rv.yemekK>0?'-'+fmt(rv.yemekK):'—'}</td>`,
             `<td class="money m-red">${rv.gunK>0?'-'+fmt(rv.gunK):'—'}</td>`,
@@ -599,7 +599,7 @@ function updateST(i,field,val){
     // Sütun indeksleri güncellendi (mesai ve mesaiUcret eklendi)
     const ci={mesaiUcret:16,yemek:17,yemekk:18,gunk:19,toplamk:20,avans:21,yatan:22,kalan:23};
     
-    tr.cells[ci.mesaiUcret].innerHTML=rv.mesaiUcret>0?`<span class="money m-mesai">+${fmt(rv.mesaiUcret)}</span>`:'—';
+    tr.cells[ci.mesaiUcret].innerHTML=tv.mesaiUcretTam>0?`<span class="money m-mesai">+${fmt(tv.mesaiUcretTam)}</span>`:'—';
     tr.cells[ci.yemekk].innerHTML=rv.yemekK>0?`<span class="money m-red">-${fmt(rv.yemekK)}</span>`:'—';
     tr.cells[ci.gunk].innerHTML=rv.gunK>0?`<span class="money m-red">-${fmt(rv.gunK)}</span>`:'—';
     tr.cells[ci.toplamk].innerHTML=(rv.gunK+rv.yemekK)>0?`<span class="money m-red">-${fmt(rv.gunK+rv.yemekK)}</span>`:'—';
@@ -760,7 +760,8 @@ function exportXLSX(type){
                 tRapor+=+st.rapor||0;
                 tYillik+=+st.yillik||0;
                 tMesai+=+st.mesai||0;
-                tMesaiUcret+=rv.mesaiUcret||0;
+                // Mesai ücreti: Tam versiyondan (maaş+ek1 bazlı) - Kalan ile uyumlu
+                tMesaiUcret+=tv.mesaiUcretTam||0;
                 tYemekK+=rv.yemekK||0;
                 tGunK+=rv.gunK||0;
                 tToplamK+=r2(rv.gunK+rv.yemekK);
@@ -787,7 +788,8 @@ function exportXLSX(type){
                     case 'saat2': row.push(st.saat2||0); break;
                     case 'calSaat': row.push(st.calSaat||0); break;
                     case 'mesai': row.push(st.mesai||0); break;
-                    case 'mesaiUcret': row.push(rv.mesaiUcret>0?rv.mesaiUcret:''); break;
+                    // Mesai ücreti: Tam versiyondan (maaş+ek1 bazlı)
+                    case 'mesaiUcret': row.push(tv.mesaiUcretTam>0?tv.mesaiUcretTam:''); break;
                     case 'yemek': row.push(YEMEK); break;
                     case 'yemekk': row.push(rv.yemekK>0?-rv.yemekK:''); break;
                     case 'gunk': row.push(rv.gunK>0?-rv.gunK:''); break;
@@ -836,6 +838,11 @@ function exportXLSX(type){
             }
         });
         rows.push(totRow);
+        // Ek2 bilgi satırı (varsa)
+        if(tEk2>0){
+            const ek2Row = activeCols.map(c => c.id==='ad' ? 'TOPLAM EK2: '+r2(tEk2)+' TL' : '');
+            rows.push(ek2Row);
+        }
         const ws=XLSX.utils.aoa_to_sheet(rows);
         ws['!cols']=activeCols.map(c=>{
             if(c.id==='aciklama') return {wch:55};
@@ -847,8 +854,8 @@ function exportXLSX(type){
             return {wch:12};
         });
         styleHeader(ws,rows[0].length);
-        XLSX.utils.book_append_sheet(wb,ws,'Ana Sayfa');
-        XLSX.writeFile(wb,`maas_${month.replace(' ','_')}_anasayfa.xlsx`);
+        XLSX.utils.book_append_sheet(wb,ws,'Tam');
+        XLSX.writeFile(wb,`maas_${month.replace(' ','_')}_tam.xlsx`);
         return;
     } else {
         // Muhasebe: sadece maaş sütunu ile hesaplanan yatan (mesai dahil)
@@ -935,7 +942,7 @@ function exportPDF(){
 
 function exportPDFTam(){
     var month=monthLabel();
-    var tY=0,tK=0,tMesai=0,tYemekK=0,tGunK=0,tTamMaas=0,tEksik=0,tEksikSaat=0,tRapor=0,tYillik=0,tCalSaat=0,tMesaiSaat=0,aktif=0;
+    var tY=0,tK=0,tMesai=0,tYemekK=0,tGunK=0,tTamMaas=0,tEk2=0,tEksik=0,tEksikSaat=0,tRapor=0,tYillik=0,tCalSaat=0,tMesaiSaat=0,aktif=0;
     DATA.forEach(function(p,i){
         if(p.pasif)return;
         aktif++;
@@ -948,6 +955,7 @@ function exportPDFTam(){
         tYemekK+=rv.yemekK||0;
         tGunK+=rv.gunK||0;
         if(p.maas) tTamMaas+=(p.maas||0)+(p.ek1||0);
+        tEk2+=p.ek2||0;
         tEksik+=+st.eksik||0;
         tEksikSaat+=+st.eksikSaat||0;
         tRapor+=+st.rapor||0;
@@ -987,7 +995,7 @@ function exportPDFTam(){
         '<style>'+css+'</style></head><body>'+
         '<div class="hdr">'+
         '<div><h1>EĞİTİMCİ DİL KONUŞMA MERKEZİ</h1><p>TAM MAAŞ BORDROSU - '+month.toUpperCase()+'</p></div>'+
-        '<div style="display:flex;gap:16px"><div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM MESAİ</div><div style="font-size:10px;color:#c4b5fd">+'+fmt(tMesai)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM KESİNTİ</div><div style="font-size:10px;color:#fca5a5">-'+fmt(tKs)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">TAM YATAN</div><div style="font-size:11px;font-weight:700;color:#86efac">'+fmt(tY)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">KALAN</div><div style="font-size:11px;font-weight:700;color:#c4b5fd">'+fmt(tK)+' TL</div></div></div>'+
+        '<div style="display:flex;gap:16px">'+(tEk2>0?'<div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM EK2</div><div style="font-size:10px;color:#fbbf24">'+fmt(tEk2)+'</div></div>':'')+'<div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM MESAİ</div><div style="font-size:10px;color:#c4b5fd">+'+fmt(tMesai)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">TOPLAM KESİNTİ</div><div style="font-size:10px;color:#fca5a5">-'+fmt(tKs)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">TAM YATAN</div><div style="font-size:11px;font-weight:700;color:#86efac">'+fmt(tY)+'</div></div><div style="text-align:right"><div style="font-size:7px;opacity:.7">KALAN</div><div style="font-size:11px;font-weight:700;color:#c4b5fd">'+fmt(tK)+' TL</div></div></div>'+
         '</div>'+
         '<div class="ozet">Aktif: '+aktif+' personel &nbsp;·&nbsp; Eksik Gün: '+fmt(tEksik)+' &nbsp;·&nbsp; Rapor: '+fmt(tRapor)+' &nbsp;·&nbsp; Yıllık: '+fmt(tYillik)+' &nbsp;·&nbsp; Yemek Kes: '+fmt(tYemekK)+' TL &nbsp;·&nbsp; Gün Kes: '+fmt(tGunK)+' TL &nbsp;·&nbsp; '+new Date().toLocaleString('tr-TR')+'</div>'+
         '<div class="pbar"><span>Yatay kağıt + PDF Olarak Kaydet seçin</span><button onclick="window.print()">Yazdır / PDF Kaydet</button></div>'+
