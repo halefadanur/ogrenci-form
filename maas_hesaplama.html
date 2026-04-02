@@ -880,9 +880,10 @@ function exportPDFTam(){
     DATA.forEach(function(p,i){
         if(p.pasif)return;
         rn++;
-        var st=ST[i], tv=calcTam(p,st), bg=rn%2===0?'#f8fafc':'#ffffff';
+        var st=ST[i], rv=calc(p,st), tv=calcTam(p,st), bg=rn%2===0?'#f8fafc':'#ffffff';
         // Tam versiyonda maaş+ek1 gösterilir
         var tamMaas = p.maas ? (p.maas||0)+(p.ek1||0) : null;
+        var aciklama = buildAciklama(st,rv,tv);
         rows += '<tr style="background:' + bg + '">' +
             '<td style="text-align:center;color:#94a3b8">' + rn + '</td>' +
             '<td><b>' + p.ad + ' ' + p.soyad + '</b></td>' +
@@ -897,7 +898,7 @@ function exportPDFTam(){
             '<td style="color:#22c55e">' + (tv.mesaiUcretTam>0?'+'+fmt(tv.mesaiUcretTam):'') + '</td>' +
             '<td style="color:#166534;font-weight:700">' + fmt(tv.tamYatan) + '</td>' +
             '<td style="color:#7c3aed;font-weight:700">' + fmt(tv.kalanTam) + '</td>' +
-            '<td style="font-size:9px;color:#64748b">Tam hesap</td>' +
+            '<td style="font-size:9px;color:#64748b;max-width:140px;white-space:normal">' + aciklama + '</td>' +
             '</tr>';
     });
     var css=['*{box-sizing:border-box;margin:0;padding:0}','body{font-family:Arial,sans-serif;font-size:10px;color:#1e293b;background:#fff}','.hdr{background:#5b21b6;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}','.hdr h1{font-size:13px;margin-bottom:2px}','.hdr p{font-size:8px;opacity:.8}','.ozet{background:#f1f5f9;padding:4px 14px;font-size:8px;color:#475569;border-bottom:1px solid #e2e8f0}','.pbar{background:#ede9fe;padding:6px 14px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#5b21b6}','.pbar button{background:#5b21b6;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-weight:600}','table{width:100%;border-collapse:collapse}','thead tr{background:#1e293b}','thead th{color:#94a3b8;padding:5px 3px;text-align:left;font-size:7.5px;white-space:nowrap}','tbody td{padding:3px 3px;border-bottom:1px solid #e2e8f0;vertical-align:middle}','.tot{background:#1e293b!important}','.tot td{color:#fff;font-weight:700;padding:5px 3px;border:none}','.ft{padding:4px 14px;font-size:7.5px;color:#94a3b8;display:flex;justify-content:space-between;margin-top:4px}','@media print{',' @page{size:A4 landscape;margin:7mm}',' .pbar{display:none!important}',' thead tr{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' .tot{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' tr:nth-child(even) td{-webkit-print-color-adjust:exact;print-color-adjust:exact}',' .hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}','}'].join('\n');
